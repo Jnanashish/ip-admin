@@ -130,8 +130,8 @@ const Addjobs = () => {
             const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME_2023
             sendTelegramMsg(MY_CHANNEL_NAME)
         }        
-        // const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME
-        // sendTelegramMsg(MY_CHANNEL_NAME)        
+        const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME
+        sendTelegramMsg(MY_CHANNEL_NAME)        
     }
 
     const addData = async (e) =>{
