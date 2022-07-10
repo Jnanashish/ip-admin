@@ -1,0 +1,39 @@
+.adminpanel{
+  background-color: #e1ebff;
+  min-height: 100vh;
+}
+.adminpanel_header {
+  background-color: #0050ff;
+  padding: 12px 60px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+}
+
+.container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 20% 80%;
+}
+
+.tablist {
+  background-color: #FFF;
+  padding: 10px;
+  list-style: none;
+  min-height: 100vh;
+}
+
+.tab {
+  border-radius: 3px;
+  padding: 10px;
+  margin: 10px 0px;
+  background-color: rgba(32, 101, 209, 0.08);
+  cursor: pointer;
+  font-size: 14px;
+
+  &:hover {
+    background-color: rgb(209, 233, 252);
+  }
+}

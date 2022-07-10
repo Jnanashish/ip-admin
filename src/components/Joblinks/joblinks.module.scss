@@ -1,0 +1,39 @@
+.update_data_container{
+  padding: 50px;
+}
+
+.adminpanel_title {
+  margin: 0px 0px 20px;
+  color: #0000ff;
+  font-size: 20px;
+}
+
+.line {
+  margin: 10px auto 20px;
+  width: 100%;
+}
+
+.adminlink_con {
+  display: flex;
+  flex-direction: row;
+  width: 90%;
+  justify-content: space-between;
+}
+
+
+.adminlinkcard_btn {
+  padding: 8px;
+  width: 100px;
+  font-size: 1.1rem;
+  border-radius: 5px;
+  background-color: #5050ff;
+  cursor: pointer;
+  border: none;
+  margin: 0px 0px 15px;
+  color: #fff;
+
+  &:hover {
+    background-color: red;
+    color: #000;
+  }
+}

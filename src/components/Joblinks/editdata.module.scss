@@ -1,0 +1,72 @@
+.adminpanel_title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 1rem 0;
+  color: #000;
+}
+.admin_grid {
+  display: grid;
+  grid-template-columns: 25% 75%;
+}
+.admin_label {
+  justify-self: end;
+  font-size: 1rem;
+  margin-top: 8px;
+  color: #121212;
+}
+.admin_input {
+  padding: 12px;
+  font-size: 1rem;
+  width: 85%;
+  margin: 0px 15px 18px;
+  border-radius: 4px;
+  border: none;
+}
+.ck {
+  padding: 100px;
+}
+.ul {
+  background-color: red;
+  color: #0000ff;
+  margin-bottom: 100px;
+}
+
+.ck_grid {
+  display: grid;
+  grid-template-columns: 25% 63.6%;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.addlink_data {
+  background-color: #0000ff;
+  border: none;
+  color: #fff;
+  width: 41%;
+  margin-bottom: 20px;
+  padding: 12px;
+  font-size: 1.2rem;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: #0c66ff;
+    cursor: pointer;
+  }
+}
+
+.admin_btn {
+  background-color: #0000ff;
+  border: none;
+  color: #fff;
+  width: 41%;
+  margin-bottom: 20px;
+  padding: 12px;
+  font-size: 1.2rem;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: #0c66ff;
+    cursor: pointer;
+  }
+}

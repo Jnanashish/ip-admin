@@ -1,0 +1,150 @@
+.adminpanel_title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 1rem 0;
+  color: #000;
+}
+.note{
+  text-align: center;
+  color: red;
+  margin-bottom: 5px;
+}
+.admin_grid {
+  display: grid;
+  grid-template-columns: 25% 75%;
+}
+.admin_label {
+  justify-self: end;
+  font-size: 1rem;
+  margin-top: 8px;
+  color: #121212;
+}
+.admin_input {
+  padding: 12px;
+  font-size: 1rem;
+  width: 85%;
+  margin: 0px 15px 18px;
+  border-radius: 4px;
+  border: none;
+}
+.ck {
+  padding: 100px;
+}
+.ul {
+  background-color: red;
+  color: #0000ff;
+  margin-bottom: 100px;
+}
+
+.ck_grid {
+  display: grid;
+  grid-template-columns: 25% 63.6%;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.addlink_data {
+  background-color: #0000ff;
+  border: none;
+  color: #fff;
+  width: 41%;
+  margin-bottom: 20px;
+  padding: 12px;
+  font-size: 1.2rem;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: #0c66ff;
+    cursor: pointer;
+  }
+}
+
+.admin_btn {
+  background-color: #0c66ff;
+  border: none;
+  color: #fff;
+  width: 41%;
+  // margin-bottom: 20px;
+  margin: 10px 20px 20px 11px;
+  padding: 12px;
+  font-size: 1.2rem;
+  border-radius: 4px;
+
+  &:hover {
+    background-color: #0c66ff;
+    cursor: pointer;
+  }
+}
+
+.adlink_con {
+  background-color: #fff;
+  padding: 15px;
+  width: 80%;
+  margin: 20px auto;
+
+  h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+}
+
+.adminlinkcard_btn {
+  padding: 8px;
+  width: 100px;
+  font-size: 1.1rem;
+  border-radius: 5px;
+  background-color: #5050ff;
+  cursor: pointer;
+  border: none;
+  margin: 15px 10px;
+  color: #fff;
+
+  &:hover {
+    background-color: red;
+    color: #000;
+  }
+}
+
+.adimage {
+  width: 300px;
+}
+.banner_con{
+  padding: 20px;
+  width : 90%;
+  margin: 20px auto;
+  border: 1px solid #121212;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.banner_btn_con{
+  display: flex;
+  flex-direction: column;
+  row-gap: 20px;
+  
+}
+.t_click{
+  b{
+    color: red;
+  }
+}
+.adimg_con{
+  width: 100%;
+  padding: 20px;
+}
+.adlinkimg_con{
+  border: 1px solid #121212;
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  margin: 20px auto;
+
+  img{
+    width: 100px;
+  }
+}
