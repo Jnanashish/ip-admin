@@ -38,38 +38,47 @@
     }
 }
 
-
-// For instagram banner
+// ---------------------------------------------
+// For instagram banner canvas -----------------
+@mixin canvasdesign{
+    // background-color: #5a7dfd;
+    background-color: #FFF;
+    font-family: 'Inter', sans-serif;
+    max-width: 100%;
+    margin-top: 20px;
+    // padding: 6.66%;
+}
 .canvas {
+    @include canvasdesign;
     width: 432px;
     height: 432px;
-    background-color: #FFFFFF;
-    font-family: 'Inter', sans-serif;
     padding: 28.8px;
 }
 .canvasbig {
+    @include canvasdesign;
     width: 900px;
     height: 900px;
-    max-width: 100%;
-    margin-top: 20px;
-    background-color: #FFFFFF;
-    font-family: 'Inter', sans-serif;
-    padding: 50px 60px;
+    padding: 60px;
 }
 
-.canvas_header{
+// header for canvas ------
+@mixin canvasdesign {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 5%;
     // background-color: salmon;
 }
-
-
+.canvas_header{
+    @include canvasdesign;
+    height: 14.38px;
+}
+.canvas_header_big {
+    @include canvasdesign;
+    height: 30px;
+}
 @mixin weblinkdesign {
     font-size: 14px;
     font-weight: 600;
-
     span {
         font-weight: 700;
         color: #0050FF;
@@ -77,84 +86,107 @@
 }
 .weblink{
     @include weblinkdesign;
-    font-size: 14px;
+    font-size: 12px;
     z-index: 99;
 }
 .weblinkbig {
     @include weblinkdesign;
-    font-size: 29px;
+    font-size: 27px;
     z-index: 99;
 }
 
-
 .logo{
-    height: 16px;
+    height: 14px;
 }
 .logobig {
-    height: 31px;
+    height: 30px;
 }
 
 
-.companylogo_con{
+// comapny logo ------
+@mixin logocondesign {
     width: 100%;
-    height: 23%;
     display: flex;
-    align-items: flex-end;
-    // padding-bottom: 10px;
-    img{
+    align-items: center;
+    img {
         height: 40%;
     }
     // background-color: #0050FF;
 }
+.companylogo_con{
+    @include logocondesign;
+    height: 86.4px;
+}
+.companylogo_con_big {
+    @include logocondesign;
+    height: 180px;
+}
 
 
+// title for ig banner -------
 @mixin canvastitledesign{
-    height: 29%;
     display: flex;
-    align-items: center;
-    // padding-bottom: 5px;
+    align-items: flex-start;
+    // padding-top: 5px;
     // background-color: greenyellow;
 }
 .canvas_title{
     @include canvastitledesign;
-    font-size: 18px;
-    line-height: 40px;
+    font-size: 17px;
+    // font-size: 27.2px;
+    line-height: 38px;
     z-index: 99;
+    // height: 86.4px;
+    height: 89.4px;
 }
 .canvas_title_big {
     @include canvastitledesign;
     font-size: 36px;
-    line-height: 80px;
+    // font-size: 56.67px;
+    line-height: 78px;
     z-index: 99;
+    // height: 180px;
+    height: 188px;
 }
 
 
+// Canvas details ---------
 @mixin canvasdetaildesign{
-    height: 38%;
     display: flex;
-    // background-color: #5a7dfd;
-    // padding-top: 5px;
+    background-color: #0050ff;
+    color: #fff;
+    border-radius: 5px;
+    justify-content: center;
+    
     flex-direction: column;
     p {
         margin: 4.5px 0px;
-        font-weight: 700;
+        font-weight: 500;
     }
-    span {
-        color: #0050FF;
+
+    .tag{
         font-weight: 600;
+        text-decoration: solid underline white 1.3px;
+        text-underline-offset : 3px;
     }
 }
 .canvas_details{
     @include canvasdetaildesign;
+    height: 155px;
+    // height: 158.41px;
+    padding: 8px 14px;
     p {
-        font-size: 15.2px;
+        font-size: 14px;
         line-height: 17px;
     }
 }
 .canvas_details_big {
     @include canvasdetaildesign;
+    height: 322px;
+    // height: 330px;
+    padding: 10px 24px;
     p {
-        font-size: 31.6px;
+        font-size: 31px;
         line-height: 49px;
     }
 }
@@ -162,10 +194,11 @@
 
 
 @mixin footerdesign {
-    height: 5%;
+    // height: 5%;
     // background-color: chartreuse;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
+    justify-content: flex-start;
     p {
         font-weight: 500;
     }
@@ -176,6 +209,7 @@
 }
 .footer{
     @include footerdesign;
+    height: 28.77px;
     font-size: 12px;
     img{
         width: 14px;
@@ -185,11 +219,14 @@
 .footerbig{
     @include footerdesign;
     font-size: 26.6px;
+    height: 59.94px;
     img{
         width: 24px;
         margin-right: 5px;
+        margin-bottom: 3px;
     }
 }
+// end of ig banner ----------------
 
 
 
@@ -198,7 +235,6 @@
 .bannerbtn{
     margin: 10px 0px;
 }
-
 .submitbtn_zone{
     width: 70%;
 }

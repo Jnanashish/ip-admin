@@ -1,6 +1,5 @@
 import React, {useState} from 'react'
 import html2canvas from "html2canvas";
-
 import styles from "./addjobs.module.scss"
 
 // mui import
@@ -24,8 +23,8 @@ import { CKEditor } from '@ckeditor/ckeditor5-react'
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import { config } from "../../Config/editorConfig"
 
+// import helpers
 import { shortenurl } from "../../Helpers/utility"
-
 import {API} from "../../Backend"
 
 const Addjobs = () => {
@@ -56,10 +55,13 @@ const Addjobs = () => {
 
     const [imgsize, setImgsize] = useState('60%');
     const [imgmleft, setiImgmleft] = useState('0px');
-    const [paddingtop, setPaddingtop] = useState('0px');
+    const [paddingtop, setPaddingtop] = useState('10px');
+    const [paddingright, setPaddingright] = useState('0px');
+    const [telegrambanner, setTelegrambanner] = useState("N");
 
     const formData = new FormData();  
 
+    // make the title bold for telegram
     const translate = (char) => {
         let diff;
         if (/[A-Z]/.test (char)) diff = "𝗔".codePointAt (0) - "A".codePointAt (0);
@@ -92,6 +94,29 @@ const Addjobs = () => {
         reader.readAsDataURL(e.target.files[0]);
     }
 
+    // get cloudinary link for telegram
+    const handleTelegramImgInput = async (e) =>{
+        toast('Generating image url from cloudinary');
+        const formData2 = new FormData();
+        const file = e.target.files ;
+        formData2.append('photo', file[0]);
+
+        const res = await fetch(`${API}/jd/getposterlink`,{
+            method : "POST",
+            body : formData2
+        })
+        const data = await res.json(); 
+        // console.log(data);
+        if(res.status === 201){
+            toast('Successfully link generated');
+            // setTimeout(refreshPage(), 2000)
+        } else {
+            toast.error("An error Occured")
+        }
+        setTelegrambanner(data.url)
+    }
+
+
     // handle company logo input for website
     const handleLogoInput = (e) =>{
         const file = e.target.files ;
@@ -119,19 +144,43 @@ const Addjobs = () => {
             toast.error("An error Occured")
         });
     }
+    const sendTelegramMsgwithImage = (chanelName) => {
+        const msg = btitle + "%0A%0AApply Link%20%3A%20" + link;
+
+        return fetch(`https://api.telegram.org/bot${BOT_API_KEY}/sendPhoto?chat_id=${chanelName}&photo=${telegrambanner}&caption=${msg}&disable_web_page_preview=true&disable_notification=true`,{  
+            method : "POST", 
+        })
+        .then(res => {
+            console.log("SUCCESS");
+            toast('Message sent')
+        })
+        .catch(err => {
+            console.log("ERROR", err);
+            toast.error("An error Occured")
+        });
+    }
 
     // handle telegram submit
     const handleTelegramSubmit = () =>{
         if(batch.includes("2022")){
             const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME_2022
-            sendTelegramMsg(MY_CHANNEL_NAME)
+            if(telegrambanner === "N")
+                sendTelegramMsg(MY_CHANNEL_NAME)
+            else 
+                sendTelegramMsgwithImage(MY_CHANNEL_NAME)
         }
         if(batch.includes("2023")){
             const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME_2023
-            sendTelegramMsg(MY_CHANNEL_NAME)
+            if(telegrambanner === "N")
+                sendTelegramMsg(MY_CHANNEL_NAME)
+            else 
+                sendTelegramMsgwithImage(MY_CHANNEL_NAME)
         }        
-        const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME
-        sendTelegramMsg(MY_CHANNEL_NAME)        
+        // const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME
+        // if(telegrambanner === "N")
+        //     sendTelegramMsg(MY_CHANNEL_NAME)
+        // else 
+        //     sendTelegramMsgwithImage(MY_CHANNEL_NAME)       
     }
 
     const addData = async (e) =>{
@@ -154,6 +203,8 @@ const Addjobs = () => {
         formData.append("location", location)
         formData.append("jdpage", jdpage)
         formData.append("companytype", companytype)
+        formData.append("jdbanner", telegrambanner)
+        
 
         
         const res = await fetch(`${API}/jd/add`,{
@@ -163,41 +214,50 @@ const Addjobs = () => {
 
         if(res.status === 201){
             toast('Job Data Added Successfully');
-            setTimeout(refreshPage(), 2000)
+            // setTimeout(refreshPage(), 2000)
         } else {
             toast.error("An error Occured")
         }
     }
 
-    const refreshPage = () => {
-        window.location.reload(false);
-    }
+    // const refreshPage = () => {
+    //     window.location.reload(false);
+    // }
 
     var style = {
         imgstyle : { height: imgsize, marginLeft:imgmleft },
-        imgstyle2 : {  paddingTop: paddingtop }
+        imgstyle2 : {  paddingTop: paddingtop },
+        imgstyle3 : {  paddingRight: paddingright },
     }
 
 
     return (
-        <div className={styles.container}>
+        <div  className={styles.container}>
             <ToastContainer/>
             <div className={styles.maininput_con}>
                 <div className={styles.input_fields}>
                     <TextField 
                         size="small" margin="normal" fullWidth  
-                        label="Title of the job" value={title}
+                        label="Title of the job *" value={title}
                         onChange = {(e) => setTitle(e.target.value)}
-                    />
-                    <TextField 
-                        size="small" margin="normal" fullWidth  
-                        label="Title for Instagram banner" value={igbannertitle}
-                        onChange = {(e) => setIgbannertitle(e.target.value)}
                     />
                     <div className={styles.flex}>
                         <TextField 
+                            size="small" margin="normal" fullWidth  
+                            label="Title for Instagram banner" value={igbannertitle}
+                            onChange = {(e) => setIgbannertitle(e.target.value)}
+                        />
+                        <TextField 
+                            size="small" sx={{ width: '10ch' }}                 
+                            label="Padding right" margin="normal"
+                            value={paddingright}
+                            onChange = {(e) => setPaddingright(e.target.value)}
+                        />
+                    </div>
+                    <div className={styles.flex}>
+                        <TextField 
                             size="small" margin="normal" fullWidth                  
-                            label="Link for the job application" value={link}
+                            label="Link for the job application *" value={link}
                             onChange = {(e) => setLink(e.target.value)}
                         />
                         <IconButton sx={{ mt: 1 }} color="secondary" aria-label="delete" size="large">
@@ -206,13 +266,13 @@ const Addjobs = () => {
                     </div>
                     <TextField 
                         size="small" margin="normal" fullWidth                  
-                        label="Degree" value={degree}
+                        label="Degree *" value={degree}
                         onChange = {(e) => setDegree(e.target.value)}
                     />
                     <div className={styles.flex}>
                         <TextField 
                             size="small" margin="normal"                   
-                            label="Batch" value={batch}
+                            label="Batch *" value={batch}
                             onChange = {(e) => setBatch(e.target.value)}
                         />
                         <TextField 
@@ -224,12 +284,12 @@ const Addjobs = () => {
                     <div className={styles.flex}>
                         <TextField 
                             size="small" margin="normal"                  
-                            label="Experience needed" value={experience}
+                            label="Experience needed *" value={experience}
                             onChange = {(e) => setExperience(e.target.value)}
                         />
                         <TextField 
                             size="small" margin="normal"                                   
-                            label="Location" value={location}
+                            label="Location *" value={location}
                             onChange = {(e) => setLocation(e.target.value)}
                         />
                     </div>
@@ -273,7 +333,7 @@ const Addjobs = () => {
                     </div>
                 </div>
 
-                <div id="htmlToCanvasViss" className={styles.canvas}>
+                <div id="htmlToCanvas" className={styles.canvas}>
                     <div className={styles.canvas_header}>
                         <p className={styles.weblink}>
                             visit - <span> careersat.tech</span>
@@ -281,21 +341,24 @@ const Addjobs = () => {
                         <img className={styles.logo} src={logo} alt="logo"/>
                     </div>
 
+                    {/* company logo  */}
                     <div className={styles.companylogo_con} style={style.imgstyle2}>
                         {imgData && <img style={style.imgstyle} src={imgData} alt="Company logo"/>}
                     </div>
-                    <div className={styles.canvas_title}>
+
+                    {/* Job title  */}
+                    <div className={styles.canvas_title} style={style.imgstyle3}>
                         <h2>{igbannertitle}</h2>
                     </div>
 
                     <div className={styles.canvas_details}>
-                        {degree !== "N" && <p>Degree : <span>{degree}</span></p>}
-                        {batch !== "N" && <p>Batch : <span>{batch}</span></p>}
-                        {experience !== "N" && <p>Experience : <span>{experience}</span></p>}
-                        {experience === "N" && salary !== "N" && <p>Salary : <span>₹{salary}</span></p>}
-                        {location !== "N" && <p>Location : <span>{location}</span></p>}
-                        {location === "N" && salary !== "N" && <p>Salary : <span>₹{salary}</span></p>}
-                        <p>Apply Link : <span>Link in Bio (visit : careersat.tech)</span></p>
+                        {degree !== "N" && <p><span className={styles.tag}>Degree</span> : <span>{degree}</span></p>}
+                        {batch !== "N" && <p><span className={styles.tag}>Batch</span> : <span>{batch}</span></p>}
+                        {experience !== "N" && <p><span className={styles.tag}>Experience</span> : <span>{experience}</span></p>}
+                        {experience === "N" && salary !== "N" && <p><span className={styles.tag}>Salary</span> : <span>₹{salary}</span></p>}
+                        {location !== "N" && <p><span className={styles.tag}>Location</span> : <span>{location}</span></p>}
+                        {location === "N" && salary !== "N" && <p><span className={styles.tag}>Salary</span> : <span>₹{salary}</span></p>}
+                        <p><span className={styles.tag}>Apply Link</span> : <span>Link in Bio (visit : careersat.tech)</span></p>
                     </div>
                     
                     <div className={styles.footer}>
@@ -398,11 +461,12 @@ const Addjobs = () => {
 
                     </div>           
                 </div>}
-
-                <br />   
+                <p style={{fontSize : "8px"}}>*{telegrambanner}</p> 
+                <br /> 
+                
                 <div className={styles.submitbtn_zone}>
-                    <div className={styles.flex}>
-                        {/* <input type="file" onChange = {handleTelegramImgInput}/> */}
+                    <div className={styles.flex} style={{backgroundColor :"#fefefe"}}>
+                        <input type="file" onChange = {handleTelegramImgInput}/>
                         <Button onClick={handleTelegramSubmit} 
                             variant="contained" color="primary"
                         > Send to telegram 
@@ -419,14 +483,14 @@ const Addjobs = () => {
             </div>
 
             <div id="htmlToCanvasVis" className={styles.canvasbig}>
-                <div className={styles.canvas_header}>
+                <div className={styles.canvas_header_big}>
                     <p className={styles.weblinkbig}>
                         visit - <span> careersat.tech</span>
                     </p>
                     <img className={styles.logobig} src={logo} alt="logo"/>
                 </div>
                 
-                <div className={styles.companylogo_con} style={style.imgstyle2}>
+                <div className={styles.companylogo_con_big} style={style.imgstyle2}>
                     {imgData && <img style={style.imgstyle} src={imgData} alt="Company logo"/>}
                 </div>
 
@@ -435,12 +499,13 @@ const Addjobs = () => {
                 </div>
 
                 <div className={styles.canvas_details_big}>
-                    {degree !== "N" && <p>Degree : <span>{degree}</span></p>}
-                    {batch !== "N" && <p>Batch : <span>{batch}</span></p>}
-                    {experience !== "N" && <p>Experience : <span>{experience}</span></p>}
-                    {experience === "N" && salary !== "N" && <p>Salary : <span>₹{salary}</span></p>}
-                    {location !== "N" && <p>Location : <span>{location}</span></p>}
-                    <p>Apply Link : <span>Link in Bio (visit : careersat.tech)</span></p>
+                    {degree !== "N" && <p><span className={styles.tag}>Degree</span> : <span>{degree}</span></p>}
+                    {batch !== "N" && <p><span className={styles.tag}>Batch</span> : <span>{batch}</span></p>}
+                    {experience !== "N" && <p><span className={styles.tag}>Experience</span> : <span>{experience}</span></p>}
+                    {experience === "N" && salary !== "N" && <p><span className={styles.tag}>Salary</span> : <span>₹{salary}</span></p>}
+                    {location !== "N" && <p><span className={styles.tag}>Location</span> : <span>{location}</span></p>}
+                    {location === "N" && salary !== "N" && <p><span className={styles.tag}>Salary</span> : <span>₹{salary}</span></p>}
+                    <p><span className={styles.tag}>Apply Link</span> : <span>Link in Bio (visit : careersat.tech)</span></p>
                 </div>
                 
                 <div className={styles.footerbig}>
