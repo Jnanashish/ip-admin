@@ -20,10 +20,10 @@ import AddLink from '../../components/AD/Addlink';
 const AdminPanel = () => {
     // const [pass, setPass] = useState("")
     // const [email, setEmail]
-    // const context = useContext(UserContext);
-    // if (!context.user?.email) {
-    //     return <Navigate to="/" />;
-    // }
+    const context = useContext(UserContext);
+    if (!context.user?.email) {
+        return <Navigate to="/" />;
+    }
 
     return (
         <div className={styles.adminpanel}>

@@ -176,11 +176,11 @@ const Addjobs = () => {
             else 
                 sendTelegramMsgwithImage(MY_CHANNEL_NAME)
         }        
-        // const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME
-        // if(telegrambanner === "N")
-        //     sendTelegramMsg(MY_CHANNEL_NAME)
-        // else 
-        //     sendTelegramMsgwithImage(MY_CHANNEL_NAME)       
+        const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME
+        if(telegrambanner === "N")
+            sendTelegramMsg(MY_CHANNEL_NAME)
+        else 
+            sendTelegramMsgwithImage(MY_CHANNEL_NAME)       
     }
 
     const addData = async (e) =>{
@@ -260,8 +260,8 @@ const Addjobs = () => {
                             label="Link for the job application *" value={link}
                             onChange = {(e) => setLink(e.target.value)}
                         />
-                        <IconButton sx={{ mt: 1 }} color="secondary" aria-label="delete" size="large">
-                            <CloudDownloadIcon onClick={shortenLink} fontSize="inherit" />
+                        <IconButton sx={{ mt: 1 }} color="secondary" aria-label="delete" size="large" onClick={shortenLink}>
+                            <CloudDownloadIcon  fontSize="inherit" />
                         </IconButton>
                     </div>
                     <TextField 
