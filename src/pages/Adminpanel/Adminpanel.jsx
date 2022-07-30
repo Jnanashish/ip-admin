@@ -36,7 +36,7 @@ const AdminPanel = () => {
                 <TabList className={styles.tablist}>
                     <Tab className={styles.tab}>+ Add Job</Tab>
                     <Tab className={styles.tab}>Job Dashboard</Tab>
-                    <Tab className={styles.tab}>Analytics</Tab>
+                    <Tab className={styles.tab}>Analytics Comming soon</Tab>
                     <Tab className={styles.tab}>+ Ad (Link only)</Tab>
                     <Tab className={styles.tab}>+ Ad (With Image)</Tab>
                     <Tab className={styles.tab}>+ Add banner</Tab>
