@@ -66,7 +66,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    // background-color: salmon;
 }
 .canvas_header{
     @include canvasdesign;
@@ -108,18 +107,29 @@
     width: 100%;
     display: flex;
     align-items: center;
-    img {
-        height: 40%;
+
+    // background-color: #ffdbdb;
+    h1{
+        font-weight: 700;
+        color: #0C0C0C;
     }
-    // background-color: #0050FF;
 }
 .companylogo_con{
     @include logocondesign;
     height: 86.4px;
+    padding-top: 10px;
+    h1 {
+        
+        font-size: 3rem;
+    }
 }
 .companylogo_con_big {
     @include logocondesign;
     height: 180px;
+    padding-top: 20px;
+    h1{
+        font-size: 5.5rem;
+    }
 }
 
 
@@ -127,54 +137,52 @@
 @mixin canvastitledesign{
     display: flex;
     align-items: flex-start;
-    // padding-top: 5px;
     // background-color: greenyellow;
+    color: #0050ff;
+    font-weight: 900;
 }
 .canvas_title{
     @include canvastitledesign;
     font-size: 17px;
-    // font-size: 27.2px;
     line-height: 38px;
     z-index: 99;
-    // height: 86.4px;
     height: 89.4px;
 }
 .canvas_title_big {
     @include canvastitledesign;
-    font-size: 36px;
-    // font-size: 56.67px;
-    line-height: 78px;
+    font-size: 37px;
+    line-height: 79px;
     z-index: 99;
-    // height: 180px;
     height: 188px;
+    padding-top: 10px;
 }
 
 
 // Canvas details ---------
 @mixin canvasdetaildesign{
     display: flex;
-    background-color: #0050ff;
-    color: #fff;
+    // background-color: #0050ff;
+    color: #0C0C0C;
     border-radius: 5px;
     justify-content: center;
     
     flex-direction: column;
     p {
         margin: 4.5px 0px;
-        font-weight: 500;
+        font-weight: 600;
     }
 
     .tag{
-        font-weight: 600;
-        text-decoration: solid underline white 1.3px;
-        text-underline-offset : 3px;
+        font-weight: 700;
+        text-decoration: solid underline #0C0C0C 1.3px;
+        text-underline-offset : 5px;
     }
 }
 .canvas_details{
     @include canvasdetaildesign;
     height: 155px;
     // height: 158.41px;
-    padding: 8px 14px;
+    padding: 0px 14px 8px 14px;
     p {
         font-size: 14px;
         line-height: 17px;
@@ -184,7 +192,7 @@
     @include canvasdetaildesign;
     height: 322px;
     // height: 330px;
-    padding: 10px 24px;
+    padding: 0px 24px 10px 24px;
     p {
         font-size: 31px;
         line-height: 49px;

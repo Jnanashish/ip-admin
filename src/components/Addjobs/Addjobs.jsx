@@ -41,12 +41,13 @@ const Addjobs = () => {
     const [imgData, setImgData] = useState(null); 
     const [salary, setSalary] = useState('N');
     const [jdpage, setJdpage] = useState(false);    
+    const [companyName, setCompanyName] = useState("");    
 
     const [companytype, setCompanytype] = useState('product / service')
-    const [lastdate, setLastdate] = useState('23/7/2022');
+    const [lastdate, setLastdate] = useState('N');
     const [role, setRole] = useState('N');
 
-    const [jobtype, setJobtype] = useState('Intern');
+    const [jobtype, setJobtype] = useState('N');
     const [jobdesc, setJobdesc] = useState('N');
     const [eligibility, setEligibility] = useState('N');
     const [responsibility, setResponsibility] = useState('N');
@@ -55,7 +56,7 @@ const Addjobs = () => {
 
     const [imgsize, setImgsize] = useState('60%');
     const [imgmleft, setiImgmleft] = useState('0px');
-    const [paddingtop, setPaddingtop] = useState('10px');
+    const [paddingtop, setPaddingtop] = useState('0px');
     const [paddingright, setPaddingright] = useState('0px');
     const [telegrambanner, setTelegrambanner] = useState("N");
 
@@ -204,6 +205,7 @@ const Addjobs = () => {
         formData.append("jdpage", jdpage)
         formData.append("companytype", companytype)
         formData.append("jdbanner", telegrambanner)
+        formData.append("companyName", companyName)
         
 
         
@@ -243,15 +245,15 @@ const Addjobs = () => {
                     />
                     <div className={styles.flex}>
                         <TextField 
+                            size="small" sx={{ width: '20ch' }}                 
+                            label="Company Name" margin="normal"
+                            value={companyName}
+                            onChange = {(e) => setCompanyName(e.target.value)}
+                        />
+                        <TextField 
                             size="small" margin="normal" fullWidth  
                             label="Title for Instagram banner" value={igbannertitle}
                             onChange = {(e) => setIgbannertitle(e.target.value)}
-                        />
-                        <TextField 
-                            size="small" sx={{ width: '10ch' }}                 
-                            label="Padding right" margin="normal"
-                            value={paddingright}
-                            onChange = {(e) => setPaddingright(e.target.value)}
                         />
                     </div>
                     <div className={styles.flex}>
@@ -342,12 +344,12 @@ const Addjobs = () => {
                     </div>
 
                     {/* company logo  */}
-                    <div className={styles.companylogo_con} style={style.imgstyle2}>
-                        {imgData && <img style={style.imgstyle} src={imgData} alt="Company logo"/>}
+                    <div className={styles.companylogo_con}>
+                        <h1>{companyName}</h1>
                     </div>
 
                     {/* Job title  */}
-                    <div className={styles.canvas_title} style={style.imgstyle3}>
+                    <div className={styles.canvas_title}>
                         <h2>{igbannertitle}</h2>
                     </div>
 
@@ -490,8 +492,8 @@ const Addjobs = () => {
                     <img className={styles.logobig} src={logo} alt="logo"/>
                 </div>
                 
-                <div className={styles.companylogo_con_big} style={style.imgstyle2}>
-                    {imgData && <img style={style.imgstyle} src={imgData} alt="Company logo"/>}
+                <div className={styles.companylogo_con_big}>
+                    <h1>{companyName}</h1>
                 </div>
 
                 <div className={styles.canvas_title_big}>
