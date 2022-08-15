@@ -350,7 +350,7 @@ const Addjobs = () => {
 
                     {/* Job title  */}
                     <div className={styles.canvas_title}>
-                        <h2>{igbannertitle}</h2>
+                        <h1>{igbannertitle}</h1>
                     </div>
 
                     <div className={styles.canvas_details}>
@@ -497,7 +497,7 @@ const Addjobs = () => {
                 </div>
 
                 <div className={styles.canvas_title_big}>
-                    <h2>{igbannertitle}</h2>
+                    <h1>{igbannertitle}</h1>
                 </div>
 
                 <div className={styles.canvas_details_big}>
