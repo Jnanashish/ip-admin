@@ -64,7 +64,6 @@ const Addjobs = () => {
     const [imgsize, setImgsize] = useState("60%");
     const [imgmleft, setiImgmleft] = useState("0px");
     const [paddingtop, setPaddingtop] = useState("0px");
-    const [paddingright, setPaddingright] = useState("0px");
     const [telegrambanner, setTelegrambanner] = useState("N");
 
     const formData = new FormData();
