@@ -37,8 +37,8 @@ const UpdateData = () => {
     ]);
     const date = new Date();
     const weeknum = date.getDay();
-    const line = captionline[weeknum / 2];
-    const hash = hashtags[weeknum / 3];
+    const line = captionline[weeknum % 2];
+    const hash = hashtags[weeknum % 3];
 
     useEffect(() => {
         getData();
@@ -68,14 +68,16 @@ const UpdateData = () => {
     const generateCaption = (id) => {
         const res = data.filter((item) => item._id === id);
         const temp =
+            "📢 " +
             res[0].title +
-            ". Visit Link in Bio to apply." +
+            ". Visit Link in Bio to apply. 🔝" +
             "\n\nBatch : " +
             res[0].batch +
             "\nDegree : " +
             res[0].degree +
             "\n\nApply Link 👉 " +
             res[0].link +
+            "\nLink in Bio" +
             "\n\n" +
             line +
             "\n.\n.\n.\n" +
