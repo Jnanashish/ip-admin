@@ -1,29 +1,28 @@
-import React, {useContext} from 'react'
+import React, { useContext } from "react";
 
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 
-import Addjobs from '../../components/Addjobs/Addjobs';
-import Joblinks from "../../components/Joblinks/Joblinks"
-import Adpoptype from "../../components/Dapoptype/Adpoptype"
-import AddBanner from '../../components/AD/Addbanner';
+import Addjobs from "../../components/Addjobs/Addjobs";
+import Joblinks from "../../components/Joblinks/Joblinks";
+import Adpoptype from "../../components/Dapoptype/Adpoptype";
+import AddBanner from "../../components/AD/Addbanner";
 
 // context
-import {UserContext} from "../../Context/userContext"
-import {Navigate} from "react-router-dom"
+import { UserContext } from "../../Context/userContext";
+import { Navigate } from "react-router-dom";
 
 // import styles
-import styles from "./adminpanel.module.scss"
-import AddLinkImg from '../../components/AD/Addlinkimg';
-import AddLink from '../../components/AD/Addlink';
-
+import styles from "./adminpanel.module.scss";
+import AddLinkImg from "../../components/AD/Addlinkimg";
+import AddLink from "../../components/AD/Addlink";
 
 const AdminPanel = () => {
     // const [pass, setPass] = useState("")
     // const [email, setEmail]
     const context = useContext(UserContext);
-    if (!context.user?.email) {
-        return <Navigate to="/" />;
-    }
+    // if (!context.user?.email) {
+    //     return <Navigate to="/" />;
+    // }
 
     return (
         <div className={styles.adminpanel}>
@@ -31,7 +30,7 @@ const AdminPanel = () => {
                 <h3>Admin Panel</h3>
                 <h4>Welcome : Jnanashish Handique</h4>
             </div>
-        
+
             <Tabs className={styles.container}>
                 <TabList className={styles.tablist}>
                     <Tab className={styles.tab}>+ Add Job</Tab>
@@ -44,30 +43,30 @@ const AdminPanel = () => {
                 </TabList>
                 <div className={styles.part2}>
                     <TabPanel>
-                        <Addjobs/>
+                        <Addjobs />
                     </TabPanel>
                     <TabPanel>
-                        <Joblinks/>
+                        <Joblinks />
                     </TabPanel>
                     <TabPanel>
                         <h2>Analytics</h2>
                     </TabPanel>
                     <TabPanel>
-                        <AddLink/>
+                        <AddLink />
                     </TabPanel>
                     <TabPanel>
-                        <AddLinkImg/>
+                        <AddLinkImg />
                     </TabPanel>
                     <TabPanel>
-                        <AddBanner/>
+                        <AddBanner />
                     </TabPanel>
                     <TabPanel>
-                        <Adpoptype/>
+                        <Adpoptype />
                     </TabPanel>
                 </div>
-            </Tabs>           
+            </Tabs>
         </div>
-    )
-}
+    );
+};
 
 export default AdminPanel;

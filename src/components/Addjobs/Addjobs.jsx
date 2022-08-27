@@ -232,10 +232,6 @@ const Addjobs = () => {
         }
     };
 
-    // const refreshPage = () => {
-    //     window.location.reload(false);
-    // }
-
     return (
         <div className={styles.container}>
             <ToastContainer />
@@ -332,7 +328,7 @@ const Addjobs = () => {
                         />
                     </div>
                     <div style={{ marginTop: "10px" }} className={styles.flex}>
-                        <label htmlFor="contained-button-file">
+                        {/* <label htmlFor="contained-button-file">
                             <input
                                 style={{ display: "none" }}
                                 accept="image/*"
@@ -372,7 +368,7 @@ const Addjobs = () => {
                         />
                         <IconButton aria-label="delete">
                             <DeleteIcon onClick={() => setImgData("")} />
-                        </IconButton>
+                        </IconButton> */}
                         <Button
                             onClick={handleDownloadImage}
                             variant="contained"
