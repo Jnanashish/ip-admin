@@ -27,13 +27,13 @@ const UpdateData = () => {
 
     const [captionline, setCaptionline] = useState([
         "Follow 👉 @careersattech to get regular Job and Internship updates.",
-        "👉 Join interviewPrep in telegram to get free resources for interview preparation.",
+        "👉 Join interviewPrep in Telegram to get free resources for interview preparation.",
     ]);
 
     const [hashtags, setHashtags] = useState([
-        "#offcampusdrive #placementdrive #jobupdates #jobsforfreshers #offcampus #softwareengineer",
-        "#codinginterview #jobsforfreshers #engineerjobs #freshersjobs #campusplacements #computerscienceengineering",
-        "#offcampusdrive #offcampus #softwareengineer #campusplacements #placementdrive #jobupdates #engineerjobs ",
+        "#offcampusdrive #placementdrive #jobupdates #jobsforfreshers #offcampus #softwaredeveloper #hiring #freshers",
+        "#codinginterview #jobsforfreshers #engineerjobs #freshersjobs #hiring #campusplacements #computerscienceengineering #jobseekers #placementdrive",
+        "#offcampusdrive #freshers #offcampus #hiring #softwaredeveloper #campusplacements #placementdrive #jobupdates #engineerjobs ",
     ]);
     const date = new Date();
     const weeknum = date.getDay();

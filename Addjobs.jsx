@@ -78,7 +78,7 @@ const Addjobs = () => {
     const btitle = title.replace(/[A-Za-z]/g, translate);
 
     const handleDownloadImage = async () => {
-        const element = document.getElementById("htmlToCanvas"),
+        const element = document.getElementById("htmlToCanvasVis"),
             canvas = await html2canvas(element);
 
         var data = canvas.toDataURL("image/jpg");
@@ -377,6 +377,80 @@ const Addjobs = () => {
                         </Button>
                     </div>
                 </div>
+
+                <div id="htmlToCanvas" className={styles.canvas}>
+                <div id="htmlToCanvas" className={styles.canvas}>
+                    <div className={styles.canvas_header}>
+                        <p className={styles.weblink}>
+                            visit - <span> careersat.tech</span>
+                        </p>
+                        <img className={styles.logo} src={logo} alt="logo" />
+                    </div>
+
+                    {/* company logo  */}
+                    <div className={styles.companylogo_con}>
+                        <h1>{companyName}</h1>
+                    </div>
+
+                    {/* Job title  */}
+                    <div className={styles.canvas_title}>
+                        <h1>{igbannertitle}</h1>
+                    </div>
+
+                    <div className={styles.canvas_details}>
+                        {degree !== "N" && (
+                            <p>
+                                <span className={styles.tag}>Degree</span> :{" "}
+                                <span>{degree}</span>
+                            </p>
+                        )}
+                        {batch !== "N" && (
+                            <p>
+                                <span className={styles.tag}>Batch</span> :{" "}
+                                <span>{batch}</span>
+                            </p>
+                        )}
+                        {experience !== "N" && (
+                            <p>
+                                <span className={styles.tag}>Experience</span> :{" "}
+                                <span>{experience}</span>
+                            </p>
+                        )}
+                        {experience === "N" && salary !== "N" && (
+                            <p>
+                                <span className={styles.tag}>Salary</span> :{" "}
+                                <span>₹{salary}</span>
+                            </p>
+                        )}
+                        {location !== "N" && (
+                            <p>
+                                <span className={styles.tag}>Location</span> :{" "}
+                                <span>{location}</span>
+                            </p>
+                        )}
+                        {location === "N" && salary !== "N" && (
+                            <p>
+                                <span className={styles.tag}>Salary</span> :{" "}
+                                <span>₹{salary}</span>
+                            </p>
+                        )}
+                        <p>
+                            <span className={styles.tag}>Apply Link</span> :{" "}
+                            <span>Link in Bio (visit : careersat.tech)</span>
+                        </p>
+                    </div>
+
+                    <div className={styles.footer}>
+                        <img src={instagram} alt="instagram-logo" />
+                        <img src={telegram} alt="telegram-logo" />
+                        <img src={linkedin} alt="linkedin-logo" />
+                        <p>
+                            Follow <span>@carrersattech</span> to get regular
+                            Job updates.
+                        </p>
+                    </div>
+                </div>
+                </div>
             </div>
 
             <br />
@@ -523,23 +597,23 @@ const Addjobs = () => {
                 </div>
             </div>
 
-            <div id="htmlToCanvas" className={styles.canvas}>
-                <div className={styles.canvas_header}>
-                    <p className={styles.weblink}>
+            <div id="htmlToCanvasVis" className={styles.canvasbig}>
+                <div className={styles.canvas_header_big}>
+                    <p className={styles.weblinkbig}>
                         visit - <span> careersat.tech</span>
                     </p>
-                    <img className={styles.logo} src={logo} alt="logo" />
+                    <img className={styles.logobig} src={logo} alt="logo" />
                 </div>
 
-                <div className={styles.companylogo_con}>
+                <div className={styles.companylogo_con_big}>
                     <h1>{companyName}</h1>
                 </div>
 
-                <div className={styles.canvas_title}>
+                <div className={styles.canvas_title_big}>
                     <h1>{igbannertitle}</h1>
                 </div>
 
-                <div className={styles.canvas_details}>
+                <div className={styles.canvas_details_big}>
                     {degree !== "N" && (
                         <p>
                             <span className={styles.tag}>Degree</span> :{" "}
@@ -582,7 +656,7 @@ const Addjobs = () => {
                     </p>
                 </div>
 
-                <div className={styles.footer}>
+                <div className={styles.footerbig}>
                     <img src={instagram} alt="instagram-logo" />
                     <img src={telegram} alt="telegram-logo" />
                     <img src={linkedin} alt="linkedin-logo" />
