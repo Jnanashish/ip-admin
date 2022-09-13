@@ -1,7 +1,7 @@
 $canvasPadding: 40px 50px;
 $canvasBgColor: #f4faff;
 $logoPaddingTop: 26px;
-$logoFontSize: 6.8rem;
+$logoFontSize: 6.5rem;
 $titleFontSize: 32px;
 $detailFontSize: 31px;
 // ---------------------------------------------
@@ -44,7 +44,7 @@ $detailFontSize: 31px;
     display: flex;
     align-items: center;
     h1 {
-        font-weight: 800;
+        font-weight: 700;
         color: #0050ff;
         font-size: $logoFontSize;
     }
@@ -90,7 +90,7 @@ $detailFontSize: 31px;
     }
     height: 333px;
     padding: 10px 0px 15px 32px;
-    background-color: #0050ff;
+    background-color: #0069ff;
 }
 
 .footer {
