@@ -494,33 +494,6 @@ const Addjobs = () => {
                 )}
                 <p style={{ fontSize: "8px" }}>*{telegrambanner}</p>
                 <br />
-
-                <div className={styles.submitbtn_zone}>
-                    <div
-                        className={styles.flex}
-                        style={{ backgroundColor: "#fefefe" }}>
-                        <input type="file" onChange={handleTelegramImgInput} />
-                        <Button
-                            onClick={handleTelegramSubmit}
-                            variant="contained"
-                            color="primary">
-                            {" "}
-                            Send to telegram
-                        </Button>
-                    </div>
-                    <br />
-                    <div className={styles.flex}>
-                        <input type="file" onChange={handleLogoInput} />
-                        <Button
-                            className={styles.submitbtn}
-                            onClick={addData}
-                            variant="contained"
-                            color="primary">
-                            {" "}
-                            Submit
-                        </Button>
-                    </div>
-                </div>
             </div>
 
             <div id="htmlToCanvas" className={styles.canvas}>
@@ -590,6 +563,42 @@ const Addjobs = () => {
                         Follow <span>@carrersattech</span> to get regular Job
                         updates.
                     </p>
+                </div>
+            </div>
+            <br />
+            <hr />
+            <br />
+            <div className={styles.submitbtn_zone}>
+                <div
+                    className={styles.flex}
+                    style={{ backgroundColor: "#fefefe" }}>
+                    <input type="file" onChange={handleTelegramImgInput} />
+                    <Button
+                        onClick={handleTelegramSubmit}
+                        variant="contained"
+                        color="primary">
+                        {" "}
+                        Send to telegram
+                    </Button>
+                </div>
+            </div>
+
+            <br />
+            <hr />
+            <br />
+
+            <div className={styles.submitbtn_zone}>
+                <br />
+                <div className={styles.flex}>
+                    <input type="file" onChange={handleLogoInput} />
+                    <Button
+                        className={styles.submitbtn}
+                        onClick={addData}
+                        variant="contained"
+                        color="primary">
+                        {" "}
+                        Submit
+                    </Button>
                 </div>
             </div>
         </div>

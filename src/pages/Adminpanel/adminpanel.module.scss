@@ -1,4 +1,4 @@
-.adminpanel{
+.adminpanel {
   background-color: #e1ebff;
   min-height: 100vh;
 }
@@ -14,24 +14,25 @@
 
 .container {
   width: 100%;
-  display: grid;
-  grid-template-columns: 20% 80%;
 }
 
 .tablist {
-  background-color: #FFF;
+  background-color: #fff;
   padding: 10px;
   list-style: none;
-  min-height: 100vh;
+  display: flex;
+  column-gap: 10px;
 }
 
 .tab {
   border-radius: 3px;
-  padding: 10px;
+  padding: 10px 15px;
   margin: 10px 0px;
   background-color: rgba(32, 101, 209, 0.08);
   cursor: pointer;
-  font-size: 14px;
+  font-size: 12px;
+  color: #0050ff;
+  font-weight: 600;
 
   &:hover {
     background-color: rgb(209, 233, 252);

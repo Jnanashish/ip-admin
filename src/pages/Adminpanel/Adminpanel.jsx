@@ -18,9 +18,9 @@ import AddLink from "../../components/AD/Addlink";
 
 const AdminPanel = () => {
     const context = useContext(UserContext);
-    if (!context.user?.email) {
-        return <Navigate to="/" />;
-    }
+    // if (!context.user?.email) {
+    //     return <Navigate to="/" />;
+    // }
 
     return (
         <div className={styles.adminpanel}>
@@ -29,7 +29,7 @@ const AdminPanel = () => {
                 <h4>Welcome : Jnanashish Handique</h4>
             </div>
 
-            <Tabs className={styles.container}>
+            <Tabs orientation="horizontal" className={styles.container}>
                 <TabList className={styles.tablist}>
                     <Tab className={styles.tab}>+ Add Job</Tab>
                     <Tab className={styles.tab}>Job Dashboard</Tab>

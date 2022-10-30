@@ -1,9 +1,9 @@
-$canvasPadding: 40px 50px;
-$canvasBgColor: #f4faff;
-$logoPaddingTop: 26px;
-$logoFontSize: 6.5rem;
-$titleFontSize: 32px;
-$detailFontSize: 31px;
+$canvasPadding: 60px; // main padding
+$canvasBgColor: #ffffff; // canvas background color
+$logoFontSize: 120px;
+$titleFontSize: 90px;
+$detailFontSize: 37px;
+$gridBoxSize: 30px;
 // ---------------------------------------------
 // For instagram banner canvas -----------------
 
@@ -12,8 +12,8 @@ $detailFontSize: 31px;
     font-family: "Inter", sans-serif;
     max-width: 100%;
     margin-top: 20px;
-    width: 900px;
-    height: 900px;
+    width: 1080px;
+    height: 1080px;
     padding: $canvasPadding;
 }
 
@@ -21,15 +21,15 @@ $detailFontSize: 31px;
 .canvas_header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    height: 30px;
+    align-items: flex-start;
+    height: $gridBoxSize;
 }
 .weblink {
     font-size: 14px;
     font-weight: 600;
     span {
         font-weight: 700;
-        color: #0050ff;
+        color: #0069ff;
     }
     font-size: 27px;
     z-index: 99;
@@ -40,33 +40,32 @@ $detailFontSize: 31px;
 
 // comapny logo with text -------------
 .companylogo_con {
+    height: 3 * $gridBoxSize;
     width: 100%;
     display: flex;
     align-items: center;
     h1 {
         font-weight: 700;
-        color: #0050ff;
+        color: #0069ff;
         font-size: $logoFontSize;
     }
-    height: 180px;
-    padding-top: $logoPaddingTop;
-    margin-left: -6px;
+    margin-top: 2 * $gridBoxSize;
 }
 
 // title for ig banner -----------
 .canvas_title {
+    height: 6 * $gridBoxSize;
     display: flex;
     align-items: flex-start;
     color: #000;
     h1 {
         font-weight: 700;
+        font-size: $titleFontSize;
+        line-height: 109px;
     }
-    font-size: $titleFontSize;
-    line-height: 85px;
     z-index: 99;
     height: 188px;
-    padding-top: 0px;
-    margin-left: -5px;
+    margin-top: 2 * $gridBoxSize;
 }
 
 // Canvas details ---------
@@ -76,25 +75,29 @@ $detailFontSize: 31px;
     border-radius: 12px;
     justify-content: center;
     flex-direction: column;
-    margin-top: 16px;
+    margin-top: 2.5 * $gridBoxSize;
     p {
+        color: #0069ff;
         margin: 4.5px 0px;
         font-weight: 600;
         font-size: $detailFontSize;
-        line-height: 51px;
+        line-height: 54px;
     }
     .tag {
-        font-weight: 700;
-        border-bottom: 1.6px solid #fff;
-        padding-bottom: 1px;
+        font-weight: 600;
+        color: #000000;
+        // border-bottom: 1.6px solid #fff;
+        // padding-bottom: 1px;
     }
-    height: 333px;
-    padding: 10px 0px 15px 32px;
-    background-color: #0069ff;
+    height: 13 * $gridBoxSize;
+    padding: 12px 0px 12px 42px;
+    background-color: #f4faff;
 }
 
 .footer {
-    margin-top: 5px;
+    position: relative;
+    margin-bottom: 0px;
+    margin-top: 1.5 * $gridBoxSize;
     font-family: "Sora", sans-serif;
     display: flex;
     align-items: flex-end;
@@ -104,11 +107,11 @@ $detailFontSize: 31px;
     }
     span {
         font-weight: 700;
-        color: #0050ff;
+        color: #0069ff;
     }
 
     font-size: 26.6px;
-    height: 59.94px;
+    height: $gridBoxSize;
     img {
         width: 24px;
         margin-right: 5px;
