@@ -18,9 +18,9 @@ import AddLink from "../../components/AD/Addlink";
 
 const AdminPanel = () => {
     const context = useContext(UserContext);
-    // if (!context.user?.email) {
-    //     return <Navigate to="/" />;
-    // }
+    if (!context.user?.email) {
+        return <Navigate to="/" />;
+    }
 
     return (
         <div className={styles.adminpanel}>
