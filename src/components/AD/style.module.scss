@@ -5,7 +5,7 @@
   padding: 1rem 0;
   color: #000;
 }
-.note{
+.note {
   text-align: center;
   color: red;
   margin-bottom: 5px;
@@ -13,6 +13,12 @@
 .admin_grid {
   display: grid;
   grid-template-columns: 25% 75%;
+
+  @media screen and (max-width: 900px) {
+    display: flex;
+    flex-direction: column;
+    margin: 10px 20px;
+  }
 }
 .admin_label {
   justify-self: end;
@@ -27,6 +33,11 @@
   margin: 0px 15px 18px;
   border-radius: 4px;
   border: none;
+
+  @media screen and (max-width: 900px) {
+    margin: 10px 0px;
+    width: 100%;
+  }
 }
 .ck {
   padding: 100px;
@@ -75,6 +86,10 @@
     background-color: #0c66ff;
     cursor: pointer;
   }
+
+  @media screen and (max-width: 900px) {
+    margin: 10px 0px;
+  }
 }
 
 .adlink_con {
@@ -86,6 +101,10 @@
   h2 {
     font-size: 20px;
     margin-bottom: 10px;
+  }
+
+  @media screen and (max-width: 900px) {
+    width: 100%;
   }
 }
 
@@ -109,9 +128,9 @@
 .adimage {
   width: 300px;
 }
-.banner_con{
+.banner_con {
   padding: 20px;
-  width : 90%;
+  width: 90%;
   margin: 20px auto;
   border: 1px solid #121212;
   display: flex;
@@ -119,22 +138,21 @@
   justify-content: space-between;
   align-items: center;
 }
-.banner_btn_con{
+.banner_btn_con {
   display: flex;
   flex-direction: column;
   row-gap: 20px;
-  
 }
-.t_click{
-  b{
+.t_click {
+  b {
     color: red;
   }
 }
-.adimg_con{
+.adimg_con {
   width: 100%;
   padding: 20px;
 }
-.adlinkimg_con{
+.adlinkimg_con {
   border: 1px solid #121212;
   width: 100%;
   padding: 10px;
@@ -144,7 +162,7 @@
   align-items: center;
   margin: 20px auto;
 
-  img{
+  img {
     width: 100px;
   }
 }

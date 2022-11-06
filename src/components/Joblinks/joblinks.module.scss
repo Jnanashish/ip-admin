@@ -1,8 +1,8 @@
 .update_data_container {
   padding: 50px;
 
-  @media screen and (max-width: 768px) {
-    padding: 10px;
+  @media screen and (max-width: 900px) {
+    padding: 20px;
   }
 }
 
@@ -10,6 +10,10 @@
   margin: 0px 0px 20px;
   color: #0000ff;
   font-size: 20px;
+
+  @media screen and (max-width: 900px) {
+    padding: 16px;
+  }
 }
 
 .line {
@@ -25,6 +29,17 @@
   flex-wrap: wrap;
   row-gap: 10px;
 
+  @media screen and (max-width: 900px) {
+    width: 100%;
+    flex-direction: column;
+  }
+}
+
+.btn_con {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  column-gap: 10px;
 }
 
 .adminlinkcard_btn {

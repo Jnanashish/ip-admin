@@ -11,8 +11,6 @@ import {
     Switch,
     FormControlLabel,
 } from "@mui/material";
-import { PhotoCamera } from "@mui/icons-material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 
 // import react toast
@@ -61,9 +59,6 @@ const Addjobs = () => {
     const [skills, setSkills] = useState("N");
     const [aboutCompany, setAboutCompany] = useState("N");
 
-    const [imgsize, setImgsize] = useState("60%");
-    const [imgmleft, setiImgmleft] = useState("0px");
-    const [paddingtop, setPaddingtop] = useState("0px");
     const [telegrambanner, setTelegrambanner] = useState("N");
 
     const formData = new FormData();
@@ -90,15 +85,6 @@ const Addjobs = () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-    };
-
-    const handleimgInput = (e) => {
-        const reader = new FileReader();
-        reader.addEventListener("load", () => {
-            setImgData(reader.result);
-        });
-
-        reader.readAsDataURL(e.target.files[0]);
     };
 
     // get cloudinary link for telegram
@@ -147,16 +133,12 @@ const Addjobs = () => {
 
         return fetch(
             `https://api.telegram.org/bot${BOT_API_KEY}/sendMessage?chat_id=${chanelName}&text=${msg}&disable_web_page_preview=true&disable_notification=true`,
-            {
-                method: "POST",
-            }
+            { method: "POST" }
         )
             .then((res) => {
-                console.log("SUCCESS");
                 toast("Message sent");
             })
             .catch((err) => {
-                console.log("ERROR");
                 toast.error("An error Occured");
             });
     };
@@ -244,7 +226,7 @@ const Addjobs = () => {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                     />
-                    <div className={styles.flex}>
+                    <div className={styles.flex_con}>
                         <TextField
                             size="small"
                             sx={{ width: "20ch" }}
@@ -294,9 +276,10 @@ const Addjobs = () => {
                         value={degree}
                         onChange={(e) => setDegree(e.target.value)}
                     />
-                    <div className={styles.flex}>
+                    <div className={styles.flex_con}>
                         <TextField
                             size="small"
+                            fullWidth
                             margin="normal"
                             label="Batch *"
                             value={batch}
@@ -304,15 +287,25 @@ const Addjobs = () => {
                         />
                         <TextField
                             size="small"
+                            fullWidth
                             margin="normal"
                             label="Salary"
                             value={salary}
                             onChange={(e) => setSalary(e.target.value)}
                         />
-                    </div>
-                    <div className={styles.flex}>
                         <TextField
                             size="small"
+                            fullWidth
+                            margin="normal"
+                            label="Experience needed *"
+                            value={experience}
+                            onChange={(e) => setExperience(e.target.value)}
+                        />
+                    </div>
+                    <div className={styles.flex_con}>
+                        <TextField
+                            size="small"
+                            fullWidth
                             margin="normal"
                             label="Experience needed *"
                             value={experience}
@@ -320,59 +313,45 @@ const Addjobs = () => {
                         />
                         <TextField
                             size="small"
+                            fullWidth
                             margin="normal"
                             label="Location *"
                             value={location}
                             onChange={(e) => setLocation(e.target.value)}
                         />
                     </div>
-                    <div style={{ marginTop: "10px" }} className={styles.flex}>
-                        {/* <label htmlFor="contained-button-file">
-                            <input
-                                style={{ display: "none" }}
-                                accept="image/*"
-                                id="contained-button-file"
-                                multiple
-                                type="file"
-                                onChange={handleimgInput}
-                            />
-                            <IconButton
-                                color="primary"
-                                aria-label="upload picture"
-                                component="span">
-                                <PhotoCamera />
-                            </IconButton>
-                        </label>
-
+                    <div
+                        style={{ marginTop: "20px" }}
+                        className={styles.flex_con}>
                         <TextField
                             size="small"
-                            sx={{ width: "10ch" }}
-                            label="Img Size"
-                            value={imgsize}
-                            onChange={(e) => setImgsize(e.target.value)}
+                            fullWidth
+                            label="Type of the company"
+                            value={companytype}
+                            onChange={(e) => setCompanytype(e.target.value)}
                         />
                         <TextField
                             size="small"
-                            sx={{ width: "10ch" }}
-                            label="Margin left"
-                            value={imgmleft}
-                            onChange={(e) => setiImgmleft(e.target.value)}
+                            fullWidth
+                            label="Last data to Apply"
+                            value={lastdate}
+                            onChange={(e) => setLastdate(e.target.value)}
                         />
                         <TextField
                             size="small"
-                            sx={{ width: "10ch" }}
-                            label="Padding Top"
-                            value={paddingtop}
-                            onChange={(e) => setPaddingtop(e.target.value)}
+                            fullWidth
+                            label="Type of Job"
+                            value={jobtype}
+                            onChange={(e) => setJobtype(e.target.value)}
                         />
-                        <IconButton aria-label="delete">
-                            <DeleteIcon onClick={() => setImgData("")} />
-                        </IconButton> */}
+                    </div>
+                    <div style={{ marginTop: "30px" }} className={styles.flex}>
                         <Button
                             onClick={handleDownloadImage}
                             variant="contained"
-                            color="success">
-                            Banner
+                            color="success"
+                            endIcon={<CloudDownloadIcon />}>
+                            Download Banner
                         </Button>
                     </div>
                 </div>
@@ -380,6 +359,7 @@ const Addjobs = () => {
 
             <br />
             <hr />
+            <br />
             <div>
                 <FormGroup>
                     <FormControlLabel
@@ -392,29 +372,6 @@ const Addjobs = () => {
 
                 {jdpage && (
                     <div className={styles.editor_fields}>
-                        <div className={styles.flex}>
-                            <TextField
-                                size="small"
-                                fullWidth
-                                label="Type of the company"
-                                value={companytype}
-                                onChange={(e) => setCompanytype(e.target.value)}
-                            />
-                            <TextField
-                                size="small"
-                                fullWidth
-                                label="Last data to Apply"
-                                value={lastdate}
-                                onChange={(e) => setLastdate(e.target.value)}
-                            />
-                            <TextField
-                                size="small"
-                                fullWidth
-                                label="Type of Job"
-                                value={jobtype}
-                                onChange={(e) => setJobtype(e.target.value)}
-                            />
-                        </div>
                         <TextField
                             size="small"
                             fullWidth
@@ -670,13 +627,13 @@ const Addjobs = () => {
                 </div>
             </div>
             <br />
-            <hr />
+            <br />
+            {/* <hr /> */}
             <br />
             <div className={styles.submitbtn_zone}>
-                <div
-                    className={styles.flex}
-                    style={{ backgroundColor: "#fefefe" }}>
+                <div className={styles.telegrambtn_zone}>
                     <input type="file" onChange={handleTelegramImgInput} />
+                    <br />
                     <Button
                         onClick={handleTelegramSubmit}
                         variant="contained"
@@ -693,18 +650,21 @@ const Addjobs = () => {
 
             <div className={styles.submitbtn_zone}>
                 <br />
-                <div className={styles.flex}>
+                <div>
                     <input type="file" onChange={handleLogoInput} />
+                    <br />
+                    <br />
                     <Button
                         className={styles.submitbtn}
                         onClick={addData}
                         variant="contained"
-                        color="primary">
-                        {" "}
+                        color="primary"
+                        size="large">
                         Submit
                     </Button>
                 </div>
             </div>
+            <br />
         </div>
     );
 };

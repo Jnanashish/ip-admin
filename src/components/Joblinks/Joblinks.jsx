@@ -156,6 +156,7 @@ const UpdateData = () => {
             hash;
 
         navigator.clipboard.writeText(temp);
+        toast("Copied");
     };
 
     const handleClick = (id) => {
@@ -168,6 +169,7 @@ const UpdateData = () => {
 
     return (
         <div className={styles.update_data_container}>
+            <br />
             <h2 className={styles.adminpanel_title}>
                 List of available Jobs - {data.length}
             </h2>
@@ -179,31 +181,26 @@ const UpdateData = () => {
                             title={item.title}
                             lastdate={item.lastdate}
                             totalclick={item.totalclick}
+                            link={item.link}
+                            time={item.createdAt}
                         />
                         <div className={styles.adminlink_con}>
-                            <Button
-                                onClick={() => deleteData(item._id)}
-                                variant="contained"
-                                startIcon={<DeleteIcon />}>
-                                Delete
-                            </Button>
-                            <a
-                                href={item.link}
-                                target="_blank"
-                                rel="noopener noreferrer">
+                            <div className={styles.btn_con}>
                                 <Button
+                                    fullWidth
+                                    onClick={() => deleteData(item._id)}
                                     variant="contained"
-                                    endIcon={<SendIcon />}>
-                                    {" "}
-                                    Visit Link{" "}
+                                    startIcon={<DeleteIcon />}>
+                                    Delete
                                 </Button>
-                            </a>
-                            <Button
-                                onClick={() => handleClick(item._id)}
-                                variant="contained"
-                                color="success">
-                                Update
-                            </Button>
+
+                                <Button
+                                    fullWidth
+                                    onClick={() => handleClick(item._id)}
+                                    variant="contained">
+                                    Update
+                                </Button>
+                            </div>
                             <Button
                                 onClick={() => handleTelegramSubmit(item)}
                                 variant="contained"
