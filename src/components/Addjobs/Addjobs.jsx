@@ -293,14 +293,6 @@ const Addjobs = () => {
                             value={salary}
                             onChange={(e) => setSalary(e.target.value)}
                         />
-                        <TextField
-                            size="small"
-                            fullWidth
-                            margin="normal"
-                            label="Experience needed *"
-                            value={experience}
-                            onChange={(e) => setExperience(e.target.value)}
-                        />
                     </div>
                     <div className={styles.flex_con}>
                         <TextField
@@ -347,6 +339,7 @@ const Addjobs = () => {
                     </div>
                     <div style={{ marginTop: "30px" }} className={styles.flex}>
                         <Button
+                            style={{ textTransform: "capitalize" }}
                             onClick={handleDownloadImage}
                             variant="contained"
                             color="success"
@@ -557,6 +550,45 @@ const Addjobs = () => {
                 </div>
             </div> */}
 
+            <br />
+            <div className={styles.submitbtn_zone}>
+                <div className={styles.telegrambtn_zone}>
+                    <input type="file" onChange={handleTelegramImgInput} />
+                    <br />
+                    <Button
+                        style={{ textTransform: "capitalize" }}
+                        onClick={handleTelegramSubmit}
+                        variant="contained"
+                        color="primary">
+                        {" "}
+                        Send to telegram
+                    </Button>
+                </div>
+            </div>
+
+            <br />
+            <hr />
+            <br />
+
+            <div className={styles.submitbtn_zone}>
+                <br />
+                <div>
+                    <input type="file" onChange={handleLogoInput} />
+                    <br />
+                    <br />
+                    <Button
+                        style={{ textTransform: "capitalize" }}
+                        className={styles.submitbtn}
+                        onClick={addData}
+                        variant="contained"
+                        color="primary"
+                        size="large">
+                        Submit
+                    </Button>
+                </div>
+            </div>
+            <br />
+
             <div id="htmlToCanvas" className={styles.canvas}>
                 <div className={styles.canvas_header}>
                     <p className={styles.weblink}>
@@ -629,41 +661,7 @@ const Addjobs = () => {
             <br />
             <br />
             {/* <hr /> */}
-            <br />
-            <div className={styles.submitbtn_zone}>
-                <div className={styles.telegrambtn_zone}>
-                    <input type="file" onChange={handleTelegramImgInput} />
-                    <br />
-                    <Button
-                        onClick={handleTelegramSubmit}
-                        variant="contained"
-                        color="primary">
-                        {" "}
-                        Send to telegram
-                    </Button>
-                </div>
-            </div>
 
-            <br />
-            <hr />
-            <br />
-
-            <div className={styles.submitbtn_zone}>
-                <br />
-                <div>
-                    <input type="file" onChange={handleLogoInput} />
-                    <br />
-                    <br />
-                    <Button
-                        className={styles.submitbtn}
-                        onClick={addData}
-                        variant="contained"
-                        color="primary"
-                        size="large">
-                        Submit
-                    </Button>
-                </div>
-            </div>
             <br />
         </div>
     );

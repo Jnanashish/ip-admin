@@ -18,12 +18,12 @@ import AddLink from "../../components/AD/Addlink";
 
 const AdminPanel = () => {
     const [currState, setCurrState] = useState("add_job");
-
+    const context = useContext(UserContext);
     const active = { backgroundColor: "#0069ff", color: "#FFFFFF" };
     const inactive = {};
-    // if (!context.user?.email) {
-    //     return <Navigate to="/" />;
-    // }
+    if (!context.user?.email) {
+        return <Navigate to="/" />;
+    }
 
     return (
         <div className={styles.adminpanel}>

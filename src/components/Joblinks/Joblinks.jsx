@@ -12,6 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SendIcon from "@mui/icons-material/Send";
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 
 import { API } from "../../Backend";
 
@@ -90,6 +91,11 @@ const UpdateData = () => {
             });
     };
 
+    const copylink = (item) => {
+        navigator.clipboard.writeText(item.link);
+        toast("Copied");
+    };
+
     const handleTelegramSubmit = (item) => {
         console.log("ITEM", item);
         if (item.batch.includes("2022")) {
@@ -159,6 +165,19 @@ const UpdateData = () => {
         toast("Copied");
     };
 
+    const downloadBanner = async (item) => {
+        const image = await fetch(item.jdbanner);
+        const imageBlog = await image.blob();
+        const imageURL = URL.createObjectURL(imageBlog);
+
+        const link = document.createElement("a");
+        link.href = imageURL;
+        link.download = item.companyName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const handleClick = (id) => {
         if (flag) {
             setFlag("");
@@ -187,6 +206,7 @@ const UpdateData = () => {
                         <div className={styles.adminlink_con}>
                             <div className={styles.btn_con}>
                                 <Button
+                                    className={styles.btn}
                                     fullWidth
                                     onClick={() => deleteData(item._id)}
                                     variant="contained"
@@ -195,24 +215,51 @@ const UpdateData = () => {
                                 </Button>
 
                                 <Button
+                                    className={styles.btn}
                                     fullWidth
                                     onClick={() => handleClick(item._id)}
                                     variant="contained">
                                     Update
                                 </Button>
                             </div>
-                            <Button
-                                onClick={() => handleTelegramSubmit(item)}
-                                variant="contained"
-                                color="success">
-                                Send to telegram
-                            </Button>
-                            <Button
-                                onClick={() => generateCaption(item._id)}
-                                variant="contained"
-                                color="success">
-                                {isCopied ? "Copied" : " Copy caption"}
-                            </Button>
+                            <div className={styles.btn_con}>
+                                <Button
+                                    size="medium"
+                                    className={styles.btn}
+                                    fullWidth
+                                    disabled={item.jdbanner === "N"}
+                                    onClick={() => downloadBanner(item)}
+                                    variant="contained"
+                                    endIcon={<CloudDownloadIcon />}>
+                                    Banner
+                                </Button>
+                                <Button
+                                    style={{ backgroundColor: "#0050ff" }}
+                                    size="medium"
+                                    className={styles.btn}
+                                    fullWidth
+                                    onClick={() => copylink(item)}
+                                    variant="contained">
+                                    Copy Link
+                                </Button>
+                            </div>
+                            <div className={styles.btn_con2}>
+                                <Button
+                                    className={styles.btn}
+                                    size="medium"
+                                    onClick={() => handleTelegramSubmit(item)}
+                                    variant="contained"
+                                    endIcon={<SendIcon />}>
+                                    Send to telegram
+                                </Button>
+                                <Button
+                                    className={styles.btn}
+                                    size="medium"
+                                    onClick={() => generateCaption(item._id)}
+                                    variant="contained">
+                                    {isCopied ? "Copied" : " Copy caption"}
+                                </Button>
+                            </div>
                         </div>
                         <br />
                         {item._id === flag && <EditData data={item} />}
@@ -223,6 +270,7 @@ const UpdateData = () => {
                 );
             })}
             <ToastContainer />
+            <canvas id="canvas" width="1080" height="1080"></canvas>
         </div>
     );
 };
