@@ -20,6 +20,7 @@ import Adminlinkcard from "./Adminlinkcard";
 import EditData from "./Editdata";
 
 const UpdateData = () => {
+    const BOT_API_KEY = process.env.REACT_APP_BOT_API_KEY;
     const [data, setData] = useState([]);
     const [flag, setFlag] = useState("");
     const [caption, setCaption] = useState("");
@@ -35,6 +36,77 @@ const UpdateData = () => {
         "#codinginterview #jobsforfreshers #engineerjobs #freshersjobs #hiring #campusplacements #computerscienceengineering #jobseekers #placementdrive",
         "#offcampusdrive #freshers #offcampus #hiring #softwaredeveloper #campusplacements #placementdrive #jobupdates #engineerjobs ",
     ]);
+
+    const sendTelegramMsg = (chanelName, item) => {
+        const btitle = item.title.replace(/[A-Za-z]/g, translate);
+
+        const msg =
+            btitle +
+            "%0A%0ABatch%20%3A%20" +
+            item.batch +
+            "%0A%0ADegree%20%3A%20" +
+            item.degree +
+            "%0A%0AApply Link%20%3A%20" +
+            item.link;
+
+        return fetch(
+            `https://api.telegram.org/bot${BOT_API_KEY}/sendMessage?chat_id=${chanelName}&text=${msg}&disable_web_page_preview=true&disable_notification=true`,
+            {
+                method: "POST",
+            }
+        )
+            .then((res) => {
+                console.log("SUCCESS");
+                toast("Message sent");
+            })
+            .catch((err) => {
+                console.log("ERROR");
+                toast.error("An error Occured");
+            });
+    };
+    const translate = (char) => {
+        let diff;
+        if (/[A-Z]/.test(char)) diff = "𝗔".codePointAt(0) - "A".codePointAt(0);
+        else diff = "𝗮".codePointAt(0) - "a".codePointAt(0);
+        return String.fromCodePoint(char.codePointAt(0) + diff);
+    };
+    const sendTelegramMsgwithImage = (chanelName, item) => {
+        const btitle = item.title.replace(/[A-Za-z]/g, translate);
+        const msg = btitle + "%0A%0AApply Link%20%3A%20" + item.link;
+
+        return fetch(
+            `https://api.telegram.org/bot${BOT_API_KEY}/sendPhoto?chat_id=${chanelName}&photo=${item.jdbanner}&caption=${msg}&disable_web_page_preview=true&disable_notification=true`,
+            {
+                method: "POST",
+            }
+        )
+            .then((res) => {
+                console.log("SUCCESS");
+                toast("Message sent");
+            })
+            .catch((err) => {
+                console.log("ERROR", err);
+                toast.error("An error Occured");
+            });
+    };
+
+    const handleTelegramSubmit = (item) => {
+        console.log("ITEM", item);
+        if (item.batch.includes("2022")) {
+            const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME_2022;
+            if (item.jdbanner === "N") sendTelegramMsg(MY_CHANNEL_NAME, item);
+            else sendTelegramMsgwithImage(MY_CHANNEL_NAME, item);
+        }
+        if (item.jdbanner.includes("2023")) {
+            const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME_2023;
+            if (item.jdbanner === "N") sendTelegramMsg(MY_CHANNEL_NAME, item);
+            else sendTelegramMsgwithImage(MY_CHANNEL_NAME, item);
+        }
+        const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME;
+        if (item.jdbanner === "N") sendTelegramMsg(MY_CHANNEL_NAME, item);
+        else sendTelegramMsgwithImage(MY_CHANNEL_NAME, item);
+    };
+
     const date = new Date();
     const weeknum = date.getDay();
     const line = captionline[weeknum % 2];
@@ -131,6 +203,12 @@ const UpdateData = () => {
                                 variant="contained"
                                 color="success">
                                 Update
+                            </Button>
+                            <Button
+                                onClick={() => handleTelegramSubmit(item)}
+                                variant="contained"
+                                color="success">
+                                Send to telegram
                             </Button>
                             <Button
                                 onClick={() => generateCaption(item._id)}

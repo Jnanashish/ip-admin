@@ -8,13 +8,16 @@ $gridBoxSize: 30px;
 // For instagram banner canvas -----------------
 
 .canvas {
+    // background-image: url("../../Image/grid.jpg");
+    // background-size: 1080px;
     background-color: $canvasBgColor;
     font-family: "Inter", sans-serif;
     max-width: 100%;
     margin-top: 20px;
     width: 1080px;
     height: 1080px;
-    padding: $canvasPadding;
+    padding: 55px $canvasPadding;
+    border: 1px solid #000;
 }
 
 // header for canvas -------------
@@ -22,7 +25,7 @@ $gridBoxSize: 30px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    height: $gridBoxSize;
+    height: calc($gridBoxSize + 5px);
 }
 .weblink {
     font-size: 14px;
@@ -41,6 +44,8 @@ $gridBoxSize: 30px;
 // comapny logo with text -------------
 .companylogo_con {
     height: 3 * $gridBoxSize;
+    margin-top: 2 * $gridBoxSize;
+
     width: 100%;
     display: flex;
     align-items: center;
@@ -48,8 +53,11 @@ $gridBoxSize: 30px;
         font-weight: 700;
         color: #0069ff;
         font-size: $logoFontSize;
+        -webkit-text-stroke-width: 1px;
+        -webkit-text-stroke-color: #0050ff;
     }
-    margin-top: 2 * $gridBoxSize;
+    grid-row-start: 6;
+    grid-row-end: 9;
 }
 
 // title for ig banner -----------
@@ -65,11 +73,12 @@ $gridBoxSize: 30px;
     }
     z-index: 99;
     height: 188px;
-    margin-top: 2 * $gridBoxSize;
+    margin-top: calc(2 * $gridBoxSize - 8px);
 }
 
 // Canvas details ---------
 .canvas_details {
+    z-index: 0;
     display: flex;
     color: #fff;
     border-radius: 12px;
@@ -81,13 +90,11 @@ $gridBoxSize: 30px;
         margin: 4.5px 0px;
         font-weight: 600;
         font-size: $detailFontSize;
-        line-height: 54px;
+        line-height: 56px;
     }
     .tag {
         font-weight: 600;
         color: #000000;
-        // border-bottom: 1.6px solid #fff;
-        // padding-bottom: 1px;
     }
     height: 13 * $gridBoxSize;
     padding: 12px 0px 12px 42px;

@@ -226,7 +226,6 @@ const Addjobs = () => {
 
         if (res.status === 201) {
             toast("Job Data Added Successfully");
-            // setTimeout(refreshPage(), 2000)
         } else {
             toast.error("An error Occured");
         }
@@ -495,6 +494,111 @@ const Addjobs = () => {
                 <p style={{ fontSize: "8px" }}>*{telegrambanner}</p>
                 <br />
             </div>
+            {/* 
+            <div id="htmlToCanvas" className={styles.canvas}>
+                <div className={styles.gridBox} id="div1">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div2">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div3"></div>
+                <div className={styles.gridBox} id="div4">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div5">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div6"></div>
+                <div className={styles.gridBox} id="div7">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div8">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div9">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div10">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div11">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div12">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div13">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div14">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div15">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div16">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div17">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div18">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div19">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div20">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div21">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div22"></div>
+                <div className={styles.gridBox} id="div23">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div24">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div25">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div26">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div27">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div28">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div29">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div30">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div31">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div32">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div33">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div34">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div35">
+                    {" "}
+                </div>
+                <div className={styles.gridBox} id="div36">
+                    {" "}
+                </div>
+            </div> */}
 
             <div id="htmlToCanvas" className={styles.canvas}>
                 <div className={styles.canvas_header}>
