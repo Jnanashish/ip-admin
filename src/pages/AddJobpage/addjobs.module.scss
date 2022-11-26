@@ -12,10 +12,10 @@ $gridBoxSize: 30px;
     // background-size: 1080px;
     background-color: $canvasBgColor;
     font-family: "Inter", sans-serif;
-    max-width: 100%;
-    margin-top: 20px;
-    width: 1080px;
-    height: 1080px;
+    // max-width: 100%;
+    // margin-top: 20px;
+    // width: 1080px;
+    // height: 1080px;
     padding: 55px $canvasPadding;
     border: 1px solid #000;
 }
@@ -54,7 +54,7 @@ $gridBoxSize: 30px;
         color: #0069ff;
         font-size: $logoFontSize;
         -webkit-text-stroke-width: 1px;
-        -webkit-text-stroke-color: #0050ff;
+        -webkit-text-stroke-color: #0069ff;
     }
     grid-row-start: 6;
     grid-row-end: 9;

@@ -234,7 +234,7 @@ const UpdateData = () => {
                                     Banner
                                 </Button>
                                 <Button
-                                    style={{ backgroundColor: "#0050ff" }}
+                                    style={{ backgroundColor: "#0069ff" }}
                                     size="medium"
                                     className={styles.btn}
                                     fullWidth
@@ -270,7 +270,7 @@ const UpdateData = () => {
                 );
             })}
             <ToastContainer />
-            <canvas id="canvas" width="1080" height="1080"></canvas>
+            {/* <canvas id="canvas" width="1080" height="1080"></canvas> */}
         </div>
     );
 };

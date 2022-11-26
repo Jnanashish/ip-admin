@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import html2canvas from "html2canvas";
 import styles from "./addjobs.module.scss";
 
@@ -12,6 +12,7 @@ import {
     FormControlLabel,
 } from "@mui/material";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import MenuItem from "@mui/material/MenuItem";
 
 // import react toast
 import { ToastContainer, toast } from "react-toastify";
@@ -31,6 +32,50 @@ import { config } from "../../Config/editorConfig";
 // import helpers
 import { shortenurl } from "../../Helpers/utility";
 import { API } from "../../Backend";
+import { Navigate, useNavigate } from "react-router-dom";
+import { UserContext } from "../../Context/userContext";
+
+const degreeOptions = [
+    "B.E / B.Tech / M.Tech",
+    "B.E / B.Tech",
+    "B.E / B.Tech / M.Tech / MCA",
+    "B.E / B.Tech / M.Tech / MCA / BCA",
+    "Any graduate",
+    "Any engineering graduate",
+    "Any bachelor's degree",
+];
+
+const batchOptions = [
+    "2022 / 2021 /2020 / 2019",
+    "2022 / 2021 /2020",
+    "2023 / 2024",
+    "2023 / 2022 / 2021",
+    "2022 / 2021 /2020 / 2019 / 2018",
+    "Any graduate",
+];
+
+const expOptions = [
+    "N",
+    "0 - 2 years",
+    "Freshers",
+    "0 - 3 years",
+    "0 - 4 years",
+    "0 - 1 years",
+];
+
+const locOptions = [
+    "N",
+    "Bengaluru",
+    "Gurgaon",
+    "Chennai",
+    "Pune",
+    "Noida",
+    "Hyderabad",
+    "PAN India",
+];
+
+const companyTypeOptions = ["N", "product", "service"];
+const jobTypeOptions = ["N", "Full time", "Internship", "Part time"];
 
 const Addjobs = () => {
     ClassicEditor.defaultConfig = config;
@@ -39,7 +84,7 @@ const Addjobs = () => {
     const [igbannertitle, setIgbannertitle] = useState("is hiring ");
     const [link, setLink] = useState("");
     const [degree, setDegree] = useState("B.E / B.Tech / M.Tech");
-    const [batch, setBatch] = useState("2022");
+    const [batch, setBatch] = useState("2022 / 2021 / 2020");
     const [experience, setExperience] = useState("N");
     const [location, setLocation] = useState("N");
     const [imgData, setImgData] = useState(null);
@@ -48,8 +93,8 @@ const Addjobs = () => {
     const [companyName, setCompanyName] = useState("");
     const [title, setTitle] = useState("");
 
-    const [companytype, setCompanytype] = useState("product / service");
-    const [lastdate, setLastdate] = useState("N");
+    const [companytype, setCompanytype] = useState("N");
+    const [lastdate, setLastdate] = useState("2022-11-00-");
     const [role, setRole] = useState("N");
 
     const [jobtype, setJobtype] = useState("N");
@@ -60,6 +105,17 @@ const Addjobs = () => {
     const [aboutCompany, setAboutCompany] = useState("N");
 
     const [telegrambanner, setTelegrambanner] = useState("N");
+
+    const navigate = useNavigate();
+    const handleBack = () => {
+        navigate("/admin");
+    };
+
+    const context = useContext(UserContext);
+
+    if (!context.user?.email) {
+        return <Navigate to="/" />;
+    }
 
     const formData = new FormData();
 
@@ -215,6 +271,16 @@ const Addjobs = () => {
 
     return (
         <div className={styles.container}>
+            <div
+                onClick={handleBack}
+                style={{ display: "flex", alignItems: "center" }}>
+                <img
+                    style={{ width: "30px", marginRight: "10px" }}
+                    src="https://img.icons8.com/ios-filled/100/null/circled-left-2.png"
+                    alt="back button"
+                />
+                <h3>Back</h3>
+            </div>
             <ToastContainer />
             <div className={styles.maininput_con}>
                 <div className={styles.input_fields}>
@@ -269,22 +335,34 @@ const Addjobs = () => {
                         </IconButton>
                     </div>
                     <TextField
+                        select
                         size="small"
                         margin="normal"
                         fullWidth
                         label="Degree *"
                         value={degree}
-                        onChange={(e) => setDegree(e.target.value)}
-                    />
+                        onChange={(e) => setDegree(e.target.value)}>
+                        {degreeOptions.map((option) => (
+                            <MenuItem key={option} value={option}>
+                                {option}
+                            </MenuItem>
+                        ))}
+                    </TextField>
                     <div className={styles.flex_con}>
                         <TextField
+                            select
                             size="small"
                             fullWidth
                             margin="normal"
                             label="Batch *"
                             value={batch}
-                            onChange={(e) => setBatch(e.target.value)}
-                        />
+                            onChange={(e) => setBatch(e.target.value)}>
+                            {batchOptions.map((option) => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                         <TextField
                             size="small"
                             fullWidth
@@ -301,16 +379,28 @@ const Addjobs = () => {
                             margin="normal"
                             label="Experience needed *"
                             value={experience}
-                            onChange={(e) => setExperience(e.target.value)}
-                        />
+                            select
+                            onChange={(e) => setExperience(e.target.value)}>
+                            {expOptions.map((option) => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                         <TextField
                             size="small"
                             fullWidth
                             margin="normal"
                             label="Location *"
                             value={location}
-                            onChange={(e) => setLocation(e.target.value)}
-                        />
+                            select
+                            onChange={(e) => setLocation(e.target.value)}>
+                            {locOptions.map((option) => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                     </div>
                     <div
                         style={{ marginTop: "20px" }}
@@ -320,8 +410,14 @@ const Addjobs = () => {
                             fullWidth
                             label="Type of the company"
                             value={companytype}
-                            onChange={(e) => setCompanytype(e.target.value)}
-                        />
+                            select
+                            onChange={(e) => setCompanytype(e.target.value)}>
+                            {companyTypeOptions.map((option) => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                         <TextField
                             size="small"
                             fullWidth
@@ -334,8 +430,14 @@ const Addjobs = () => {
                             fullWidth
                             label="Type of Job"
                             value={jobtype}
-                            onChange={(e) => setJobtype(e.target.value)}
-                        />
+                            select
+                            onChange={(e) => setJobtype(e.target.value)}>
+                            {jobTypeOptions.map((option) => (
+                                <MenuItem key={option} value={option}>
+                                    {option}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                     </div>
                     <div style={{ marginTop: "30px" }} className={styles.flex}>
                         <Button

@@ -2,14 +2,13 @@ import React, { useState, useContext } from "react";
 
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 
-import Addjobs from "../../components/Addjobs/Addjobs";
 import Joblinks from "../../components/Joblinks/Joblinks";
 import Adpoptype from "../../components/Dapoptype/Adpoptype";
 import AddBanner from "../../components/AD/Addbanner";
 
 // context
 import { UserContext } from "../../Context/userContext";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 // import styles
 import styles from "./adminpanel.module.scss";
@@ -17,41 +16,38 @@ import AddLinkImg from "../../components/AD/Addlinkimg";
 import AddLink from "../../components/AD/Addlink";
 
 const AdminPanel = () => {
-    const [currState, setCurrState] = useState("add_job");
+    const [currState, setCurrState] = useState("dashboard");
     const context = useContext(UserContext);
     const active = { backgroundColor: "#0069ff", color: "#FFFFFF" };
     const inactive = {};
+    const navigate = useNavigate();
     if (!context.user?.email) {
         return <Navigate to="/" />;
     }
 
+    const addJobspage = () => {
+        navigate("/addjob");
+    };
+
     return (
         <div className={styles.adminpanel}>
             <div className={styles.adminpanel_header}>
-                <h3>Admin Panel</h3>
-                <h3>Welcome : Jnanashish Handique</h3>
+                <h4>Admin Panel</h4>
+
+                <h4>Welcome : Jnanashish Handique</h4>
             </div>
 
             <Tabs orientation="horizontal" className={styles.container}>
                 <TabList className={styles.tablist}>
-                    <Tab
-                        style={currState === "add_job" ? active : inactive}
-                        onClick={() => setCurrState("add_job")}
-                        className={styles.tab}>
-                        + Add Job
-                    </Tab>
+                    <div onClick={addJobspage} className={styles.tab}>
+                        <h4>+ Add Job</h4>
+                    </div>
                     <Tab
                         style={currState === "dashboard" ? active : inactive}
                         onClick={() => setCurrState("dashboard")}
                         className={styles.tab}>
                         Job Dashboard
                     </Tab>
-                    {/* <Tab
-                        style={currState === "analytics" ? active : inactive}
-                        onClick={() => setCurrState("analytics")}
-                        className={styles.tab}>
-                        Analytics
-                    </Tab> */}
                     <Tab
                         style={currState === "ad_link" ? active : inactive}
                         onClick={() => setCurrState("ad_link")}
@@ -79,14 +75,8 @@ const AdminPanel = () => {
                 </TabList>
                 <div className={styles.part2}>
                     <TabPanel>
-                        <Addjobs />
-                    </TabPanel>
-                    <TabPanel>
                         <Joblinks />
                     </TabPanel>
-                    {/* <TabPanel>
-                        <h2>Analytics</h2>
-                    </TabPanel> */}
                     <TabPanel>
                         <AddLink />
                     </TabPanel>
