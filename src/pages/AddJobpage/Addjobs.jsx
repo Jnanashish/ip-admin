@@ -87,7 +87,6 @@ const Addjobs = () => {
     const [batch, setBatch] = useState("2022 / 2021 / 2020");
     const [experience, setExperience] = useState("N");
     const [location, setLocation] = useState("N");
-    const [imgData, setImgData] = useState(null);
     const [salary, setSalary] = useState("N");
     const [jdpage, setJdpage] = useState(false);
     const [companyName, setCompanyName] = useState("");
