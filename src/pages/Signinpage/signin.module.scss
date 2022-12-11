@@ -8,9 +8,16 @@
 }
 
 .input_field {
-    width: 100%;
+    width: 60%;
     padding: 10px;
+
+    @media screen and (max-width: 900px) {
+        width: 80%;
+    }
 }
 .button {
-    width: 100%;
+    width: 60%;
+    @media screen and (max-width: 900px) {
+        width: 80%;
+    }
 }

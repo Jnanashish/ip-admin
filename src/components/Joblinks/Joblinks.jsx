@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 
 //import css
 import styles from "./joblinks.module.scss";
@@ -13,12 +13,14 @@ import { Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SendIcon from "@mui/icons-material/Send";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { API } from "../../Backend";
 
 // import components
 import Adminlinkcard from "./Adminlinkcard";
 import EditData from "./Editdata";
+import { UserContext } from "../../Context/userContext";
 
 const UpdateData = () => {
     const BOT_API_KEY = process.env.REACT_APP_BOT_API_KEY;
@@ -26,6 +28,8 @@ const UpdateData = () => {
     const [flag, setFlag] = useState("");
     const [caption, setCaption] = useState("");
     const [isCopied, setCopied] = useClipboard(caption);
+    const [email, setEmail] = useState("");
+    const [isApiCalled, setIsApiCalled] = useState(false);
 
     const [captionline, setCaptionline] = useState([
         "Follow 👉 @careersattech to get regular Job and Internship updates.",
@@ -65,6 +69,12 @@ const UpdateData = () => {
                 toast.error("An error Occured");
             });
     };
+
+    const context = useContext(UserContext);
+    useEffect(() => {
+        setEmail(context.user?.email);
+    }, []);
+
     const translate = (char) => {
         let diff;
         if (/[A-Z]/.test(char)) diff = "𝗔".codePointAt(0) - "A".codePointAt(0);
@@ -132,14 +142,18 @@ const UpdateData = () => {
     };
 
     const getData = async () => {
+        setIsApiCalled(true);
         try {
             const res = await fetch(`${API}/jd/get/all`, {
                 method: "GET",
             });
             const data = await res.json();
+            setIsApiCalled(false);
             setData(data);
         } catch (error) {
             console.log(error);
+            toast.error("An error loading occured");
+            setIsApiCalled(false);
         }
     };
 
@@ -156,6 +170,22 @@ const UpdateData = () => {
             "\n\nApply Link 👉 " +
             res[0].link +
             "\nLink in Bio" +
+            "\n\n" +
+            line +
+            "\n.\n.\n.\n" +
+            hash;
+
+        navigator.clipboard.writeText(temp);
+        toast("Copied");
+    };
+
+    const generateLinkedinCaption = (id) => {
+        const res = data.filter((item) => item._id === id);
+        const temp =
+            "📢 " +
+            res[0].title +
+            "\n\nApply Link 👉 " +
+            res[0].link +
             "\n\n" +
             line +
             "\n.\n.\n.\n" +
@@ -192,85 +222,113 @@ const UpdateData = () => {
             <h2 className={styles.adminpanel_title}>
                 List of available Jobs - {data.length}
             </h2>
-            {data.map((item) => {
-                return (
-                    <div key={item._id} className={styles.updatedata_con}>
-                        <Adminlinkcard
-                            key={item._id}
-                            title={item.title}
-                            lastdate={item.lastdate}
-                            totalclick={item.totalclick}
-                            link={item.link}
-                            time={item.createdAt}
-                        />
-                        <div className={styles.adminlink_con}>
-                            <div className={styles.btn_con}>
-                                <Button
-                                    className={styles.btn}
-                                    fullWidth
-                                    onClick={() => deleteData(item._id)}
-                                    variant="contained"
-                                    startIcon={<DeleteIcon />}>
-                                    Delete
-                                </Button>
+            {isApiCalled && (
+                <div className={styles.loaderCon}>
+                    <CircularProgress size={80} />
+                </div>
+            )}
+            <div>
+                {data.map((item) => {
+                    return (
+                        <div key={item._id} className={styles.updatedata_con}>
+                            <Adminlinkcard
+                                key={item._id}
+                                title={item.title}
+                                lastdate={item.lastdate}
+                                totalclick={item.totalclick}
+                                link={item.link}
+                                time={item.createdAt}
+                            />
+                            <div className={styles.adminlink_con}>
+                                <div className={styles.btn_con}>
+                                    <Button
+                                        disabled={
+                                            email !== "jhandique1999@gmail.com"
+                                        }
+                                        style={{ backgroundColor: "red" }}
+                                        className={styles.btn}
+                                        fullWidth
+                                        onClick={() => deleteData(item._id)}
+                                        variant="contained"
+                                        startIcon={<DeleteIcon />}>
+                                        Delete
+                                    </Button>
 
-                                <Button
-                                    className={styles.btn}
-                                    fullWidth
-                                    onClick={() => handleClick(item._id)}
-                                    variant="contained">
-                                    Update
-                                </Button>
+                                    <Button
+                                        className={styles.btn}
+                                        fullWidth
+                                        onClick={() => handleClick(item._id)}
+                                        variant="contained">
+                                        Update
+                                    </Button>
+                                </div>
+                                <div className={styles.btn_con}>
+                                    <Button
+                                        size="medium"
+                                        className={styles.btn}
+                                        fullWidth
+                                        disabled={item.jdbanner === "N"}
+                                        onClick={() => downloadBanner(item)}
+                                        variant="contained"
+                                        endIcon={<CloudDownloadIcon />}>
+                                        Banner
+                                    </Button>
+                                    <Button
+                                        style={{ backgroundColor: "#0069ff" }}
+                                        size="medium"
+                                        className={styles.btn}
+                                        fullWidth
+                                        onClick={() => copylink(item)}
+                                        variant="contained">
+                                        Copy Link
+                                    </Button>
+                                </div>
+                                <div className={styles.btn_con2}>
+                                    <Button
+                                        disabled={
+                                            email !== "jhandique1999@gmail.com"
+                                        }
+                                        className={styles.btn}
+                                        size="medium"
+                                        onClick={() =>
+                                            handleTelegramSubmit(item)
+                                        }
+                                        variant="contained"
+                                        endIcon={<SendIcon />}>
+                                        Telegram
+                                    </Button>
+                                    <Button
+                                        className={styles.btn}
+                                        size="medium"
+                                        onClick={() =>
+                                            generateCaption(item._id)
+                                        }
+                                        variant="contained">
+                                        {isCopied ? "Copied" : " Caption (IG)"}
+                                    </Button>
+                                    <Button
+                                        className={styles.btn}
+                                        size="medium"
+                                        onClick={() =>
+                                            generateLinkedinCaption(item._id)
+                                        }
+                                        variant="contained">
+                                        {isCopied
+                                            ? "Copied"
+                                            : "Caption (Linkedin)"}
+                                    </Button>
+                                </div>
                             </div>
-                            <div className={styles.btn_con}>
-                                <Button
-                                    size="medium"
-                                    className={styles.btn}
-                                    fullWidth
-                                    disabled={item.jdbanner === "N"}
-                                    onClick={() => downloadBanner(item)}
-                                    variant="contained"
-                                    endIcon={<CloudDownloadIcon />}>
-                                    Banner
-                                </Button>
-                                <Button
-                                    style={{ backgroundColor: "#0069ff" }}
-                                    size="medium"
-                                    className={styles.btn}
-                                    fullWidth
-                                    onClick={() => copylink(item)}
-                                    variant="contained">
-                                    Copy Link
-                                </Button>
-                            </div>
-                            <div className={styles.btn_con2}>
-                                <Button
-                                    className={styles.btn}
-                                    size="medium"
-                                    onClick={() => handleTelegramSubmit(item)}
-                                    variant="contained"
-                                    endIcon={<SendIcon />}>
-                                    Send to telegram
-                                </Button>
-                                <Button
-                                    className={styles.btn}
-                                    size="medium"
-                                    onClick={() => generateCaption(item._id)}
-                                    variant="contained">
-                                    {isCopied ? "Copied" : " Copy caption"}
-                                </Button>
-                            </div>
+                            <br />
+                            {item._id === flag && <EditData data={item} />}
+
+                            {/* <Update item = {item}/>*/}
+                            <hr className={styles.line} />
                         </div>
-                        <br />
-                        {item._id === flag && <EditData data={item} />}
-
-                        {/* <Update item = {item}/>*/}
-                        <hr className={styles.line} />
-                    </div>
-                );
-            })}
+                    );
+                })}
+            </div>
             <ToastContainer />
-            {/* <canvas id="canvas" width="1080" height="1080"></canvas> */}
         </div>
     );
 };

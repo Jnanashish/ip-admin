@@ -8,14 +8,11 @@ $gridBoxSize: 30px;
 // For instagram banner canvas -----------------
 
 .canvas {
-    // background-image: url("../../Image/grid.jpg");
-    // background-size: 1080px;
     background-color: $canvasBgColor;
     font-family: "Inter", sans-serif;
-    // max-width: 100%;
-    // margin-top: 20px;
-    // width: 1080px;
-    // height: 1080px;
+    max-width: 100%;
+    width: 1080px;
+    height: 1080px;
     padding: 55px $canvasPadding;
     border: 1px solid #000;
 }
@@ -193,6 +190,7 @@ $gridBoxSize: 30px;
 }
 .telegrambtn_zone {
     display: flex;
+    align-items: center;
     width: 70%;
 
     @media screen and (max-width: 900px) {
@@ -258,5 +256,4 @@ li {
 
 .adminpanel_home {
     background-color: #e1ebff;
-    // padding: 20px 10px;
 }

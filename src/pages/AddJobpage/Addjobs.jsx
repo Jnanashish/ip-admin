@@ -39,16 +39,21 @@ const degreeOptions = [
     "B.E / B.Tech / M.Tech",
     "B.E / B.Tech",
     "B.E / B.Tech / M.Tech / MCA",
-    "B.E / B.Tech / M.Tech / MCA / BCA",
+    "B.E / B.Tech / M.Tech / BCA / MCA",
     "Any graduate",
     "Any engineering graduate",
     "Any bachelor's degree",
 ];
 
 const batchOptions = [
+    "N",
     "2022 / 2021 /2020 / 2019",
     "2022 / 2021 /2020",
+    "2022",
     "2023 / 2024",
+    "2023 / 2022",
+    "2023",
+    "2024",
     "2023 / 2022 / 2021",
     "2022 / 2021 /2020 / 2019 / 2018",
     "Any graduate",
@@ -61,6 +66,8 @@ const expOptions = [
     "0 - 3 years",
     "0 - 4 years",
     "0 - 1 years",
+    "1+ years",
+    "Final year student",
 ];
 
 const locOptions = [
@@ -71,7 +78,9 @@ const locOptions = [
     "Pune",
     "Noida",
     "Hyderabad",
+    "Mumbai",
     "PAN India",
+    "Chandigarh",
 ];
 
 const companyTypeOptions = ["N", "product", "service"];
@@ -84,7 +93,7 @@ const Addjobs = () => {
     const [igbannertitle, setIgbannertitle] = useState("is hiring ");
     const [link, setLink] = useState("");
     const [degree, setDegree] = useState("B.E / B.Tech / M.Tech");
-    const [batch, setBatch] = useState("2022 / 2021 / 2020");
+    const [batch, setBatch] = useState("N");
     const [experience, setExperience] = useState("N");
     const [location, setLocation] = useState("N");
     const [salary, setSalary] = useState("N");
@@ -104,6 +113,7 @@ const Addjobs = () => {
     const [aboutCompany, setAboutCompany] = useState("N");
 
     const [telegrambanner, setTelegrambanner] = useState("N");
+    const [imgSize, setImgSize] = useState(false);
 
     const navigate = useNavigate();
     const handleBack = () => {
@@ -167,7 +177,12 @@ const Addjobs = () => {
     // handle company logo input for website
     const handleLogoInput = (e) => {
         const file = e.target.files;
-        formData.append("photo", file[0]);
+        if (file[0].size > 5120) {
+            toast.error("Image size should be less than 5kb, UPLOAD again");
+            return false;
+        } else {
+            formData.append("photo", file[0]);
+        }
     };
 
     // shorten link using bit.ly
@@ -263,6 +278,7 @@ const Addjobs = () => {
 
         if (res.status === 201) {
             toast("Job Data Added Successfully");
+            navigate("/admin");
         } else {
             toast.error("An error Occured");
         }
@@ -545,115 +561,11 @@ const Addjobs = () => {
                 <p style={{ fontSize: "8px" }}>*{telegrambanner}</p>
                 <br />
             </div>
-            {/* 
-            <div id="htmlToCanvas" className={styles.canvas}>
-                <div className={styles.gridBox} id="div1">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div2">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div3"></div>
-                <div className={styles.gridBox} id="div4">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div5">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div6"></div>
-                <div className={styles.gridBox} id="div7">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div8">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div9">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div10">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div11">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div12">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div13">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div14">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div15">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div16">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div17">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div18">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div19">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div20">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div21">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div22"></div>
-                <div className={styles.gridBox} id="div23">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div24">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div25">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div26">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div27">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div28">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div29">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div30">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div31">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div32">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div33">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div34">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div35">
-                    {" "}
-                </div>
-                <div className={styles.gridBox} id="div36">
-                    {" "}
-                </div>
-            </div> */}
 
             <br />
             <div className={styles.submitbtn_zone}>
                 <div className={styles.telegrambtn_zone}>
+                    <p style={{ paddingRight: "10px" }}>Upload JD banner : </p>
                     <input type="file" onChange={handleTelegramImgInput} />
                     <br />
                     <Button
@@ -661,7 +573,6 @@ const Addjobs = () => {
                         onClick={handleTelegramSubmit}
                         variant="contained"
                         color="primary">
-                        {" "}
                         Send to telegram
                     </Button>
                 </div>
@@ -674,13 +585,22 @@ const Addjobs = () => {
             <div className={styles.submitbtn_zone}>
                 <br />
                 <div>
-                    <input type="file" onChange={handleLogoInput} />
+                    <div style={{ display: "flex" }}>
+                        <p style={{ paddingRight: "10px" }}>
+                            Upload Company logo (Size less then 5kb) :
+                        </p>
+                        <input
+                            type="file"
+                            onChange={(e) => handleLogoInput(e)}
+                        />
+                    </div>
                     <br />
                     <br />
                     <Button
                         style={{ textTransform: "capitalize" }}
                         className={styles.submitbtn}
                         onClick={addData}
+                        disabled={link.length === 0}
                         variant="contained"
                         color="primary"
                         size="large">

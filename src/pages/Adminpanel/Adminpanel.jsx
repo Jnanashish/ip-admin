@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 
@@ -21,6 +21,7 @@ const AdminPanel = () => {
     const active = { backgroundColor: "#0069ff", color: "#FFFFFF" };
     const inactive = {};
     const navigate = useNavigate();
+
     if (!context.user?.email) {
         return <Navigate to="/" />;
     }

@@ -17,10 +17,14 @@ const LinkCard = (props) => {
                     <h5>Created At : </h5>
                     <h5> {date}</h5>
                 </div>
-                <div className={styles.adminlink_item}>
-                    <h5>Last date : </h5>
-                    <h5> {props.lastdate}</h5>
-                </div>
+                {props.lastdate !== "2022-11-00-" && (
+                    <div className={styles.adminlink_item}>
+                        <h5>Last date : </h5>
+                        <h5 style={{ color: "red" }}>
+                            <b> {props.lastdate}</b>
+                        </h5>
+                    </div>
+                )}
                 <div className={styles.adminlink_item}>
                     <h5>Total Click : </h5>
                     <h5 className={styles.jd_date}>
