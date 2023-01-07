@@ -36,36 +36,41 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { UserContext } from "../../Context/userContext";
 
 const degreeOptions = [
+    "B.E / B.Tech / M.Tech / MCA / BCA",
+    "B.E / B.Tech / M.Tech / MCA",
     "B.E / B.Tech / M.Tech",
     "B.E / B.Tech",
-    "B.E / B.Tech / M.Tech / MCA",
-    "B.E / B.Tech / M.Tech / BCA / MCA",
+    "BBA / MBA",
     "Any graduate",
     "Any engineering graduate",
     "Any bachelor's degree",
+    "Diploma students",
 ];
 
 const batchOptions = [
     "N",
+    "2022 / 2021 /2020 / 2019 / 2018",
     "2022 / 2021 /2020 / 2019",
     "2022 / 2021 /2020",
+    "2022 / 2021",
     "2022",
-    "2023 / 2024",
+    "2023 / 2022 / 2021",
     "2023 / 2022",
     "2023",
+    "2024 / 2023",
     "2024",
-    "2023 / 2022 / 2021",
-    "2022 / 2021 /2020 / 2019 / 2018",
     "Any graduate",
 ];
 
 const expOptions = [
     "N",
-    "0 - 2 years",
     "Freshers",
+    "0 - 1 years",
+    "0 - 2 years",
     "0 - 3 years",
     "0 - 4 years",
-    "0 - 1 years",
+    "1 - 2 years",
+    "1 years",
     "1+ years",
     "Final year student",
 ];
@@ -81,6 +86,7 @@ const locOptions = [
     "Mumbai",
     "PAN India",
     "Chandigarh",
+    "Kolkata",
 ];
 
 const companyTypeOptions = ["N", "product", "service"];
@@ -167,7 +173,6 @@ const Addjobs = () => {
         // console.log(data);
         if (res.status === 201) {
             toast("Successfully link generated");
-            // setTimeout(refreshPage(), 2000)
         } else {
             toast.error("An error Occured");
         }
@@ -288,14 +293,19 @@ const Addjobs = () => {
         <div className={styles.container}>
             <div
                 onClick={handleBack}
-                style={{ display: "flex", alignItems: "center" }}>
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                }}>
                 <img
                     style={{ width: "30px", marginRight: "10px" }}
                     src="https://img.icons8.com/ios-filled/100/null/circled-left-2.png"
                     alt="back button"
                 />
-                <h3>Back</h3>
+                <h3>Back to dashboard</h3>
             </div>
+            <br />
             <ToastContainer />
             <div className={styles.maininput_con}>
                 <div className={styles.input_fields}>
@@ -475,10 +485,9 @@ const Addjobs = () => {
                     <FormControlLabel
                         onChange={() => setJdpage(!jdpage)}
                         control={<Switch />}
-                        label="Show Job description"
+                        label="Add Job description fields (Optional)"
                     />
                 </FormGroup>
-                <br />
 
                 {jdpage && (
                     <div className={styles.editor_fields}>
@@ -558,16 +567,26 @@ const Addjobs = () => {
                         </div>
                     </div>
                 )}
-                <p style={{ fontSize: "8px" }}>*{telegrambanner}</p>
                 <br />
             </div>
-
+            <hr />
+            <br />
+            <br />
+            <div>
+                <div style={{ display: "flex" }}>
+                    <p style={{ paddingRight: "10px" }}>Upload JD banner : </p>
+                    <input type="file" onChange={handleTelegramImgInput} />
+                </div>
+                <p style={{ fontSize: "10px" }}>
+                    Banner Link : {telegrambanner}
+                </p>
+            </div>
+            <br />
+            <br />
+            <hr />
             <br />
             <div className={styles.submitbtn_zone}>
                 <div className={styles.telegrambtn_zone}>
-                    <p style={{ paddingRight: "10px" }}>Upload JD banner : </p>
-                    <input type="file" onChange={handleTelegramImgInput} />
-                    <br />
                     <Button
                         style={{ textTransform: "capitalize" }}
                         onClick={handleTelegramSubmit}
@@ -577,7 +596,6 @@ const Addjobs = () => {
                     </Button>
                 </div>
             </div>
-
             <br />
             <hr />
             <br />
@@ -604,85 +622,90 @@ const Addjobs = () => {
                         variant="contained"
                         color="primary"
                         size="large">
-                        Submit
+                        Submit Job details
                     </Button>
                 </div>
             </div>
             <br />
 
+            {/* ------------------------------  CANVAS -------------------------------------- */}
             <div id="htmlToCanvas" className={styles.canvas}>
-                <div className={styles.canvas_header}>
-                    <p className={styles.weblink}>
-                        visit - <span> careersat.tech</span>
-                    </p>
-                    <img className={styles.logo} src={logo} alt="logo" />
-                </div>
+                <div className={styles.upper}>
+                    <div className={styles.canvas_header}>
+                        <p className={styles.weblink}>
+                            Visit <span>careersat.tech</span>
+                        </p>
+                        <img className={styles.logo} src={logo} alt="logo" />
+                    </div>
 
-                <div className={styles.companylogo_con}>
-                    <h1>{companyName}</h1>
-                </div>
+                    <div className={styles.companylogo_con}>
+                        <h1>{companyName}</h1>
+                    </div>
 
-                <div className={styles.canvas_title}>
-                    <h1>{igbannertitle}</h1>
+                    <div className={styles.canvas_title}>
+                        <h1>{igbannertitle}</h1>
+                    </div>
                 </div>
+                <div className={styles.lower}>
+                    <div className={styles.canvas_details}>
+                        {degree !== "N" && (
+                            <p>
+                                <span className={styles.tag}>Degree</span> :{" "}
+                                <span>{degree}</span>
+                            </p>
+                        )}
+                        {batch !== "N" && (
+                            <p>
+                                <span className={styles.tag}>Batch</span> :{" "}
+                                <span>{batch}</span>
+                            </p>
+                        )}
+                        {experience !== "N" && (
+                            <p>
+                                <span className={styles.tag}>Experience</span> :{" "}
+                                <span>{experience}</span>
+                            </p>
+                        )}
+                        {experience === "N" && salary !== "N" && (
+                            <p>
+                                <span className={styles.tag}>Salary</span> :{" "}
+                                <span>₹{salary}</span>
+                            </p>
+                        )}
+                        {location !== "N" && (
+                            <p>
+                                <span className={styles.tag}>Location</span> :{" "}
+                                <span>{location}</span>
+                            </p>
+                        )}
+                        {location === "N" && salary !== "N" && (
+                            <p>
+                                <span className={styles.tag}>Salary</span> :{" "}
+                                <span>₹{salary}</span>
+                            </p>
+                        )}
+                        <p>
+                            <span className={styles.tag}>Apply Link</span> :{" "}
+                            <span style={{ color: "#0069ff" }}>
+                                Link in Bio (visit : careersat.tech)
+                            </span>
+                        </p>
+                    </div>
 
-                <div className={styles.canvas_details}>
-                    {degree !== "N" && (
+                    <div className={styles.footer}>
+                        <img src={instagram} alt="instagram-logo" />
+                        <img src={telegram} alt="telegram-logo" />
+                        <img src={linkedin} alt="linkedin-logo" />
                         <p>
-                            <span className={styles.tag}>Degree</span> :{" "}
-                            <span>{degree}</span>
+                            Follow <span>@carrersattech</span> to get regular
+                            Job updates.
                         </p>
-                    )}
-                    {batch !== "N" && (
-                        <p>
-                            <span className={styles.tag}>Batch</span> :{" "}
-                            <span>{batch}</span>
-                        </p>
-                    )}
-                    {experience !== "N" && (
-                        <p>
-                            <span className={styles.tag}>Experience</span> :{" "}
-                            <span>{experience}</span>
-                        </p>
-                    )}
-                    {experience === "N" && salary !== "N" && (
-                        <p>
-                            <span className={styles.tag}>Salary</span> :{" "}
-                            <span>₹{salary}</span>
-                        </p>
-                    )}
-                    {location !== "N" && (
-                        <p>
-                            <span className={styles.tag}>Location</span> :{" "}
-                            <span>{location}</span>
-                        </p>
-                    )}
-                    {location === "N" && salary !== "N" && (
-                        <p>
-                            <span className={styles.tag}>Salary</span> :{" "}
-                            <span>₹{salary}</span>
-                        </p>
-                    )}
-                    <p>
-                        <span className={styles.tag}>Apply Link</span> :{" "}
-                        <span>Link in Bio (visit : careersat.tech)</span>
-                    </p>
-                </div>
-
-                <div className={styles.footer}>
-                    <img src={instagram} alt="instagram-logo" />
-                    <img src={telegram} alt="telegram-logo" />
-                    <img src={linkedin} alt="linkedin-logo" />
-                    <p>
-                        Follow <span>@carrersattech</span> to get regular Job
-                        updates.
-                    </p>
+                    </div>
                 </div>
             </div>
+            {/* ---------------------------------  END ---------------------------------- */}
             <br />
             <br />
-            {/* <hr /> */}
-
             <br />
         </div>
     );

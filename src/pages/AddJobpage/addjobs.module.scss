@@ -13,8 +13,16 @@ $gridBoxSize: 30px;
     max-width: 100%;
     width: 1080px;
     height: 1080px;
-    padding: 55px $canvasPadding;
     border: 1px solid #000;
+}
+
+.upper {
+    padding: 55px $canvasPadding;
+    height: 19 * $gridBoxSize;
+}
+.lower {
+    padding: 0px;
+    height: 17 * $gridBoxSize;
 }
 
 // header for canvas -------------
@@ -22,7 +30,7 @@ $gridBoxSize: 30px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    height: calc($gridBoxSize + 5px);
+    height: $gridBoxSize;
 }
 .weblink {
     font-size: 14px;
@@ -40,18 +48,16 @@ $gridBoxSize: 30px;
 
 // comapny logo with text -------------
 .companylogo_con {
-    height: 3 * $gridBoxSize;
-    margin-top: 2 * $gridBoxSize;
-
+    height: 7 * $gridBoxSize;
     width: 100%;
     display: flex;
     align-items: center;
     h1 {
-        font-weight: 700;
+        font-weight: 600;
         color: #0069ff;
         font-size: $logoFontSize;
         -webkit-text-stroke-width: 1px;
-        -webkit-text-stroke-color: #0069ff;
+        -webkit-text-stroke-color: #0050ff;
     }
     grid-row-start: 6;
     grid-row-end: 9;
@@ -61,7 +67,7 @@ $gridBoxSize: 30px;
 .canvas_title {
     height: 6 * $gridBoxSize;
     display: flex;
-    align-items: flex-start;
+    align-items: flex-end;
     color: #000;
     h1 {
         font-weight: 700;
@@ -69,8 +75,7 @@ $gridBoxSize: 30px;
         line-height: 109px;
     }
     z-index: 99;
-    height: 188px;
-    margin-top: calc(2 * $gridBoxSize - 8px);
+    height: calc(7 * $gridBoxSize + 20px);
 }
 
 // Canvas details ---------
@@ -78,48 +83,50 @@ $gridBoxSize: 30px;
     z-index: 0;
     display: flex;
     color: #fff;
-    border-radius: 12px;
+    border-radius: 40px 40px 0px 0px;
     justify-content: center;
     flex-direction: column;
-    margin-top: 2.5 * $gridBoxSize;
     p {
-        color: #0069ff;
+        color: #000000;
+        // color: #0069ff;
         margin: 4.5px 0px;
         font-weight: 600;
         font-size: $detailFontSize;
-        line-height: 56px;
+        line-height: 60px;
     }
     .tag {
-        font-weight: 600;
+        font-weight: 700;
         color: #000000;
     }
-    height: 13 * $gridBoxSize;
-    padding: 12px 0px 12px 42px;
-    background-color: #f4faff;
+    padding: 0px 0px 0px 120px;
+    background-color: #f0f8ff;
+    height: 15 * $gridBoxSize;
 }
 
 .footer {
+    background-color: #121212;
     position: relative;
     margin-bottom: 0px;
-    margin-top: 1.5 * $gridBoxSize;
-    font-family: "Sora", sans-serif;
+    padding: 0px 2 * $gridBoxSize;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: flex-start;
     p {
-        font-weight: 600;
+        font-weight: 500;
+        color: #ffffff;
+        margin-left: 10px;
     }
     span {
-        font-weight: 700;
-        color: #0069ff;
+        font-weight: 600;
+        // color: #0069ff;
     }
 
-    font-size: 26.6px;
-    height: $gridBoxSize;
+    font-size: 24px;
+    height: 2 * $gridBoxSize;
     img {
-        width: 24px;
+        width: 22px;
         margin-right: 5px;
-        margin-bottom: 4px;
+        margin-top: 1px;
     }
 }
 // end of ig banner ----------------

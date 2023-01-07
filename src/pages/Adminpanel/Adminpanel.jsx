@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 
@@ -92,6 +92,7 @@ const AdminPanel = () => {
                     </TabPanel>
                 </div>
             </Tabs>
+            <br />
         </div>
     );
 };
