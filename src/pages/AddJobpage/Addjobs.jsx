@@ -73,6 +73,7 @@ const expOptions = [
     "1 years",
     "1+ years",
     "Final year student",
+    "Any batch",
 ];
 
 const locOptions = [
@@ -84,9 +85,9 @@ const locOptions = [
     "Noida",
     "Hyderabad",
     "Mumbai",
-    "PAN India",
     "Chandigarh",
     "Kolkata",
+    "PAN India",
 ];
 
 const companyTypeOptions = ["N", "product", "service"];
@@ -119,7 +120,6 @@ const Addjobs = () => {
     const [aboutCompany, setAboutCompany] = useState("N");
 
     const [telegrambanner, setTelegrambanner] = useState("N");
-    const [imgSize, setImgSize] = useState(false);
 
     const navigate = useNavigate();
     const handleBack = () => {

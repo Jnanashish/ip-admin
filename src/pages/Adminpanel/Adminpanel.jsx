@@ -22,9 +22,11 @@ const AdminPanel = () => {
     const inactive = {};
     const navigate = useNavigate();
 
-    if (!context.user?.email) {
-        return <Navigate to="/" />;
-    }
+    const isUserLogedIn = context.user?.email;
+
+    // if (!context.user?.email) {
+    //     return <Navigate to="/" />;
+    // }
 
     const addJobspage = () => {
         navigate("/addjob");
@@ -40,39 +42,55 @@ const AdminPanel = () => {
 
             <Tabs orientation="horizontal" className={styles.container}>
                 <TabList className={styles.tablist}>
-                    <div onClick={addJobspage} className={styles.tab}>
-                        <h4>+ Add Job</h4>
-                    </div>
+                    {isUserLogedIn && (
+                        <div onClick={addJobspage} className={styles.tab}>
+                            <h4>+ Add Job</h4>
+                        </div>
+                    )}
                     <Tab
                         style={currState === "dashboard" ? active : inactive}
                         onClick={() => setCurrState("dashboard")}
                         className={styles.tab}>
                         Job Dashboard
                     </Tab>
-                    <Tab
-                        style={currState === "ad_link" ? active : inactive}
-                        onClick={() => setCurrState("ad_link")}
-                        className={styles.tab}>
-                        + Ad (Link only)
-                    </Tab>
-                    <Tab
-                        style={currState === "ad_img" ? active : inactive}
-                        onClick={() => setCurrState("ad_img")}
-                        className={styles.tab}>
-                        + Ad (With Image)
-                    </Tab>
-                    <Tab
-                        style={currState === "ad_banner" ? active : inactive}
-                        onClick={() => setCurrState("ad_banner")}
-                        className={styles.tab}>
-                        + Add banner
-                    </Tab>
-                    <Tab
-                        style={currState === "ad_pop" ? active : inactive}
-                        onClick={() => setCurrState("ad_pop")}
-                        className={styles.tab}>
-                        Ad pop type
-                    </Tab>
+                    {isUserLogedIn && (
+                        <>
+                            <Tab
+                                style={
+                                    currState === "ad_link" ? active : inactive
+                                }
+                                onClick={() => setCurrState("ad_link")}
+                                className={styles.tab}>
+                                + Ad (Link only)
+                            </Tab>
+                            <Tab
+                                style={
+                                    currState === "ad_img" ? active : inactive
+                                }
+                                onClick={() => setCurrState("ad_img")}
+                                className={styles.tab}>
+                                + Ad (With Image)
+                            </Tab>
+                            <Tab
+                                style={
+                                    currState === "ad_banner"
+                                        ? active
+                                        : inactive
+                                }
+                                onClick={() => setCurrState("ad_banner")}
+                                className={styles.tab}>
+                                + Add banner
+                            </Tab>
+                            <Tab
+                                style={
+                                    currState === "ad_pop" ? active : inactive
+                                }
+                                onClick={() => setCurrState("ad_pop")}
+                                className={styles.tab}>
+                                Ad pop type
+                            </Tab>
+                        </>
+                    )}
                 </TabList>
                 <div className={styles.part2}>
                     <TabPanel>

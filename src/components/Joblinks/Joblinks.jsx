@@ -13,6 +13,7 @@ import { Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SendIcon from "@mui/icons-material/Send";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import { API } from "../../Backend";
@@ -71,6 +72,8 @@ const UpdateData = () => {
     };
 
     const context = useContext(UserContext);
+    const isUserLogedIn = context.user?.email;
+
     useEffect(() => {
         setEmail(context.user?.email);
     }, []);
@@ -182,9 +185,8 @@ const UpdateData = () => {
     const generateLinkedinCaption = (id) => {
         const res = data.filter((item) => item._id === id);
         const temp =
-            "📢 " +
             res[0].title +
-            "\n\nApply Link 👉 " +
+            "\n\nApply Link in comment\n\n" +
             res[0].link +
             "\n\n" +
             line +
@@ -216,6 +218,22 @@ const UpdateData = () => {
         }
     };
 
+    // const sendIGCaption = () => {
+    //     var url =
+    //         "https://api.whatsapp.com/send?phone=" +
+    //         "" +
+    //         "&text=" +
+    //         encodeURIComponent(message);
+
+    //     return url;
+    // };
+    const sendToWhatsApp = () => {
+        const phoneNumber = "8812871645";
+        const message = "Hello, this is a test message.";
+        const url = `whatsapp://send?phone=${phoneNumber}&text=${message}`;
+        window.open(url);
+    };
+
     return (
         <div className={styles.update_data_container}>
             <br />
@@ -240,28 +258,33 @@ const UpdateData = () => {
                                 time={item.createdAt}
                             />
                             <div className={styles.adminlink_con}>
-                                <div className={styles.btn_con}>
-                                    <Button
-                                        disabled={
-                                            email !== "jhandique1999@gmail.com"
-                                        }
-                                        style={{ backgroundColor: "red" }}
-                                        className={styles.btn}
-                                        fullWidth
-                                        onClick={() => deleteData(item._id)}
-                                        variant="contained"
-                                        startIcon={<DeleteIcon />}>
-                                        Delete
-                                    </Button>
+                                {isUserLogedIn && (
+                                    <div className={styles.btn_con}>
+                                        <Button
+                                            disabled={
+                                                email !==
+                                                "jhandique1999@gmail.com"
+                                            }
+                                            style={{ backgroundColor: "red" }}
+                                            className={styles.btn}
+                                            fullWidth
+                                            onClick={() => deleteData(item._id)}
+                                            variant="contained"
+                                            startIcon={<DeleteIcon />}>
+                                            Delete
+                                        </Button>
 
-                                    <Button
-                                        className={styles.btn}
-                                        fullWidth
-                                        onClick={() => handleClick(item._id)}
-                                        variant="contained">
-                                        Update
-                                    </Button>
-                                </div>
+                                        <Button
+                                            className={styles.btn}
+                                            fullWidth
+                                            onClick={() =>
+                                                handleClick(item._id)
+                                            }
+                                            variant="contained">
+                                            Update
+                                        </Button>
+                                    </div>
+                                )}
                                 <div className={styles.btn_con}>
                                     <Button
                                         size="medium"
@@ -284,19 +307,22 @@ const UpdateData = () => {
                                     </Button>
                                 </div>
                                 <div className={styles.btn_con2}>
-                                    <Button
-                                        disabled={
-                                            email !== "jhandique1999@gmail.com"
-                                        }
-                                        className={styles.btn}
-                                        size="medium"
-                                        onClick={() =>
-                                            handleTelegramSubmit(item)
-                                        }
-                                        variant="contained"
-                                        endIcon={<SendIcon />}>
-                                        Telegram
-                                    </Button>
+                                    {isUserLogedIn && (
+                                        <Button
+                                            disabled={
+                                                email !==
+                                                "jhandique1999@gmail.com"
+                                            }
+                                            className={styles.btn}
+                                            size="medium"
+                                            onClick={() =>
+                                                handleTelegramSubmit(item)
+                                            }
+                                            variant="contained"
+                                            endIcon={<SendIcon />}>
+                                            Telegram
+                                        </Button>
+                                    )}
                                     <Button
                                         className={styles.btn}
                                         size="medium"
@@ -317,6 +343,14 @@ const UpdateData = () => {
                                             ? "Copied"
                                             : "Caption (Linkedin)"}
                                     </Button>
+                                    <Button
+                                        size="medium"
+                                        style={{ width: "50px" }}
+                                        className={styles.btn}
+                                        onClick={() => sendToWhatsApp()}
+                                        variant="contained"
+                                        endIcon={<WhatsAppIcon />}
+                                    />
                                 </div>
                             </div>
                             <br />
