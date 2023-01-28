@@ -19,12 +19,34 @@
   @media screen and (max-width: 900px) {
     max-width: 100%;
   }
+  display: flex;
+  justify-content: space-between;
 }
 
 .jd_date {
   color: red;
 }
 
+.btn {
+  text-transform: capitalize;
+  background-color: #0069ff;
+  color: #ffffff;
+  padding: 0px 0px;
+  font-weight: 400;
+  height: 30px;
+  width: 100px;
+  opacity: 0.6;
+
+  &:hover {
+    background-color: #0069ff;
+    opacity: 1;
+  }
+}
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
 .adminlink_item {
   display: flex;
   flex-direction: row;

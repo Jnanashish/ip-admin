@@ -14,6 +14,7 @@ import { Navigate, useNavigate } from "react-router-dom";
 import styles from "./adminpanel.module.scss";
 import AddLinkImg from "../../components/AD/Addlinkimg";
 import AddLink from "../../components/AD/Addlink";
+import { Button } from "@mui/material";
 
 const AdminPanel = () => {
     const [currState, setCurrState] = useState("dashboard");
@@ -37,7 +38,15 @@ const AdminPanel = () => {
             <div className={styles.adminpanel_header}>
                 <h4>Admin Panel</h4>
 
-                <h4>Welcome : Jnanashish Handique</h4>
+                {isUserLogedIn && <h4>Welcome : Jnanashish Handique</h4>}
+                {!isUserLogedIn && (
+                    <Button
+                        onClick={() => navigate("/signin")}
+                        size="medium"
+                        style={{ backgroundColor: "#FFF" }}>
+                        Sign in
+                    </Button>
+                )}
             </div>
 
             <Tabs orientation="horizontal" className={styles.container}>

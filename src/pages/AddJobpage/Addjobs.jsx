@@ -41,14 +41,16 @@ const degreeOptions = [
     "B.E / B.Tech / M.Tech",
     "B.E / B.Tech",
     "BBA / MBA",
-    "Any graduate",
-    "Any engineering graduate",
-    "Any bachelor's degree",
+    "Any Graduate",
+    "Any Engineering graduate",
+    "Any Bachelor's degree",
     "Diploma students",
 ];
 
 const batchOptions = [
     "N",
+    "2021 / 2020 / 2019",
+    "2021 / 2020 ",
     "2022 / 2021 /2020 / 2019 / 2018",
     "2022 / 2021 /2020 / 2019",
     "2022 / 2021 /2020",
@@ -57,8 +59,11 @@ const batchOptions = [
     "2023 / 2022 / 2021",
     "2023 / 2022",
     "2023",
+    "2024 / 2023 / 2022",
     "2024 / 2023",
     "2024",
+    "2025 / 2024 / 2023",
+    "2025 / 2024",
     "Any graduate",
 ];
 
@@ -70,6 +75,7 @@ const expOptions = [
     "0 - 3 years",
     "0 - 4 years",
     "1 - 2 years",
+    "College students",
     "1 years",
     "1+ years",
     "Final year student",
@@ -88,6 +94,7 @@ const locOptions = [
     "Chandigarh",
     "Kolkata",
     "PAN India",
+    "Delhi",
 ];
 
 const companyTypeOptions = ["N", "product", "service"];

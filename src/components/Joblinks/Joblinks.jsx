@@ -10,7 +10,6 @@ import useClipboard from "react-use-clipboard";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import SendIcon from "@mui/icons-material/Send";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
@@ -38,9 +37,9 @@ const UpdateData = () => {
     ]);
 
     const [hashtags, setHashtags] = useState([
-        "#offcampusdrive #placementdrive #jobupdates #jobsforfreshers #offcampus #softwaredeveloper #hiring #freshers",
-        "#codinginterview #jobsforfreshers #engineerjobs #freshersjobs #hiring #campusplacements #computerscienceengineering #jobseekers #placementdrive",
-        "#offcampusdrive #freshers #offcampus #hiring #softwaredeveloper #campusplacements #placementdrive #jobupdates #engineerjobs ",
+        "#offcampusdrive #placementdrive #jobsinindia #jobupdates #jobsforfreshers #offcampus #hiring #freshers #jobs #jobseek #jobsearch",
+        "#codinginterview #jobsforfreshers #engineerjobs #freshersjobs #hiring #computerscienceengineering #hiringnow #jobseekers #placementdrive",
+        "#offcampusdrive #freshers #offcampus #hiring #softwaredeveloper #campusplacements #placementdrive #hiringalert #jobupdates #engineerjobs ",
     ]);
 
     const sendTelegramMsg = (chanelName, item) => {
@@ -135,15 +134,6 @@ const UpdateData = () => {
         getData();
     }, []);
 
-    const deleteData = (id) => {
-        fetch(`${API}/jd/delete/${id}`, { method: "DELETE" })
-            .then((res) => getData(), toast("Job deleted Successfully"))
-            .catch((err) => {
-                toast.error("An error Occured");
-                console.log(err);
-            });
-    };
-
     const getData = async () => {
         setIsApiCalled(true);
         try {
@@ -163,16 +153,14 @@ const UpdateData = () => {
     const generateCaption = (id) => {
         const res = data.filter((item) => item._id === id);
         const temp =
-            "📢 " +
             res[0].title +
             ". Visit Link in Bio to apply. 🔝" +
             "\n\nBatch : " +
             res[0].batch +
             "\nDegree : " +
             res[0].degree +
-            "\n\nApply Link 👉 " +
-            res[0].link +
-            "\nLink in Bio" +
+            "\n\nApply Link in Bio " +
+
             "\n\n" +
             line +
             "\n.\n.\n.\n" +
@@ -227,11 +215,19 @@ const UpdateData = () => {
 
     //     return url;
     // };
-    const sendToWhatsApp = () => {
-        const phoneNumber = "8812871645";
-        const message = "Hello, this is a test message.";
-        const url = `whatsapp://send?phone=${phoneNumber}&text=${message}`;
-        window.open(url);
+    const copyWhatsAppMessage = (item) => {
+        const msg =
+            item.title.replace(/[A-Za-z]/g, translate) +
+            "\nBatch : " +
+            item.batch +
+            "\nDegree : " +
+            item.degree +
+            "\n\nApply Here 👉 " +
+            item.link +
+            "\n\nFor more Jobs visit " +
+            "https://bit.ly/careersattechWA";
+        navigator.clipboard.writeText(msg);
+        toast("Copied");
     };
 
     return (
@@ -249,45 +245,12 @@ const UpdateData = () => {
                 {data.map((item) => {
                     return (
                         <div key={item._id} className={styles.updatedata_con}>
-                            <Adminlinkcard
-                                key={item._id}
-                                title={item.title}
-                                lastdate={item.lastdate}
-                                totalclick={item.totalclick}
-                                link={item.link}
-                                time={item.createdAt}
-                            />
+                            <Adminlinkcard item={item} />
                             <div className={styles.adminlink_con}>
-                                {isUserLogedIn && (
-                                    <div className={styles.btn_con}>
-                                        <Button
-                                            disabled={
-                                                email !==
-                                                "jhandique1999@gmail.com"
-                                            }
-                                            style={{ backgroundColor: "red" }}
-                                            className={styles.btn}
-                                            fullWidth
-                                            onClick={() => deleteData(item._id)}
-                                            variant="contained"
-                                            startIcon={<DeleteIcon />}>
-                                            Delete
-                                        </Button>
-
-                                        <Button
-                                            className={styles.btn}
-                                            fullWidth
-                                            onClick={() =>
-                                                handleClick(item._id)
-                                            }
-                                            variant="contained">
-                                            Update
-                                        </Button>
-                                    </div>
-                                )}
                                 <div className={styles.btn_con}>
                                     <Button
                                         size="medium"
+                                        disableElevation
                                         className={styles.btn}
                                         fullWidth
                                         disabled={item.jdbanner === "N"}
@@ -302,6 +265,7 @@ const UpdateData = () => {
                                         className={styles.btn}
                                         fullWidth
                                         onClick={() => copylink(item)}
+                                        disableElevation
                                         variant="contained">
                                         Copy Link
                                     </Button>
@@ -309,6 +273,7 @@ const UpdateData = () => {
                                 <div className={styles.btn_con2}>
                                     {isUserLogedIn && (
                                         <Button
+                                            disableElevation
                                             disabled={
                                                 email !==
                                                 "jhandique1999@gmail.com"
@@ -324,6 +289,7 @@ const UpdateData = () => {
                                         </Button>
                                     )}
                                     <Button
+                                        disableElevation
                                         className={styles.btn}
                                         size="medium"
                                         onClick={() =>
@@ -333,6 +299,7 @@ const UpdateData = () => {
                                         {isCopied ? "Copied" : " Caption (IG)"}
                                     </Button>
                                     <Button
+                                        disableElevation
                                         className={styles.btn}
                                         size="medium"
                                         onClick={() =>
@@ -344,13 +311,16 @@ const UpdateData = () => {
                                             : "Caption (Linkedin)"}
                                     </Button>
                                     <Button
+                                        disableElevation
                                         size="medium"
-                                        style={{ width: "50px" }}
                                         className={styles.btn}
-                                        onClick={() => sendToWhatsApp()}
+                                        onClick={() =>
+                                            copyWhatsAppMessage(item)
+                                        }
                                         variant="contained"
-                                        endIcon={<WhatsAppIcon />}
-                                    />
+                                        endIcon={<WhatsAppIcon />}>
+                                        Message
+                                    </Button>
                                 </div>
                             </div>
                             <br />
