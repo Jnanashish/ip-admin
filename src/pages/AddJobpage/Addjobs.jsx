@@ -12,6 +12,7 @@ import {
     FormControlLabel,
 } from "@mui/material";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import DeleteIcon from "@mui/icons-material/Delete";
 import MenuItem from "@mui/material/MenuItem";
 
 // import react toast
@@ -75,6 +76,7 @@ const expOptions = [
     "0 - 3 years",
     "0 - 4 years",
     "1 - 2 years",
+    "0+ years",
     "College students",
     "1 years",
     "1+ years",
@@ -127,6 +129,12 @@ const Addjobs = () => {
     const [aboutCompany, setAboutCompany] = useState("N");
 
     const [telegrambanner, setTelegrambanner] = useState("N");
+    const [companyLogo, setCompanyLogo] = useState(null);
+
+    const [imgsize, setImgsize] = useState("60%");
+    const [imgmleft, setiImgmleft] = useState("0px");
+    const [paddingtop, setPaddingtop] = useState("0px");
+    const [paddingbottom, setPaddingbottom] = useState("0px");
 
     const navigate = useNavigate();
     const handleBack = () => {
@@ -135,9 +143,9 @@ const Addjobs = () => {
 
     const context = useContext(UserContext);
 
-    if (!context.user?.email) {
-        return <Navigate to="/" />;
-    }
+    // if (!context.user?.email) {
+    //     return <Navigate to="/" />;
+    // }
 
     const formData = new FormData();
 
@@ -197,6 +205,16 @@ const Addjobs = () => {
         }
     };
 
+    const handleCompanyLogoInput = (e) => {
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+            console.log("reader.result", reader.result);
+            setCompanyLogo(reader.result);
+        });
+
+        reader.readAsDataURL(e.target.files[0]);
+    };
+
     // shorten link using bit.ly
     async function shortenLink() {
         const tempLink = await shortenurl(link);
@@ -241,6 +259,16 @@ const Addjobs = () => {
                 console.log("ERROR", err);
                 toast.error("An error Occured");
             });
+    };
+
+    var customStyle = {
+        imgstyle: {
+            height: imgsize,
+            marginLeft: imgmleft,
+            marginTop: paddingtop,
+            marginBottom: paddingbottom,
+        },
+        imgContainerstyle: {},
     };
 
     // handle telegram submit
@@ -471,6 +499,63 @@ const Addjobs = () => {
                             ))}
                         </TextField>
                     </div>
+                    <div
+                        style={{
+                            marginTop: "30px",
+                            justifyContent: "flex-start",
+                        }}
+                        className={styles.flex}>
+                        <div className={styles.flex}>
+                            <h5>Company Logo for Banner : </h5>
+                            <label htmlFor="contained-button-file">
+                                <input
+                                    accept="image/*"
+                                    id="contained-button-file"
+                                    multiple
+                                    type="file"
+                                    onChange={(e) => handleCompanyLogoInput(e)}
+                                />
+                            </label>
+                        </div>
+                        <IconButton
+                            sx={{ mt: 1 }}
+                            color="warning"
+                            aria-label="delete"
+                            size="large"
+                            onClick={() => setCompanyLogo(null)}>
+                            <DeleteIcon fontSize="inherit" />
+                        </IconButton>
+                    </div>
+                    <div className={styles.flex} style={{ width: "50%" }}>
+                        <TextField
+                            size="small"
+                            sx={{ width: "10ch" }}
+                            label="Img Size"
+                            value={imgsize}
+                            onChange={(e) => setImgsize(e.target.value)}
+                        />
+                        <TextField
+                            size="small"
+                            sx={{ width: "10ch" }}
+                            label="Margin left"
+                            value={imgmleft}
+                            onChange={(e) => setiImgmleft(e.target.value)}
+                        />
+                        <TextField
+                            size="small"
+                            sx={{ width: "10ch" }}
+                            label="Margin Top"
+                            value={paddingtop}
+                            onChange={(e) => setPaddingtop(e.target.value)}
+                        />
+                        <TextField
+                            size="small"
+                            sx={{ width: "10ch" }}
+                            label="Margin Bottom"
+                            value={paddingbottom}
+                            onChange={(e) => setPaddingbottom(e.target.value)}
+                        />
+                    </div>
                     <div style={{ marginTop: "30px" }} className={styles.flex}>
                         <Button
                             style={{ textTransform: "capitalize" }}
@@ -645,8 +730,14 @@ const Addjobs = () => {
                         <img className={styles.logo} src={logo} alt="logo" />
                     </div>
 
-                    <div className={styles.companylogo_con}>
-                        <h1>{companyName}</h1>
+                    <div className={styles.companylogo}>
+                        {companyLogo && (
+                            <img
+                                style={customStyle.imgstyle}
+                                src={companyLogo}
+                                alt="company logo"></img>
+                        )}
+                        {!companyLogo && <h1>{companyName}</h1>}
                     </div>
 
                     <div className={styles.canvas_title}>

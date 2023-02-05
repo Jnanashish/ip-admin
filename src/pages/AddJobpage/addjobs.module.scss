@@ -4,7 +4,6 @@ $logoFontSize: 120px;
 $titleFontSize: 90px;
 $detailFontSize: 37px;
 $gridBoxSize: 30px;
-// ---------------------------------------------
 // For instagram banner canvas -----------------
 
 .canvas {
@@ -17,12 +16,12 @@ $gridBoxSize: 30px;
 }
 
 .upper {
-    padding: 55px $canvasPadding;
-    height: 19 * $gridBoxSize;
+    padding: 55px 60px 20px;
+    height: 20 * $gridBoxSize;
 }
 .lower {
     padding: 0px;
-    height: 17 * $gridBoxSize;
+    height: 14 * $gridBoxSize;
 }
 
 // header for canvas -------------
@@ -30,24 +29,26 @@ $gridBoxSize: 30px;
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    height: $gridBoxSize;
-}
-.weblink {
-    font-size: 14px;
-    font-weight: 600;
-    span {
-        font-weight: 700;
-        color: #0069ff;
+    height: 1 * $gridBoxSize;
+
+    .weblink {
+        font-size: 14px;
+        font-weight: 600;
+        span {
+            font-weight: 700;
+            color: #0069ff;
+        }
+        font-size: 27px;
+        z-index: 99;
     }
-    font-size: 27px;
-    z-index: 99;
-}
-.logo {
-    height: 30px;
+    .logo {
+        height: 30px;
+    }
 }
 
 // comapny logo with text -------------
-.companylogo_con {
+.companylogo {
+    // background-color: lightsalmon;
     height: 7 * $gridBoxSize;
     width: 100%;
     display: flex;
@@ -66,21 +67,25 @@ $gridBoxSize: 30px;
 
 // title for ig banner -----------
 .canvas_title {
-    height: 6 * $gridBoxSize;
+    // background-color: forestgreen;
     display: flex;
     align-items: flex-end;
     color: #000;
+    margin-top: 10px;
+
     h1 {
-        font-weight: 700;
+        font-weight: 600;
         font-size: $titleFontSize;
         line-height: 109px;
     }
     z-index: 99;
-    height: calc(7 * $gridBoxSize + 20px);
+    height: calc(8 * $gridBoxSize);
 }
 
 // Canvas details ---------
 .canvas_details {
+    background-color: #f0f8ff;
+    height: 14 * $gridBoxSize;
     z-index: 0;
     display: flex;
     color: #fff;
@@ -89,7 +94,6 @@ $gridBoxSize: 30px;
     flex-direction: column;
     p {
         color: #000000;
-        // color: #0069ff;
         margin: 4.5px 0px;
         font-weight: 600;
         font-size: $detailFontSize;
@@ -100,12 +104,11 @@ $gridBoxSize: 30px;
         color: #000000;
     }
     padding: 0px 0px 0px 120px;
-    background-color: #f0f8ff;
-    height: 15 * $gridBoxSize;
 }
 
 .footer {
     background-color: #121212;
+    height: 2 * $gridBoxSize;
     position: relative;
     margin-bottom: 0px;
     padding: 0px 2 * $gridBoxSize;
@@ -119,11 +122,8 @@ $gridBoxSize: 30px;
     }
     span {
         font-weight: 600;
-        // color: #0069ff;
     }
-
     font-size: 24px;
-    height: 2 * $gridBoxSize;
     img {
         width: 22px;
         margin-right: 5px;
