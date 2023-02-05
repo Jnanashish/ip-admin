@@ -104,7 +104,8 @@ const UpdateData = () => {
     };
 
     const copylink = (item) => {
-        navigator.clipboard.writeText(item.link);
+        const applyLink = item.companyName + "Apply Link : " + item.link;
+        navigator.clipboard.writeText(applyLink);
         toast("Copied");
     };
 
@@ -160,7 +161,6 @@ const UpdateData = () => {
             "\nDegree : " +
             res[0].degree +
             "\n\nApply Link in Bio " +
-
             "\n\n" +
             line +
             "\n.\n.\n.\n" +

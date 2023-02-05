@@ -143,9 +143,9 @@ const Addjobs = () => {
 
     const context = useContext(UserContext);
 
-    // if (!context.user?.email) {
-    //     return <Navigate to="/" />;
-    // }
+    if (!context.user?.email) {
+        return <Navigate to="/" />;
+    }
 
     const formData = new FormData();
 
