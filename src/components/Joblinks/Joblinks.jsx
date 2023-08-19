@@ -215,6 +215,15 @@ const UpdateData = () => {
 
     //     return url;
     // };
+    // const sendIGCaption = () => {
+    //     var url =
+    //         "https://api.whatsapp.com/send?phone=" +
+    //         "" +
+    //         "&text=" +
+    //         encodeURIComponent(message);
+
+    //     return url;
+    // };
     const copyWhatsAppMessage = (item) => {
         const msg =
             item.title.replace(/[A-Za-z]/g, translate) +
@@ -233,9 +242,7 @@ const UpdateData = () => {
     return (
         <div className={styles.update_data_container}>
             <br />
-            <h2 className={styles.adminpanel_title}>
-                List of available Jobs - {data.length}
-            </h2>
+            <h2 className={styles.adminpanel_title}>List of available Jobs - {data.length}</h2>
             {isApiCalled && (
                 <div className={styles.loaderCon}>
                     <CircularProgress size={80} />
@@ -274,15 +281,10 @@ const UpdateData = () => {
                                     {isUserLogedIn && (
                                         <Button
                                             disableElevation
-                                            disabled={
-                                                email !==
-                                                "jhandique1999@gmail.com"
-                                            }
+                                            disabled={email !== "jhandique1999@gmail.com"}
                                             className={styles.btn}
                                             size="medium"
-                                            onClick={() =>
-                                                handleTelegramSubmit(item)
-                                            }
+                                            onClick={() => handleTelegramSubmit(item)}
                                             variant="contained"
                                             endIcon={<SendIcon />}>
                                             Telegram
@@ -292,9 +294,7 @@ const UpdateData = () => {
                                         disableElevation
                                         className={styles.btn}
                                         size="medium"
-                                        onClick={() =>
-                                            generateCaption(item._id)
-                                        }
+                                        onClick={() => generateCaption(item._id)}
                                         variant="contained">
                                         {isCopied ? "Copied" : " Caption (IG)"}
                                     </Button>
@@ -302,21 +302,15 @@ const UpdateData = () => {
                                         disableElevation
                                         className={styles.btn}
                                         size="medium"
-                                        onClick={() =>
-                                            generateLinkedinCaption(item._id)
-                                        }
+                                        onClick={() => generateLinkedinCaption(item._id)}
                                         variant="contained">
-                                        {isCopied
-                                            ? "Copied"
-                                            : "Caption (Linkedin)"}
+                                        {isCopied ? "Copied" : "Caption (Linkedin)"}
                                     </Button>
                                     <Button
                                         disableElevation
                                         size="medium"
                                         className={styles.btn}
-                                        onClick={() =>
-                                            copyWhatsAppMessage(item)
-                                        }
+                                        onClick={() => copyWhatsAppMessage(item)}
                                         variant="contained"
                                         endIcon={<WhatsAppIcon />}>
                                         Message
