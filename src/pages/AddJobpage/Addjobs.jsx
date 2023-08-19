@@ -10,6 +10,8 @@ import {
     FormGroup,
     Switch,
     FormControlLabel,
+    Divider,
+    InputAdornment
 } from "@mui/material";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -118,7 +120,7 @@ const Addjobs = () => {
     const [title, setTitle] = useState("");
 
     const [companytype, setCompanytype] = useState("N");
-    const [lastdate, setLastdate] = useState("2022-11-00-");
+    const [lastdate, setLastdate] = useState("2023-12-31");
     const [role, setRole] = useState("N");
 
     const [jobtype, setJobtype] = useState("N");
@@ -143,9 +145,9 @@ const Addjobs = () => {
 
     const context = useContext(UserContext);
 
-    if (!context.user?.email) {
-        return <Navigate to="/" />;
-    }
+    // if (!context.user?.email) {
+    //     return <Navigate to="/" />;
+    // }
 
     const formData = new FormData();
 
@@ -345,7 +347,7 @@ const Addjobs = () => {
             <div className={styles.maininput_con}>
                 <div className={styles.input_fields}>
                     <TextField
-                        size="small"
+                        size="Normal"
                         margin="normal"
                         fullWidth
                         label="Title of the job *"
@@ -354,7 +356,7 @@ const Addjobs = () => {
                     />
                     <div className={styles.flex_con}>
                         <TextField
-                            size="small"
+                            size="Normal"
                             sx={{ width: "20ch" }}
                             label="Company Name"
                             margin="normal"
@@ -365,7 +367,7 @@ const Addjobs = () => {
                             }}
                         />
                         <TextField
-                            size="small"
+                            size="Normal"
                             margin="normal"
                             fullWidth
                             label="Title for Instagram banner"
@@ -378,7 +380,7 @@ const Addjobs = () => {
                     </div>
                     <div className={styles.flex}>
                         <TextField
-                            size="small"
+                            size="Normal"
                             margin="normal"
                             fullWidth
                             label="Link for the job application *"
@@ -396,7 +398,7 @@ const Addjobs = () => {
                     </div>
                     <TextField
                         select
-                        size="small"
+                        size="Normal"
                         margin="normal"
                         fullWidth
                         label="Degree *"
@@ -411,7 +413,7 @@ const Addjobs = () => {
                     <div className={styles.flex_con}>
                         <TextField
                             select
-                            size="small"
+                            size="Normal"
                             fullWidth
                             margin="normal"
                             label="Batch *"
@@ -424,17 +426,20 @@ const Addjobs = () => {
                             ))}
                         </TextField>
                         <TextField
-                            size="small"
+                            size="Normal"
                             fullWidth
                             margin="normal"
                             label="Salary"
                             value={salary}
                             onChange={(e) => setSalary(e.target.value)}
+                            InputProps={{
+                                endAdornment: <InputAdornment position="start">₹</InputAdornment>,
+                            }}
                         />
                     </div>
                     <div className={styles.flex_con}>
                         <TextField
-                            size="small"
+                            size="Normal"
                             fullWidth
                             margin="normal"
                             label="Experience needed *"
@@ -448,7 +453,7 @@ const Addjobs = () => {
                             ))}
                         </TextField>
                         <TextField
-                            size="small"
+                            size="Normal"
                             fullWidth
                             margin="normal"
                             label="Location *"
@@ -466,7 +471,7 @@ const Addjobs = () => {
                         style={{ marginTop: "20px" }}
                         className={styles.flex_con}>
                         <TextField
-                            size="small"
+                            size="Normal"
                             fullWidth
                             label="Type of the company"
                             value={companytype}
@@ -478,15 +483,16 @@ const Addjobs = () => {
                                 </MenuItem>
                             ))}
                         </TextField>
-                        <TextField
-                            size="small"
+                        {/* <TextField
+                            size="Normal"
                             fullWidth
                             label="Last data to Apply"
                             value={lastdate}
                             onChange={(e) => setLastdate(e.target.value)}
-                        />
+                        /> */}
+
                         <TextField
-                            size="small"
+                            size="Normal"
                             fullWidth
                             label="Type of Job"
                             value={jobtype}
@@ -499,6 +505,16 @@ const Addjobs = () => {
                             ))}
                         </TextField>
                     </div>
+                    <div 
+                        style={{
+                                marginTop: "30px",
+                                alignItems: "start",
+                                flexDirection: "column",
+                            }}
+                            className={styles.flex} >
+                        <label className={styles.lastDateLabel}>Last date to apply</label>
+                        <input className={styles.datePicker} type="date" value={lastdate} min="2018-01-01" max="2026-12-31" onChange={(e) => setLastdate(e.target.value)}/>
+                    </div>
                     <div
                         style={{
                             marginTop: "30px",
@@ -506,7 +522,7 @@ const Addjobs = () => {
                         }}
                         className={styles.flex}>
                         <div className={styles.flex}>
-                            <h5>Company Logo for Banner : </h5>
+                            <h4>* Company Logo for Banner : </h4>
                             <label htmlFor="contained-button-file">
                                 <input
                                     accept="image/*"
@@ -526,6 +542,7 @@ const Addjobs = () => {
                             <DeleteIcon fontSize="inherit" />
                         </IconButton>
                     </div>
+                    <br/>
                     <div className={styles.flex} style={{ width: "50%" }}>
                         <TextField
                             size="small"
@@ -563,15 +580,16 @@ const Addjobs = () => {
                             variant="contained"
                             color="success"
                             endIcon={<CloudDownloadIcon />}>
-                            Download Banner
+                            Download IG Banner
                         </Button>
                     </div>
                 </div>
             </div>
 
-            <br />
-            <hr />
-            <br />
+            <br /><br />
+            <Divider />
+            <br /><br />
+
             <div>
                 <FormGroup>
                     <FormControlLabel
@@ -584,7 +602,7 @@ const Addjobs = () => {
                 {jdpage && (
                     <div className={styles.editor_fields}>
                         <TextField
-                            size="small"
+                            size="Normal"
                             fullWidth
                             margin="normal"
                             label="Role of the Job"
@@ -661,9 +679,9 @@ const Addjobs = () => {
                 )}
                 <br />
             </div>
-            <hr />
             <br />
-            <br />
+            <Divider />
+            <br /><br />
             <div>
                 <div style={{ display: "flex" }}>
                     <p style={{ paddingRight: "10px" }}>Upload JD banner : </p>
@@ -673,10 +691,9 @@ const Addjobs = () => {
                     Banner Link : {telegrambanner}
                 </p>
             </div>
-            <br />
-            <br />
-            <hr />
-            <br />
+            <br /><br />
+            <Divider />
+            <br /><br />
             <div className={styles.submitbtn_zone}>
                 <div className={styles.telegrambtn_zone}>
                     <Button
@@ -688,9 +705,9 @@ const Addjobs = () => {
                     </Button>
                 </div>
             </div>
-            <br />
-            <hr />
-            <br />
+            <br /><br />
+            <Divider />
+            <br /><br />
 
             <div className={styles.submitbtn_zone}>
                 <br />
