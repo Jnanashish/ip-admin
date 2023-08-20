@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import html2canvas from "html2canvas";
 import styles from "./addjobs.module.scss";
 
@@ -11,7 +11,7 @@ import {
     Switch,
     FormControlLabel,
     Divider,
-    InputAdornment
+    InputAdornment,
 } from "@mui/material";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -54,9 +54,9 @@ const batchOptions = [
     "N",
     "2021 / 2020 / 2019",
     "2021 / 2020 ",
-    "2022 / 2021 /2020 / 2019 / 2018",
-    "2022 / 2021 /2020 / 2019",
-    "2022 / 2021 /2020",
+    "2022 / 2021 / 2020 / 2019 / 2018",
+    "2022 / 2021 / 2020 / 2019",
+    "2022 / 2021 / 2020",
     "2022 / 2021",
     "2022",
     "2023 / 2022 / 2021",
@@ -111,16 +111,16 @@ const Addjobs = () => {
     const [igbannertitle, setIgbannertitle] = useState("is hiring ");
     const [link, setLink] = useState("");
     const [degree, setDegree] = useState("B.E / B.Tech / M.Tech");
-    const [batch, setBatch] = useState("N");
-    const [experience, setExperience] = useState("N");
-    const [location, setLocation] = useState("N");
+    const [batch, setBatch] = useState("2022 / 2021 / 2020");
+    const [experience, setExperience] = useState("0 - 2 years");
+    const [location, setLocation] = useState("Bengaluru");
     const [salary, setSalary] = useState("N");
     const [jdpage, setJdpage] = useState(false);
     const [companyName, setCompanyName] = useState("");
     const [title, setTitle] = useState("");
 
     const [companytype, setCompanytype] = useState("N");
-    const [lastdate, setLastdate] = useState("2023-12-31");
+    const [lastdate, setLastdate] = useState(null);
     const [role, setRole] = useState("N");
 
     const [jobtype, setJobtype] = useState("N");
@@ -145,9 +145,9 @@ const Addjobs = () => {
 
     const context = useContext(UserContext);
 
-    // if (!context.user?.email) {
-    //     return <Navigate to="/" />;
-    // }
+    if (!context.user?.email) {
+        return <Navigate to="/" />;
+    }
 
     const formData = new FormData();
 
@@ -326,6 +326,18 @@ const Addjobs = () => {
         }
     };
 
+    useEffect(() => {
+        const currentDate = new Date();
+        currentDate.setDate(currentDate.getDate() + 30);
+
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+        const day = String(currentDate.getDate()).padStart(2, "0");
+        const formattedDate = `${year}-${month}-${day}`;
+
+        setLastdate(formattedDate)
+    }, []);
+
     return (
         <div className={styles.container}>
             <div
@@ -334,7 +346,8 @@ const Addjobs = () => {
                     display: "flex",
                     alignItems: "center",
                     cursor: "pointer",
-                }}>
+                }}
+            >
                 <img
                     style={{ width: "30px", marginRight: "10px" }}
                     src="https://img.icons8.com/ios-filled/100/null/circled-left-2.png"
@@ -375,6 +388,7 @@ const Addjobs = () => {
                             onChange={(e) => {
                                 setIgbannertitle(e.target.value);
                                 setTitle(companyName + " " + e.target.value);
+                                setRole(e.target.value);
                             }}
                         />
                     </div>
@@ -392,7 +406,8 @@ const Addjobs = () => {
                             color="secondary"
                             aria-label="delete"
                             size="large"
-                            onClick={shortenLink}>
+                            onClick={shortenLink}
+                        >
                             <CloudDownloadIcon fontSize="inherit" />
                         </IconButton>
                     </div>
@@ -403,7 +418,8 @@ const Addjobs = () => {
                         fullWidth
                         label="Degree *"
                         value={degree}
-                        onChange={(e) => setDegree(e.target.value)}>
+                        onChange={(e) => setDegree(e.target.value)}
+                    >
                         {degreeOptions.map((option) => (
                             <MenuItem key={option} value={option}>
                                 {option}
@@ -418,7 +434,8 @@ const Addjobs = () => {
                             margin="normal"
                             label="Batch *"
                             value={batch}
-                            onChange={(e) => setBatch(e.target.value)}>
+                            onChange={(e) => setBatch(e.target.value)}
+                        >
                             {batchOptions.map((option) => (
                                 <MenuItem key={option} value={option}>
                                     {option}
@@ -445,7 +462,8 @@ const Addjobs = () => {
                             label="Experience needed *"
                             value={experience}
                             select
-                            onChange={(e) => setExperience(e.target.value)}>
+                            onChange={(e) => setExperience(e.target.value)}
+                        >
                             {expOptions.map((option) => (
                                 <MenuItem key={option} value={option}>
                                     {option}
@@ -459,7 +477,8 @@ const Addjobs = () => {
                             label="Location *"
                             value={location}
                             select
-                            onChange={(e) => setLocation(e.target.value)}>
+                            onChange={(e) => setLocation(e.target.value)}
+                        >
                             {locOptions.map((option) => (
                                 <MenuItem key={option} value={option}>
                                     {option}
@@ -467,16 +486,15 @@ const Addjobs = () => {
                             ))}
                         </TextField>
                     </div>
-                    <div
-                        style={{ marginTop: "20px" }}
-                        className={styles.flex_con}>
+                    <div style={{ marginTop: "20px" }} className={styles.flex_con}>
                         <TextField
                             size="Normal"
                             fullWidth
                             label="Type of the company"
                             value={companytype}
                             select
-                            onChange={(e) => setCompanytype(e.target.value)}>
+                            onChange={(e) => setCompanytype(e.target.value)}
+                        >
                             {companyTypeOptions.map((option) => (
                                 <MenuItem key={option} value={option}>
                                     {option}
@@ -497,7 +515,8 @@ const Addjobs = () => {
                             label="Type of Job"
                             value={jobtype}
                             select
-                            onChange={(e) => setJobtype(e.target.value)}>
+                            onChange={(e) => setJobtype(e.target.value)}
+                        >
                             {jobTypeOptions.map((option) => (
                                 <MenuItem key={option} value={option}>
                                     {option}
@@ -505,22 +524,31 @@ const Addjobs = () => {
                             ))}
                         </TextField>
                     </div>
-                    <div 
+                    <div
                         style={{
-                                marginTop: "30px",
-                                alignItems: "start",
-                                flexDirection: "column",
-                            }}
-                            className={styles.flex} >
+                            marginTop: "30px",
+                            alignItems: "start",
+                            flexDirection: "column",
+                        }}
+                        className={styles.flex}
+                    >
                         <label className={styles.lastDateLabel}>Last date to apply</label>
-                        <input className={styles.datePicker} type="date" value={lastdate} min="2018-01-01" max="2026-12-31" onChange={(e) => setLastdate(e.target.value)}/>
+                        <input
+                            className={styles.datePicker}
+                            type="date"
+                            value={lastdate}
+                            min="2018-01-01"
+                            max="2026-12-31"
+                            onChange={(e) => setLastdate(e.target.value)}
+                        />
                     </div>
                     <div
                         style={{
                             marginTop: "30px",
                             justifyContent: "flex-start",
                         }}
-                        className={styles.flex}>
+                        className={styles.flex}
+                    >
                         <div className={styles.flex}>
                             <h4>* Company Logo for Banner : </h4>
                             <label htmlFor="contained-button-file">
@@ -538,11 +566,12 @@ const Addjobs = () => {
                             color="warning"
                             aria-label="delete"
                             size="large"
-                            onClick={() => setCompanyLogo(null)}>
+                            onClick={() => setCompanyLogo(null)}
+                        >
                             <DeleteIcon fontSize="inherit" />
                         </IconButton>
                     </div>
-                    <br/>
+                    <br />
                     <div className={styles.flex} style={{ width: "50%" }}>
                         <TextField
                             size="small"
@@ -579,16 +608,19 @@ const Addjobs = () => {
                             onClick={handleDownloadImage}
                             variant="contained"
                             color="success"
-                            endIcon={<CloudDownloadIcon />}>
+                            endIcon={<CloudDownloadIcon />}
+                        >
                             Download IG Banner
                         </Button>
                     </div>
                 </div>
             </div>
 
-            <br /><br />
+            <br />
+            <br />
             <Divider />
-            <br /><br />
+            <br />
+            <br />
 
             <div>
                 <FormGroup>
@@ -610,9 +642,7 @@ const Addjobs = () => {
                             onChange={(e) => setRole(e.target.value)}
                         />
                         <div className={styles.ck_grid}>
-                            <p className={styles.editor_label}>
-                                Job Description :-
-                            </p>
+                            <p className={styles.editor_label}>Job Description :-</p>
                             <CKEditor
                                 className={styles.ck_input}
                                 editor={ClassicEditor}
@@ -623,9 +653,7 @@ const Addjobs = () => {
                                 }}
                             />
 
-                            <p className={styles.editor_label}>
-                                Eligibility Criteria :-
-                            </p>
+                            <p className={styles.editor_label}>Eligibility Criteria :-</p>
                             <CKEditor
                                 className={styles.ck_input}
                                 editor={ClassicEditor}
@@ -636,9 +664,7 @@ const Addjobs = () => {
                                 }}
                             />
 
-                            <p className={styles.editor_label}>
-                                Responsibility of the job :-
-                            </p>
+                            <p className={styles.editor_label}>Responsibility of the job :-</p>
                             <CKEditor
                                 className={styles.ck_input}
                                 editor={ClassicEditor}
@@ -649,9 +675,7 @@ const Addjobs = () => {
                                 }}
                             />
 
-                            <p className={styles.editor_label}>
-                                Skills needed :-
-                            </p>
+                            <p className={styles.editor_label}>Skills needed :-</p>
                             <CKEditor
                                 className={styles.ck_input}
                                 editor={ClassicEditor}
@@ -662,9 +686,7 @@ const Addjobs = () => {
                                 }}
                             />
 
-                            <p className={styles.editor_label}>
-                                About the company :-
-                            </p>
+                            <p className={styles.editor_label}>About the company :-</p>
                             <CKEditor
                                 className={styles.ck_input}
                                 editor={ClassicEditor}
@@ -681,45 +703,44 @@ const Addjobs = () => {
             </div>
             <br />
             <Divider />
-            <br /><br />
+            <br />
+            <br />
             <div>
                 <div style={{ display: "flex" }}>
                     <p style={{ paddingRight: "10px" }}>Upload JD banner : </p>
                     <input type="file" onChange={handleTelegramImgInput} />
                 </div>
-                <p style={{ fontSize: "10px" }}>
-                    Banner Link : {telegrambanner}
-                </p>
+                <p style={{ fontSize: "10px" }}>Banner Link : {telegrambanner}</p>
             </div>
-            <br /><br />
+            <br />
+            <br />
             <Divider />
-            <br /><br />
+            <br />
+            <br />
             <div className={styles.submitbtn_zone}>
                 <div className={styles.telegrambtn_zone}>
                     <Button
                         style={{ textTransform: "capitalize" }}
                         onClick={handleTelegramSubmit}
                         variant="contained"
-                        color="primary">
+                        color="primary"
+                    >
                         Send to telegram
                     </Button>
                 </div>
             </div>
-            <br /><br />
+            <br />
+            <br />
             <Divider />
-            <br /><br />
+            <br />
+            <br />
 
             <div className={styles.submitbtn_zone}>
                 <br />
                 <div>
                     <div style={{ display: "flex" }}>
-                        <p style={{ paddingRight: "10px" }}>
-                            Upload Company logo (Size less then 5kb) :
-                        </p>
-                        <input
-                            type="file"
-                            onChange={(e) => handleLogoInput(e)}
-                        />
+                        <p style={{ paddingRight: "10px" }}>Upload Company logo (Size less then 5kb) :</p>
+                        <input type="file" onChange={(e) => handleLogoInput(e)} />
                     </div>
                     <br />
                     <br />
@@ -730,7 +751,8 @@ const Addjobs = () => {
                         disabled={link.length === 0}
                         variant="contained"
                         color="primary"
-                        size="large">
+                        size="large"
+                    >
                         Submit Job details
                     </Button>
                 </div>
@@ -744,16 +766,14 @@ const Addjobs = () => {
                         <p className={styles.weblink}>
                             Visit <span>careersat.tech</span>
                         </p>
-                        <img className={styles.logo} src={logo} alt="logo" />
+                        <p className={styles.logoText}>
+                            careers@<span>tech</span>
+                        </p>
+                        {/* <img className={styles.logo} src={logo} alt="logo" /> */}
                     </div>
 
                     <div className={styles.companylogo}>
-                        {companyLogo && (
-                            <img
-                                style={customStyle.imgstyle}
-                                src={companyLogo}
-                                alt="company logo"></img>
-                        )}
+                        {companyLogo && <img style={customStyle.imgstyle} src={companyLogo} alt="company logo"></img>}
                         {!companyLogo && <h1>{companyName}</h1>}
                     </div>
 
@@ -765,45 +785,37 @@ const Addjobs = () => {
                     <div className={styles.canvas_details}>
                         {degree !== "N" && (
                             <p>
-                                <span className={styles.tag}>Degree</span> :{" "}
-                                <span>{degree}</span>
+                                <span className={styles.tag}>Degree</span> : <span>{degree}</span>
                             </p>
                         )}
                         {batch !== "N" && (
                             <p>
-                                <span className={styles.tag}>Batch</span> :{" "}
-                                <span>{batch}</span>
+                                <span className={styles.tag}>Batch</span> : <span>{batch}</span>
                             </p>
                         )}
                         {experience !== "N" && (
                             <p>
-                                <span className={styles.tag}>Experience</span> :{" "}
-                                <span>{experience}</span>
+                                <span className={styles.tag}>Experience</span> : <span>{experience}</span>
                             </p>
                         )}
                         {experience === "N" && salary !== "N" && (
                             <p>
-                                <span className={styles.tag}>Salary</span> :{" "}
-                                <span>₹{salary}</span>
+                                <span className={styles.tag}>Salary</span> : <span>₹{salary}</span>
                             </p>
                         )}
                         {location !== "N" && (
                             <p>
-                                <span className={styles.tag}>Location</span> :{" "}
-                                <span>{location}</span>
+                                <span className={styles.tag}>Location</span> : <span>{location}</span>
                             </p>
                         )}
                         {location === "N" && salary !== "N" && (
                             <p>
-                                <span className={styles.tag}>Salary</span> :{" "}
-                                <span>₹{salary}</span>
+                                <span className={styles.tag}>Salary</span> : <span>₹{salary}</span>
                             </p>
                         )}
                         <p>
                             <span className={styles.tag}>Apply Link</span> :{" "}
-                            <span style={{ color: "#0069ff" }}>
-                                Link in Bio (visit : careersat.tech)
-                            </span>
+                            <span style={{ color: "#0069ff" }}>Link in Bio (visit : careersat.tech)</span>
                         </p>
                     </div>
 
@@ -812,14 +824,24 @@ const Addjobs = () => {
                         <img src={telegram} alt="telegram-logo" />
                         <img src={linkedin} alt="linkedin-logo" />
                         <p>
-                            Follow <span>@carrersattech</span> to get regular
-                            Job updates.
+                            Follow <span>@carrersattech</span> to get regular Job updates.
                         </p>
                     </div>
                 </div>
             </div>
             {/* ---------------------------------  END ---------------------------------- */}
             <br />
+            <div style={{ marginTop: "30px" }} className={styles.flex}>
+                <Button
+                    style={{ textTransform: "capitalize" }}
+                    onClick={handleDownloadImage}
+                    variant="contained"
+                    color="success"
+                    endIcon={<CloudDownloadIcon />}
+                >
+                    Download IG Banner
+                </Button>
+            </div>
             <br />
             <br />
         </div>

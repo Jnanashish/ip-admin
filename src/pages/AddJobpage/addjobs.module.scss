@@ -1,8 +1,9 @@
 $canvasPadding: 60px; // main padding
 $canvasBgColor: #ffffff; // canvas background color
 $logoFontSize: 120px;
-$titleFontSize: 90px;
-$detailFontSize: 37px;
+$titleFontSize: 96px;
+$detailFontSize: 38px;
+// $gridBoxSize: 30px;
 $gridBoxSize: 30px;
 // For instagram banner canvas -----------------
 
@@ -11,17 +12,20 @@ $gridBoxSize: 30px;
     font-family: "Inter", sans-serif;
     max-width: 100%;
     width: 1080px;
-    height: 1080px;
+    // height: 1080px;
+    height: 1350px;
     border: 1px solid #000;
 }
 
 .upper {
     padding: 55px 60px 20px;
-    height: 20 * $gridBoxSize;
+    // height: 20 * $gridBoxSize;
+    height: 24 * $gridBoxSize;
 }
 .lower {
     padding: 0px;
-    height: 14 * $gridBoxSize;
+    // height: 14 * $gridBoxSize;
+    height: 19 * $gridBoxSize;
 }
 
 // header for canvas -------------
@@ -32,7 +36,7 @@ $gridBoxSize: 30px;
     height: 1 * $gridBoxSize;
 
     .weblink {
-        font-size: 14px;
+        // font-size: 14px;
         font-weight: 600;
         span {
             font-weight: 700;
@@ -44,12 +48,22 @@ $gridBoxSize: 30px;
     .logo {
         height: 30px;
     }
+    .logoText{
+        font-size: 27px;
+        font-weight: 600;
+        span{
+            background-color: #0069ff;
+            color: #FFFFFF;
+            padding: 4px 6px;
+            margin-left: 4px;
+        }
+    }
 }
 
 // comapny logo with text -------------
 .companylogo {
     // background-color: lightsalmon;
-    height: 7 * $gridBoxSize;
+    height: 9 * $gridBoxSize;
     width: 100%;
     display: flex;
     align-items: center;
@@ -62,7 +76,7 @@ $gridBoxSize: 30px;
     }
     grid-row-start: 6;
     grid-row-end: 9;
-    padding-top: 40px;
+    padding-top: 60px;
 }
 
 // title for ig banner -----------
@@ -76,7 +90,7 @@ $gridBoxSize: 30px;
     h1 {
         font-weight: 600;
         font-size: $titleFontSize;
-        line-height: 109px;
+        line-height: 120px;
     }
     z-index: 99;
     height: calc(8 * $gridBoxSize);
@@ -85,7 +99,7 @@ $gridBoxSize: 30px;
 // Canvas details ---------
 .canvas_details {
     background-color: #f0f8ff;
-    height: 14 * $gridBoxSize;
+    height: 19 * $gridBoxSize;
     z-index: 0;
     display: flex;
     color: #fff;
@@ -95,12 +109,12 @@ $gridBoxSize: 30px;
     p {
         color: #000000;
         margin: 4.5px 0px;
-        font-weight: 600;
+        font-weight: 500;
         font-size: $detailFontSize;
-        line-height: 60px;
+        line-height: 70px;
     }
     .tag {
-        font-weight: 700;
+        font-weight: 600;
         color: #000000;
     }
     padding: 0px 0px 0px 120px;
@@ -278,10 +292,13 @@ li {
     margin-bottom: 4px;
 }
 .datePicker{
-    padding: 16px 48px;
+    padding: 16px 12px;
     background-color: #e1ebff !important;
     border-radius: 6px;
     border: 1px solid #b3b3b3;
+    text-align: start;
+    width: 50%;
+    font-size: 1rem;
 }
 input:focus{
     outline: none;

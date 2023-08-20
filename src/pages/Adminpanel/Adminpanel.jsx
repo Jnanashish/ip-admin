@@ -2,9 +2,9 @@ import React, { useState, useContext } from "react";
 
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 
-import Joblinks from "../../components/Joblinks/Joblinks";
-import Adpoptype from "../../components/Dapoptype/Adpoptype";
-import AddBanner from "../../components/AD/Addbanner";
+import Joblinks from "../../widgets/Joblinks/Joblinks";
+import Adpoptype from "../../widgets/Dapoptype/Adpoptype";
+import AddBanner from "../../widgets/AD/Addbanner";
 
 // context
 import { UserContext } from "../../Context/userContext";
@@ -12,8 +12,8 @@ import { Navigate, useNavigate } from "react-router-dom";
 
 // import styles
 import styles from "./adminpanel.module.scss";
-import AddLinkImg from "../../components/AD/Addlinkimg";
-import AddLink from "../../components/AD/Addlink";
+import AddLinkImg from "../../widgets/AD/Addlinkimg";
+import AddLink from "../../widgets/AD/Addlink";
 import { Button } from "@mui/material";
 
 const AdminPanel = () => {
