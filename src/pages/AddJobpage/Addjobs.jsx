@@ -145,6 +145,10 @@ const Addjobs = () => {
 
     const context = useContext(UserContext);
 
+    useEffect(() => {
+        generateLastDatetoApply()
+    }, []);
+
     if (!context.user?.email) {
         return <Navigate to="/" />;
     }
@@ -326,7 +330,7 @@ const Addjobs = () => {
         }
     };
 
-    useEffect(() => {
+    const generateLastDatetoApply = () =>{
         const currentDate = new Date();
         currentDate.setDate(currentDate.getDate() + 30);
 
@@ -336,7 +340,8 @@ const Addjobs = () => {
         const formattedDate = `${year}-${month}-${day}`;
 
         setLastdate(formattedDate)
-    }, []);
+    }
+
 
     return (
         <div className={styles.container}>
