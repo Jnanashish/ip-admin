@@ -20,6 +20,7 @@ import MenuItem from "@mui/material/MenuItem";
 // import react toast
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Compressor from "compressorjs";
 
 // import images
 import logo from "../../Image/logo.svg";
@@ -48,6 +49,8 @@ const degreeOptions = [
     "Any Engineering graduate",
     "Any Bachelor's degree",
     "Diploma students",
+    "Bachelor's degree in CS and IT",
+    "Computer science degree",
 ];
 
 const batchOptions = [
@@ -78,16 +81,21 @@ const expOptions = [
     "0 - 3 years",
     "0 - 4 years",
     "1 - 2 years",
+    "1 - 3 years",
     "0+ years",
     "College students",
     "1 years",
     "1+ years",
+    "2+ years",
+    "3+ years",
     "Final year student",
     "Any batch",
 ];
 
 const locOptions = [
     "N",
+    "Remote",
+    "Work from home (remote)",
     "Bengaluru",
     "Gurgaon",
     "Chennai",
@@ -99,6 +107,11 @@ const locOptions = [
     "Kolkata",
     "PAN India",
     "Delhi",
+    "Hybrid",
+    "Bengaluru (Hybrid)",
+    "Gurgaon (Hybrid)",
+    "Hyderabad (Hybrid)",
+    "Noida (Hybrid)",
 ];
 
 const companyTypeOptions = ["N", "product", "service"];
@@ -108,7 +121,7 @@ const Addjobs = () => {
     ClassicEditor.defaultConfig = config;
     const BOT_API_KEY = process.env.REACT_APP_BOT_API_KEY;
 
-    const [igbannertitle, setIgbannertitle] = useState("is hiring ");
+    const [igbannertitle, setIgbannertitle] = useState("");
     const [link, setLink] = useState("");
     const [degree, setDegree] = useState("B.E / B.Tech / M.Tech");
     const [batch, setBatch] = useState("2022 / 2021 / 2020");
@@ -119,11 +132,11 @@ const Addjobs = () => {
     const [companyName, setCompanyName] = useState("");
     const [title, setTitle] = useState("");
 
-    const [companytype, setCompanytype] = useState("N");
+    const [companytype, setCompanytype] = useState("product");
     const [lastdate, setLastdate] = useState(null);
     const [role, setRole] = useState("N");
 
-    const [jobtype, setJobtype] = useState("N");
+    const [jobtype, setJobtype] = useState("Full time");
     const [jobdesc, setJobdesc] = useState("N");
     const [eligibility, setEligibility] = useState("N");
     const [responsibility, setResponsibility] = useState("N");
@@ -137,6 +150,7 @@ const Addjobs = () => {
     const [imgmleft, setiImgmleft] = useState("0px");
     const [paddingtop, setPaddingtop] = useState("0px");
     const [paddingbottom, setPaddingbottom] = useState("0px");
+    const [companyLogoSize, setCompanyLogoSize] = useState(0);
 
     const navigate = useNavigate();
     const handleBack = () => {
@@ -146,8 +160,14 @@ const Addjobs = () => {
     const context = useContext(UserContext);
 
     useEffect(() => {
-        generateLastDatetoApply()
+        generateLastDatetoApply();
     }, []);
+
+    useEffect(() => {
+        if (link) {
+            shortenLink();
+        }
+    }, [link]);
 
     if (!context.user?.email) {
         return <Navigate to="/" />;
@@ -200,14 +220,36 @@ const Addjobs = () => {
         setTelegrambanner(data.url);
     };
 
+    const resizeImage = (file) => {
+        new Compressor(file, {
+            quality: 0.6,
+            height: 250,
+            width: 250,
+            success(result) {
+                setCompanyLogoSize(result.size / 1024);
+                if (result.size > 5120) {
+                    toast.error("Image size should be less than 5kb (After compression), UPLOAD again");
+                } else {
+                    formData.append("photo", result);
+                }
+            },
+            error(err) {
+                toast.error("Error in compressing");
+            },
+        });
+    };
+
     // handle company logo input for website
     const handleLogoInput = (e) => {
         const file = e.target.files;
-        if (file[0].size > 5120) {
-            toast.error("Image size should be less than 5kb, UPLOAD again");
+        setCompanyLogoSize(file[0].size / 1024);
+
+        if (file[0].size > 150000) {
+            toast.error("Image size should be less than 150kb (Before compression), UPLOAD again");
             return false;
         } else {
-            formData.append("photo", file[0]);
+            resizeImage(file[0]);
+            // formData.append("photo", file[0]);
         }
     };
 
@@ -330,7 +372,7 @@ const Addjobs = () => {
         }
     };
 
-    const generateLastDatetoApply = () =>{
+    const generateLastDatetoApply = () => {
         const currentDate = new Date();
         currentDate.setDate(currentDate.getDate() + 30);
 
@@ -339,8 +381,8 @@ const Addjobs = () => {
         const day = String(currentDate.getDate()).padStart(2, "0");
         const formattedDate = `${year}-${month}-${day}`;
 
-        setLastdate(formattedDate)
-    }
+        setLastdate(formattedDate);
+    };
 
 
     return (
@@ -381,7 +423,7 @@ const Addjobs = () => {
                             value={companyName}
                             onChange={(e) => {
                                 setCompanyName(e.target.value);
-                                setTitle(e.target.value);
+                                setTitle(e.target.value + " " + igbannertitle);
                             }}
                         />
                         <TextField
@@ -547,6 +589,22 @@ const Addjobs = () => {
                             onChange={(e) => setLastdate(e.target.value)}
                         />
                     </div>
+                    <br />
+                    <br />
+                    <div style={{ display: "flex" }}>
+                        <p style={{ paddingRight: "10px" }}>
+                            {" "}
+                            <b>
+                                <b style={{ color: "red" }}>**</b> Upload Company logo
+                            </b>{" "}
+                            (150kb) :
+                        </p>
+                        <input type="file" onChange={(e) => handleLogoInput(e)} />
+                        <p>File Size : {companyLogoSize}</p>
+                    </div>
+                    <br />
+                    <br />
+                    <Divider />
                     <div
                         style={{
                             marginTop: "30px",
@@ -617,6 +675,14 @@ const Addjobs = () => {
                         >
                             Download IG Banner
                         </Button>
+                    </div>
+                    <div>
+                        <br/><br/>
+                        <div style={{ display: "flex" }}>
+                            <p style={{ paddingRight: "10px" }}>Upload JD banner : </p>
+                            <input type="file" onChange={handleTelegramImgInput} />
+                        </div>
+                        <p style={{ fontSize: "10px" }}>Banner Link : {telegrambanner}</p>
                     </div>
                 </div>
             </div>
@@ -704,18 +770,6 @@ const Addjobs = () => {
                         </div>
                     </div>
                 )}
-                <br />
-            </div>
-            <br />
-            <Divider />
-            <br />
-            <br />
-            <div>
-                <div style={{ display: "flex" }}>
-                    <p style={{ paddingRight: "10px" }}>Upload JD banner : </p>
-                    <input type="file" onChange={handleTelegramImgInput} />
-                </div>
-                <p style={{ fontSize: "10px" }}>Banner Link : {telegrambanner}</p>
             </div>
             <br />
             <br />
@@ -737,18 +791,11 @@ const Addjobs = () => {
             <br />
             <br />
             <Divider />
-            <br />
-            <br />
+            <br /><br />
 
             <div className={styles.submitbtn_zone}>
                 <br />
                 <div>
-                    <div style={{ display: "flex" }}>
-                        <p style={{ paddingRight: "10px" }}>Upload Company logo (Size less then 5kb) :</p>
-                        <input type="file" onChange={(e) => handleLogoInput(e)} />
-                    </div>
-                    <br />
-                    <br />
                     <Button
                         style={{ textTransform: "capitalize" }}
                         className={styles.submitbtn}
@@ -762,7 +809,7 @@ const Addjobs = () => {
                     </Button>
                 </div>
             </div>
-            <br />
+            <br /><br />
 
             {/* ------------------------------  CANVAS -------------------------------------- */}
             <div id="htmlToCanvas" className={styles.canvas}>
@@ -783,7 +830,7 @@ const Addjobs = () => {
                     </div>
 
                     <div className={styles.canvas_title}>
-                        <h1>{igbannertitle}</h1>
+                        <h1>{"is hiring " + igbannertitle}</h1>
                     </div>
                 </div>
                 <div className={styles.lower}>
