@@ -151,6 +151,7 @@ const Addjobs = () => {
     const [paddingtop, setPaddingtop] = useState("0px");
     const [paddingbottom, setPaddingbottom] = useState("0px");
     const [companyLogoSize, setCompanyLogoSize] = useState(0);
+    const [resizedImage, setResizedImage] = useState(null)
 
     const navigate = useNavigate();
     const handleBack = () => {
@@ -162,18 +163,18 @@ const Addjobs = () => {
     useEffect(() => {
         generateLastDatetoApply();
     }, []);
-
-    useEffect(() => {
-        if (link) {
-            shortenLink();
-        }
-    }, [link]);
-
-    if (!context.user?.email) {
-        return <Navigate to="/" />;
-    }
-
     const formData = new FormData();
+
+    // useEffect(() => {
+    //     if (link) {
+    //         shortenLink();
+    //     }
+    // }, [link]);
+
+    // if (!context.user?.email) {
+    //     return <Navigate to="/" />;
+    // }
+
 
     // make the title bold for telegram
     const translate = (char) => {
@@ -222,15 +223,15 @@ const Addjobs = () => {
 
     const resizeImage = (file) => {
         new Compressor(file, {
-            quality: 0.6,
-            height: 250,
-            width: 250,
+            quality: 0.5,
+            height: 200,
+            width: 200,
             success(result) {
                 setCompanyLogoSize(result.size / 1024);
                 if (result.size > 5120) {
                     toast.error("Image size should be less than 5kb (After compression), UPLOAD again");
                 } else {
-                    formData.append("photo", result);
+                    setResizedImage(result)
                 }
             },
             error(err) {
@@ -240,16 +241,24 @@ const Addjobs = () => {
     };
 
     // handle company logo input for website
-    const handleLogoInput = (e) => {
+    const handleLogoInput = (e, compress) => {
         const file = e.target.files;
         setCompanyLogoSize(file[0].size / 1024);
 
-        if (file[0].size > 150000) {
-            toast.error("Image size should be less than 150kb (Before compression), UPLOAD again");
-            return false;
+        if(compress){
+            if (file[0].size > 150000) {
+                toast.error("Image size should be less than 150kb (Before compression), UPLOAD again");
+                return false;
+            } else {
+                resizeImage(file[0]);
+            }
         } else {
-            resizeImage(file[0]);
-            // formData.append("photo", file[0]);
+            if (file[0].size > 5124) {
+                toast.error("Image size should be less than 5kb, UPLOAD again");
+                return false;
+            } else {
+                setResizedImage(file[0]);
+            }
         }
     };
 
@@ -358,6 +367,7 @@ const Addjobs = () => {
         formData.append("companytype", companytype);
         formData.append("jdbanner", telegrambanner);
         formData.append("companyName", companyName);
+        formData.append("photo", resizedImage);
 
         const res = await fetch(`${API}/jd/add`, {
             method: "POST",
@@ -599,7 +609,19 @@ const Addjobs = () => {
                             </b>{" "}
                             (150kb) :
                         </p>
-                        <input type="file" onChange={(e) => handleLogoInput(e)} />
+                        <input type="file" onChange={(e) => handleLogoInput(e, true)} />
+                        <p>File Size : {companyLogoSize}</p>
+                    </div>
+                    <br/><br/>
+                    <div style={{ display: "flex" }}>
+                        <p style={{ paddingRight: "10px" }}>
+                            {" "}
+                            <b>
+                                <b style={{ color: "red" }}>*</b> Upload Company logo
+                            </b>{" "}
+                            (5kb) :
+                        </p>
+                        <input type="file" onChange={(e) => handleLogoInput(e, false)} />
                         <p>File Size : {companyLogoSize}</p>
                     </div>
                     <br />
