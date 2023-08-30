@@ -165,15 +165,9 @@ const Addjobs = () => {
   }, []);
   const formData = new FormData();
 
-  // useEffect(() => {
-  //     if (link) {
-  //         shortenLink();
-  //     }
-  // }, [link]);
-
-  // if (!context.user?.email) {
-  //     return <Navigate to="/" />;
-  // }
+  if (!context.user?.email) {
+    return <Navigate to="/" />;
+  }
 
   // make the title bold for telegram
   const translate = (char) => {
