@@ -1,0 +1,147 @@
+$canvasPadding: 60px; // main padding
+$canvasBgColor: #ffffff; // canvas background color
+$logoFontSize: 120px;
+$titleFontSize: 96px;
+$detailFontSize: 38px;
+$gridBoxSize: 30px;
+
+.canvas {
+    background-color: $canvasBgColor;
+    font-family: "Inter", sans-serif;
+    max-width: 100%;
+    width: 1080px;
+    // height: 1080px;
+    height: 1350px;
+    border: 1px solid #000;
+}
+
+.upper {
+    // padding: 55px 60px 20px;
+    padding: 55px 60px 0px;
+    // height: 20 * $gridBoxSize;
+    height: 24 * $gridBoxSize;
+    // background-color: #b3b3b3;
+}
+.lower {
+    padding: 0px;
+    // height: 14 * $gridBoxSize;
+    height: 19 * $gridBoxSize;
+}
+
+// header for canvas -------------
+.canvas_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    height: 1 * $gridBoxSize;
+
+    .weblink {
+        // font-size: 14px;
+        font-weight: 600;
+        span {
+            font-weight: 700;
+            color: #0069ff;
+        }
+        font-size: 28px;
+        z-index: 99;
+    }
+    .logo {
+        height: 30px;
+    }
+    .logoText{
+        font-size: 28px;
+        font-weight: 600;
+        span{
+            background-color: #0069ff;
+            color: #FFFFFF;
+            padding: 4px 6px;
+            margin-left: 4px;
+        }
+    }
+}
+
+// comapny logo with text -------------
+.companylogo {
+    // background-color: lightsalmon;
+    height: 9 * $gridBoxSize;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    h1 {
+        font-weight: 600;
+        color: #0069ff;
+        font-size: $logoFontSize;
+        -webkit-text-stroke-width: 1px;
+        -webkit-text-stroke-color: #0050ff;
+    }
+    grid-row-start: 6;
+    grid-row-end: 9;
+    padding-top: 64px;
+}
+
+// title for ig banner -----------
+.canvas_title {
+    // background-color: forestgreen;
+    display: flex;
+    // align-items: flex-end;
+    align-items: center;
+    color: #000;
+
+    h1 {
+        font-weight: 600;
+        font-size: $titleFontSize;
+        line-height: 120px;
+    }
+    z-index: 99;
+    height: calc(12 * $gridBoxSize);
+    padding-bottom: 60px;
+}
+
+// Canvas details ---------
+.canvas_details {
+    background-color: #f0f8ff;
+    height: 19 * $gridBoxSize;
+    z-index: 0;
+    display: flex;
+    color: #fff;
+    border-radius: 40px 40px 0px 0px;
+    justify-content: center;
+    flex-direction: column;
+    p {
+        color: #000000;
+        margin: 4.5px 0px;
+        font-weight: 500;
+        font-size: $detailFontSize;
+        line-height: 70px;
+    }
+    .tag {
+        font-weight: 600;
+        color: #000000;
+    }
+    padding: 0px 0px 0px 120px;
+}
+
+.footer {
+    background-color: #121212;
+    height: 2.2 * $gridBoxSize;
+    position: relative;
+    margin-bottom: 0px;
+    padding: 0px 2 * $gridBoxSize;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    p {
+        font-weight: 500;
+        color: #ffffff;
+        margin-left: 10px;
+    }
+    span {
+        font-weight: 600;
+    }
+    font-size: 28px;
+    img {
+        width: 24px;
+        margin-right: 5px;
+        margin-top: 0px;
+    }
+}
