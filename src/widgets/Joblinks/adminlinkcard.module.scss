@@ -1,55 +1,63 @@
 .adminlinkcard_con {
-  background-color: #fff;
-  text-align: left;
-  cursor: pointer;
+    background-color: #fff;
+    text-align: left;
+    cursor: pointer;
 
-  max-width: 90%;
-  min-height: 80px;
-  margin-bottom: 20px;
+    max-width: 90%;
+    min-height: 80px;
+    margin-bottom: 20px;
 
-  font-family: "IBM Plex Sans", sans-serif;
-  cursor: default;
-  padding: 10px 20px;
+    font-family: "IBM Plex Sans", sans-serif;
+    cursor: default;
+    padding: 10px 20px;
 
-  h2 {
-    font-size: 1.1rem;
-    margin-bottom: 5px;
-  }
+    h2 {
+        font-size: 1.1rem;
+        margin-bottom: 5px;
+    }
 
-  @media screen and (max-width: 900px) {
-    max-width: 100%;
-  }
-  display: flex;
-  justify-content: space-between;
+    @media screen and (max-width: 900px) {
+        max-width: 100%;
+    }
+    display: flex;
+    align-items: center;
 }
 
 .jd_date {
-  color: red;
+    color: red;
+    margin-right: 30px;
 }
 
 .btn {
-  text-transform: capitalize;
-  background-color: #0069ff;
-  color: #ffffff;
-  padding: 0px 0px;
-  font-weight: 400;
-  height: 30px;
-  width: 100px;
-  opacity: 0.6;
-
-  &:hover {
+    text-transform: capitalize;
     background-color: #0069ff;
-    opacity: 1;
-  }
+    color: #ffffff;
+    padding: 0px 0px;
+    font-weight: 400;
+    height: 30px;
+    width: 100px;
+    opacity: 0.6;
+
+    &:hover {
+        background-color: #0069ff;
+        opacity: 1;
+    }
 }
 .buttonContainer {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
 }
 .adminlink_item {
-  display: flex;
-  flex-direction: row;
-  color: #121212;
-  margin-bottom: 4px;
+    display: flex;
+    flex-direction: row;
+    color: #121212;
+    margin-bottom: 4px;
+}
+
+
+.companyLogo{
+    height: 50px;
+    width: 50px;
+    margin-right: 20px;
 }

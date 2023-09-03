@@ -61,7 +61,6 @@ const UpdateData = () => {
             }
         )
             .then((res) => {
-                console.log("SUCCESS");
                 toast("Message sent");
             })
             .catch((err) => {
@@ -173,13 +172,7 @@ const UpdateData = () => {
     const generateLinkedinCaption = (id) => {
         const res = data.filter((item) => item._id === id);
         const temp =
-            res[0].title +
-            "\n\nApply Link in comment\n\n" +
-            res[0].link +
-            "\n\n" +
-            line +
-            "\n.\n.\n.\n" +
-            hash;
+            res[0].title + "\n\nApply Link in comment\n\n" + res[0].link + "\n\n" + line + "\n.\n.\n.\n" + hash;
 
         navigator.clipboard.writeText(temp);
         toast("Copied");
@@ -263,7 +256,8 @@ const UpdateData = () => {
                                         disabled={item.jdbanner === "N"}
                                         onClick={() => downloadBanner(item)}
                                         variant="contained"
-                                        endIcon={<CloudDownloadIcon />}>
+                                        endIcon={<CloudDownloadIcon />}
+                                    >
                                         Banner
                                     </Button>
                                     <Button
@@ -273,7 +267,8 @@ const UpdateData = () => {
                                         fullWidth
                                         onClick={() => copylink(item)}
                                         disableElevation
-                                        variant="contained">
+                                        variant="contained"
+                                    >
                                         Copy Link
                                     </Button>
                                 </div>
@@ -286,7 +281,8 @@ const UpdateData = () => {
                                             size="medium"
                                             onClick={() => handleTelegramSubmit(item)}
                                             variant="contained"
-                                            endIcon={<SendIcon />}>
+                                            endIcon={<SendIcon />}
+                                        >
                                             Telegram
                                         </Button>
                                     )}
@@ -295,7 +291,8 @@ const UpdateData = () => {
                                         className={styles.btn}
                                         size="medium"
                                         onClick={() => generateCaption(item._id)}
-                                        variant="contained">
+                                        variant="contained"
+                                    >
                                         {isCopied ? "Copied" : " Caption (IG)"}
                                     </Button>
                                     <Button
@@ -303,7 +300,8 @@ const UpdateData = () => {
                                         className={styles.btn}
                                         size="medium"
                                         onClick={() => generateLinkedinCaption(item._id)}
-                                        variant="contained">
+                                        variant="contained"
+                                    >
                                         {isCopied ? "Copied" : "Caption (Linkedin)"}
                                     </Button>
                                     <Button
@@ -312,7 +310,8 @@ const UpdateData = () => {
                                         className={styles.btn}
                                         onClick={() => copyWhatsAppMessage(item)}
                                         variant="contained"
-                                        endIcon={<WhatsAppIcon />}>
+                                        endIcon={<WhatsAppIcon />}
+                                    >
                                         Message
                                     </Button>
                                 </div>

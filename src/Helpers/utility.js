@@ -3,7 +3,6 @@ const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME
 const TOKEN = process.env.REACT_APP_TOKEN
 // short long job link with bitly
 export const shortenurl = async (link) =>{
-    console.log("LINK AFTER", link);
     const res = await fetch('https://api-ssl.bitly.com/v4/shorten', {
         method: 'POST',
         headers: {
@@ -29,4 +28,17 @@ export const sendMessage = (msg) =>{
     .catch(err => {
         return err;
     });    
+}
+
+export const getLinkClickCount = async(link) => {
+    const linkWithoutHttps = link.replace(/^https:\/\//, "");
+    const res = await fetch(`https://api-ssl.bitly.com/v4/bitlinks/${linkWithoutHttps}/clicks?unit=month`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${TOKEN}`,
+        },
+    }) 
+    const json = await res.json();
+    console.log("JSON", json, json?.link_clicks[0]?.clicks)
+    return json;
 }

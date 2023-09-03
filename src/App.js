@@ -1,12 +1,12 @@
-// import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import React, { useState } from "react";
-import Adminpanel from "./pages/Adminpanel/Adminpanel";
-import Signin from "./pages/Signinpage/Signin";
+
 import { UserContext } from "./Context/userContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-// import css
+
 import "./App.css";
 import Addjobs from "./pages/AddJobpage/Addjobs";
+import Adminpanel from "./pages/Adminpanel/Adminpanel";
+import Signin from "./pages/Signinpage/Signin";
 
 function App() {
     const [user, setUser] = useState(null);

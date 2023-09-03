@@ -9,17 +9,9 @@ import CustomCKEditor from "../../Components/CkEditor/CkEditor";
 import CustomDivider from "../../Components/Divider/Divider";
 
 // mui import
-import {
-    TextField,
-    Button,
-    IconButton,
-    FormGroup,
-    Switch,
-    FormControlLabel,
-    Divider,
-    InputAdornment,
-} from "@mui/material";
+import { TextField, Button, IconButton, FormGroup, Switch, FormControlLabel, InputAdornment } from "@mui/material";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DeleteIcon from "@mui/icons-material/Delete";
 
 // import react toast
@@ -27,21 +19,18 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Compressor from "compressorjs";
 
-
 // import helpers
 import { shortenurl } from "../../Helpers/utility";
 import { API } from "../../Backend";
 import { Navigate, useNavigate } from "react-router-dom";
 import { UserContext } from "../../Context/userContext";
 
-import { degreeOptions, batchOptions, expOptions, locOptions } from "./addjobdata";
+import { degreeOptions, batchOptions, expOptions, locOptions } from "./Helpers/addjobdata";
 
 const companyTypeOptions = ["N", "product", "service"];
 const jobTypeOptions = ["N", "Full time", "Internship", "Part time"];
 
 const Addjobs = () => {
-    const BOT_API_KEY = process.env.REACT_APP_BOT_API_KEY;
-
     const [igbannertitle, setIgbannertitle] = useState("");
     const [link, setLink] = useState("");
     const [degree, setDegree] = useState("B.E / B.Tech / M.Tech");
@@ -90,43 +79,43 @@ const Addjobs = () => {
       return <Navigate to="/" />;
     }
 
-    // make the title bold for telegram
-    const translate = (char) => {
-        let diff;
-        if (/[A-Z]/.test(char)) diff = "𝗔".codePointAt(0) - "A".codePointAt(0);
-        else diff = "𝗮".codePointAt(0) - "a".codePointAt(0);
-        return String.fromCodePoint(char.codePointAt(0) + diff);
-    };
-    const btitle = title.replace(/[A-Za-z]/g, translate);
-
-    const handleDownloadImage = async () => {
+    const handleDownloadImage = async (flag) => {
         const element = document.getElementById("htmlToCanvas"),
             canvas = await html2canvas(element);
 
         var data = canvas.toDataURL("image/jpg");
         var link = document.createElement("a");
 
-        link.href = data;
-        link.download = companyName + ".jpg";
+        canvas.toBlob((blob) => {
+            handleTelegramImgInput(null, "code", blob);
+        }, "image/jpg");
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        if (flag) {
+            link.href = data;
+            link.download = companyName + ".jpg";
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
     };
 
     // get cloudinary link for telegram
-    const handleTelegramImgInput = async (e) => {
-        toast("Generating image url from cloudinary");
+    const handleTelegramImgInput = async (e, type, image) => {
         const formData2 = new FormData();
-        const file = e.target.files;
-        formData2.append("photo", file[0]);
+        if (type === "input") {
+            const file = e.target.files;
+            formData2.append("photo", file[0]);
+        } else {
+            formData2.append("photo", image);
+        }
+        toast("Generating image url from cloudinary");
 
         const res = await fetch(`${API}/jd/getposterlink`, {
             method: "POST",
             body: formData2,
         });
         const data = await res.json();
-        // console.log(data);
         if (res.status === 201) {
             toast("Successfully link generated");
         } else {
@@ -179,7 +168,6 @@ const Addjobs = () => {
     const handleCompanyLogoInput = (e) => {
         const reader = new FileReader();
         reader.addEventListener("load", () => {
-            console.log("reader.result", reader.result);
             setCompanyLogo(reader.result);
         });
 
@@ -192,62 +180,9 @@ const Addjobs = () => {
         setLink(tempLink);
     }
 
-    const sendTelegramMsg = (chanelName) => {
-        const msg =
-            btitle +
-            "%0A%0ABatch%20%3A%20" +
-            batch +
-            "%0A%0ADegree%20%3A%20" +
-            degree +
-            "%0A%0AApply Link%20%3A%20" +
-            link;
-
-        return fetch(
-            `https://api.telegram.org/bot${BOT_API_KEY}/sendMessage?chat_id=${chanelName}&text=${msg}&disable_web_page_preview=true&disable_notification=true`,
-            { method: "POST" }
-        )
-            .then((res) => {
-                toast("Message sent");
-            })
-            .catch((err) => {
-                toast.error("An error Occured");
-            });
-    };
-    const sendTelegramMsgwithImage = (chanelName) => {
-        const msg = btitle + "%0A%0AApply Link%20%3A%20" + link;
-
-        return fetch(
-            `https://api.telegram.org/bot${BOT_API_KEY}/sendPhoto?chat_id=${chanelName}&photo=${telegrambanner}&caption=${msg}&disable_web_page_preview=true&disable_notification=true`,
-            {
-                method: "POST",
-            }
-        )
-            .then((res) => {
-                console.log("SUCCESS");
-                toast("Message sent");
-            })
-            .catch((err) => {
-                console.log("ERROR", err);
-                toast.error("An error Occured");
-            });
-    };
-
-    // handle telegram submit
-    const handleTelegramSubmit = () => {
-        if (batch.includes("2022")) {
-            const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME_2022;
-            if (telegrambanner === "N") sendTelegramMsg(MY_CHANNEL_NAME);
-            else sendTelegramMsgwithImage(MY_CHANNEL_NAME);
-        }
-        if (batch.includes("2023")) {
-            const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME_2023;
-            if (telegrambanner === "N") sendTelegramMsg(MY_CHANNEL_NAME);
-            else sendTelegramMsgwithImage(MY_CHANNEL_NAME);
-        }
-        const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME;
-        if (telegrambanner === "N") sendTelegramMsg(MY_CHANNEL_NAME);
-        else sendTelegramMsgwithImage(MY_CHANNEL_NAME);
-    };
+    const copyBannerLink = (text) => {   
+        navigator.clipboard.writeText(text);
+    }
 
     const addData = async (e) => {
         e.preventDefault();
@@ -315,8 +250,9 @@ const Addjobs = () => {
                 />
                 <h3>Back to dashboard</h3>
             </div>
-            <br />
+
             <ToastContainer />
+
             <div className={styles.maininput_con}>
                 <div className={styles.input_fields}>
                     <CustomTextField
@@ -438,7 +374,7 @@ const Addjobs = () => {
 
                     <div
                         style={{
-                            marginTop: "30px",
+                            marginTop: "10px",
                             alignItems: "start",
                             flexDirection: "column",
                         }}
@@ -454,42 +390,33 @@ const Addjobs = () => {
                             onChange={(e) => setLastdate(e.target.value)}
                         />
                     </div>
-                    <br />
-                    <br />
-                    <div style={{ display: "flex" }}>
+
+                    <div style={{ display: "flex", marginTop: "30px" }}>
                         <p style={{ paddingRight: "10px" }}>
-                            {" "}
                             <b>
-                                <b style={{ color: "red" }}>**</b> Upload Company logo
-                            </b>{" "}
+                                <span style={{ color: "red" }}>**</span> Upload Company logo
+                            </b>
                             (150kb) :
                         </p>
                         <input type="file" onChange={(e) => handleLogoInput(e, true)} />
                         <p>File Size : {companyLogoSize}</p>
                     </div>
-                    <br />
-                    <br />
-                    <div style={{ display: "flex" }}>
+
+                    <div style={{ display: "flex", marginTop: "30px" }}>
                         <p style={{ paddingRight: "10px" }}>
-                            {" "}
                             <b>
-                                <b style={{ color: "red" }}>*</b> Upload Company logo
+                                {" "}
+                                <span style={{ color: "red" }}>*</span> Upload Company logo{" "}
                             </b>{" "}
                             (5kb) :
                         </p>
                         <input type="file" onChange={(e) => handleLogoInput(e, false)} />
                         <p>File Size : {companyLogoSize}</p>
                     </div>
-                    <br />
-                    <br />
-                    <Divider />
-                    <div
-                        style={{
-                            marginTop: "30px",
-                            justifyContent: "flex-start",
-                        }}
-                        className={styles.flex}
-                    >
+
+                    <CustomDivider />
+
+                    <div style={{ justifyContent: "flex-start" }} className={styles.flex}>
                         <div className={styles.flex}>
                             <h4>* Company Logo for Banner : </h4>
                             <label htmlFor="contained-button-file">
@@ -512,8 +439,7 @@ const Addjobs = () => {
                             <DeleteIcon fontSize="inherit" />
                         </IconButton>
                     </div>
-                    <br />
-                    <div className={styles.flex} style={{ width: "50%" }}>
+                    <div className={styles.flex} style={{ width: "50%", marginTop: "30px" }}>
                         <TextField
                             size="small"
                             sx={{ width: "10ch" }}
@@ -546,27 +472,43 @@ const Addjobs = () => {
                     <div style={{ marginTop: "30px" }} className={styles.flex}>
                         <Button
                             style={{ textTransform: "capitalize" }}
-                            onClick={handleDownloadImage}
+                            onClick={() => handleDownloadImage(true)}
                             variant="contained"
                             color="success"
                             endIcon={<CloudDownloadIcon />}
                         >
                             Download IG Banner
                         </Button>
+                        <Button
+                            style={{ textTransform: "capitalize" }}
+                            onClick={() => handleDownloadImage(false)}
+                            variant="outlined"
+                            color="success"
+                        >
+                            Upload Banner
+                        </Button>
                     </div>
-                    <div>
-                        <br />
-                        <br />
+                    <div style={{ marginTop: "30px" }}>
                         <div style={{ display: "flex" }}>
                             <p style={{ paddingRight: "10px" }}>Upload JD banner : </p>
-                            <input type="file" onChange={handleTelegramImgInput} />
+                            <input type="file" onChange={(e) => handleTelegramImgInput(e, "input", null)} />
                         </div>
-                        <p style={{ fontSize: "10px" }}>Banner Link : {telegrambanner}</p>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            <p style={{ fontSize: "10px" }}>Banner Link : {telegrambanner}</p>
+                            <IconButton
+                                color="secondary"
+                                aria-label="delete"
+                                size="small"
+                                onClick={()=>copyBannerLink(telegrambanner)}
+                            >
+                                <ContentCopyIcon fontSize="inherit" />
+                            </IconButton>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <CustomDivider/>
+            <CustomDivider />
 
             <div>
                 <FormGroup>
@@ -616,23 +558,9 @@ const Addjobs = () => {
                     </div>
                 )}
             </div>
-				<CustomDivider/>
-            <div className={styles.submitbtn_zone}>
-                <div className={styles.telegrambtn_zone}>
-                    <Button
-                        style={{ textTransform: "capitalize" }}
-                        onClick={handleTelegramSubmit}
-                        variant="contained"
-                        color="primary"
-                    >
-                        Send to telegram
-                    </Button>
-                </div>
-            </div>
-            <CustomDivider/>
 
+            <CustomDivider />
             <div className={styles.submitbtn_zone}>
-                <br />
                 <div>
                     <Button
                         style={{ textTransform: "capitalize" }}
@@ -647,8 +575,6 @@ const Addjobs = () => {
                     </Button>
                 </div>
             </div>
-            <br />
-            <br />
 
             <Canvas
                 companyName={companyName}
@@ -665,11 +591,10 @@ const Addjobs = () => {
                 paddingbottom={paddingbottom}
             />
 
-            <br />
-            <div style={{ marginTop: "30px" }} className={styles.flex}>
+            <div style={{ marginTop: "30px", marginBottom: "50px" }} className={styles.flex}>
                 <Button
                     style={{ textTransform: "capitalize" }}
-                    onClick={handleDownloadImage}
+                    onClick={() => handleDownloadImage(true)}
                     variant="contained"
                     color="success"
                     endIcon={<CloudDownloadIcon />}
@@ -677,8 +602,6 @@ const Addjobs = () => {
                     Download IG Banner
                 </Button>
             </div>
-            <br />
-            <br />
         </div>
     );
 };
