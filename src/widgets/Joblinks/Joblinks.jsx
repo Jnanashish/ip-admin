@@ -9,11 +9,13 @@ import useClipboard from "react-use-clipboard";
 // import react toast
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Button } from "@mui/material";
+
 import SendIcon from "@mui/icons-material/Send";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import CircularProgress from "@mui/material/CircularProgress";
+
+import { Button, Switch, FormControlLabel } from "@mui/material";
 
 import { API } from "../../Backend";
 
@@ -30,6 +32,7 @@ const UpdateData = () => {
     const [isCopied, setCopied] = useClipboard(caption);
     const [email, setEmail] = useState("");
     const [isApiCalled, setIsApiCalled] = useState(false);
+    const [showBitlyClick, setShowBitlyClick] = useState(false);
 
     const [captionline, setCaptionline] = useState([
         "Follow 👉 @careersattech to get regular Job and Internship updates.",
@@ -235,17 +238,26 @@ const UpdateData = () => {
     return (
         <div className={styles.update_data_container}>
             <br />
-            <h2 className={styles.adminpanel_title}>List of available Jobs - {data.length}</h2>
-            {isApiCalled && (
-                <div className={styles.loaderCon}>
-                    <CircularProgress size={80} />
-                </div>
-            )}
+            <div className={styles.headerContainer}>
+                <h2 className={styles.adminpanel_title}>List of available Jobs - {data.length}</h2>
+                {isApiCalled && (
+                    <div className={styles.loaderCon}>
+                        <CircularProgress size={80} />
+                    </div>
+                )}
+
+                <FormControlLabel
+                    onChange={() => setShowBitlyClick(!showBitlyClick)}
+                    control={<Switch />}
+                    label="Show Bit.ly click"
+                />
+            </div>
             <div>
                 {data.map((item) => {
                     return (
                         <div key={item._id} className={styles.updatedata_con}>
                             <Adminlinkcard item={item} />
+
                             <div className={styles.adminlink_con}>
                                 <div className={styles.btn_con}>
                                     <Button

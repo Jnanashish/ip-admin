@@ -49,7 +49,7 @@ const LinkCard = ({ item }) => {
 
     useEffect(() => {
         if (item.link.includes("bit.ly")) {
-            getBitlyShortClick();
+            // getBitlyShortClick();
         }
     }, [item.link]);
 
@@ -58,59 +58,61 @@ const LinkCard = ({ item }) => {
             {deletedId !== item._id && (
                 <div className={styles.adminlinkcard_con}>
                     <img className={styles.companyLogo} src={item.imagePath} />
-                    <a href={item.link} target="_blank" rel="noopener noreferrer">
-                        <h2>{item.title}</h2>
-                        <div className={styles.adminlink_item}>
-                            <h5>Created At : </h5>
-                            <h5> {date}</h5>
-                        </div>
-                        {item.lastdate !== "2022-11-00-" && (
+                    <div className={styles.adminlinkWrapper}>
+                        <a href={item.link} target="_blank" rel="noopener noreferrer">
+                            <h2>{item.title}</h2>
                             <div className={styles.adminlink_item}>
-                                <h5>Last date : </h5>
-                                <h5 style={{ color: "red" }}>
-                                    <b> {item.lastdate}</b>
+                                <h5>Created At : </h5>
+                                <h5> {date}</h5>
+                            </div>
+                            {item.lastdate !== "2022-11-00-" && (
+                                <div className={styles.adminlink_item}>
+                                    <h5>Last date : </h5>
+                                    <h5 style={{ color: "red" }}>
+                                        <b> {item.lastdate}</b>
+                                    </h5>
+                                </div>
+                            )}
+                            <div className={styles.adminlink_item}>
+                                <h5>Total Click : </h5>
+                                <h5 className={styles.jd_date}>
+                                    <b>{item.totalclick}</b>
+                                </h5>
+
+                                <h5>Bit.ly Click : </h5>
+                                <h5 className={styles.jd_date}>
+                                    <b>{linkClickCount}</b>
                                 </h5>
                             </div>
+                        </a>
+                        {isUserLogedIn && (
+                            <div className={styles.buttonContainer}>
+                                <Button
+                                    size="small"
+                                    disableElevation
+                                    style={{ backgroundColor: "red" }}
+                                    className={styles.btn}
+                                    fullWidth
+                                    onClick={() => deleteData(item._id)}
+                                    variant="contained"
+                                    startIcon={<DeleteIcon />}
+                                >
+                                    Delete
+                                </Button>
+
+                                <Button
+                                    size="small"
+                                    disableElevation
+                                    className={styles.btn}
+                                    onClick={() => handleClick(item._id)}
+                                    fullWidth
+                                    variant="contained"
+                                >
+                                    Update
+                                </Button>
+                            </div>
                         )}
-                        <div className={styles.adminlink_item}>
-                            <h5>Total Click : </h5>
-                            <h5 className={styles.jd_date}>
-                                <b>{item.totalclick}</b>
-                            </h5>
-
-                            <h5>Bit.ly Click : </h5>
-                            <h5 className={styles.jd_date}>
-                                <b>{linkClickCount}</b>
-                            </h5>
-                        </div>
-                    </a>
-                    {isUserLogedIn && (
-                        <div className={styles.buttonContainer}>
-                            <Button
-                                size="small"
-                                disableElevation
-                                style={{ backgroundColor: "red" }}
-                                className={styles.btn}
-                                fullWidth
-                                onClick={() => deleteData(item._id)}
-                                variant="contained"
-                                startIcon={<DeleteIcon />}
-                            >
-                                Delete
-                            </Button>
-
-                            <Button
-                                size="small"
-                                disableElevation
-                                className={styles.btn}
-                                onClick={() => handleClick(item._id)}
-                                fullWidth
-                                variant="contained"
-                            >
-                                Update
-                            </Button>
-                        </div>
-                    )}
+                    </div>
                 </div>
             )}
             {flag === item._id && <EditData data={item} />}
