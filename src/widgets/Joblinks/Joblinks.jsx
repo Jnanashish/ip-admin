@@ -256,7 +256,7 @@ const UpdateData = () => {
                 {data.map((item) => {
                     return (
                         <div key={item._id} className={styles.updatedata_con}>
-                            <Adminlinkcard item={item} />
+                            <Adminlinkcard showBitlyClick={showBitlyClick} item={item} />
 
                             <div className={styles.adminlink_con}>
                                 <div className={styles.btn_con}>

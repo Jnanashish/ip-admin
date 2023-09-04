@@ -11,7 +11,7 @@ import CustomDivider from "../../Components/Divider/Divider";
 // mui import
 import { TextField, Button, IconButton, FormGroup, Switch, FormControlLabel, InputAdornment } from "@mui/material";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 // import react toast
@@ -76,7 +76,7 @@ const Addjobs = () => {
     const formData = new FormData();
 
     if (!context.user?.email) {
-      return <Navigate to="/" />;
+        return <Navigate to="/" />;
     }
 
     const handleDownloadImage = async (flag) => {
@@ -147,21 +147,17 @@ const Addjobs = () => {
     const handleLogoInput = (e, compress) => {
         const file = e.target.files;
         setCompanyLogoSize(file[0].size / 1024);
+        const fileSize = file[0].size;
 
-        if (compress) {
-            if (file[0].size > 150000) {
+        if (fileSize > 4096) {
+            if (file[0].size > 51200) {
                 toast.error("Image size should be less than 150kb (Before compression), UPLOAD again");
                 return false;
             } else {
                 resizeImage(file[0]);
             }
         } else {
-            if (file[0].size > 5124) {
-                toast.error("Image size should be less than 5kb, UPLOAD again");
-                return false;
-            } else {
-                setResizedImage(file[0]);
-            }
+            setResizedImage(file[0]);
         }
     };
 
@@ -180,9 +176,9 @@ const Addjobs = () => {
         setLink(tempLink);
     }
 
-    const copyBannerLink = (text) => {   
+    const copyBannerLink = (text) => {
         navigator.clipboard.writeText(text);
-    }
+    };
 
     const addData = async (e) => {
         e.preventDefault();
@@ -391,7 +387,7 @@ const Addjobs = () => {
                         />
                     </div>
 
-                    <div style={{ display: "flex", marginTop: "30px" }}>
+                    <div style={{ display: "flex", marginTop: "40px" }}>
                         <p style={{ paddingRight: "10px" }}>
                             <b>
                                 <span style={{ color: "red" }}>**</span> Upload Company logo
@@ -402,7 +398,7 @@ const Addjobs = () => {
                         <p>File Size : {companyLogoSize}</p>
                     </div>
 
-                    <div style={{ display: "flex", marginTop: "30px" }}>
+                    {/* <div style={{ display: "flex", marginTop: "30px" }}>
                         <p style={{ paddingRight: "10px" }}>
                             <b>
                                 {" "}
@@ -412,7 +408,7 @@ const Addjobs = () => {
                         </p>
                         <input type="file" onChange={(e) => handleLogoInput(e, false)} />
                         <p>File Size : {companyLogoSize}</p>
-                    </div>
+                    </div> */}
 
                     <CustomDivider />
 
@@ -499,7 +495,7 @@ const Addjobs = () => {
                                 color="secondary"
                                 aria-label="delete"
                                 size="small"
-                                onClick={()=>copyBannerLink(telegrambanner)}
+                                onClick={() => copyBannerLink(telegrambanner)}
                             >
                                 <ContentCopyIcon fontSize="inherit" />
                             </IconButton>

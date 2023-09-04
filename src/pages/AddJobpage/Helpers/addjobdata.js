@@ -8,7 +8,8 @@ export const degreeOptions = [
     "Any Engineering graduate",
     "Any Bachelor's degree",
     "Diploma students",
-    "Bachelor's degree in CS and IT",
+    "Bachelor's in Computer Science",
+    "Bachelor's degree in CSE and IT",
     "Computer science degree",
 ]
 

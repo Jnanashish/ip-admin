@@ -10,7 +10,7 @@ import { API } from "../../Backend";
 import { UserContext } from "../../Context/userContext";
 import { getLinkClickCount } from "../../Helpers/utility";
 
-const LinkCard = ({ item }) => {
+const LinkCard = ({ item, showBitlyClick }) => {
     const [flag, setFlag] = useState("");
     const [deletedId, setDeletedId] = useState("");
     const [linkClickCount, setLinkClickCount] = useState(null);
@@ -48,10 +48,10 @@ const LinkCard = ({ item }) => {
     };
 
     useEffect(() => {
-        if (item.link.includes("bit.ly")) {
-            // getBitlyShortClick();
+        if (item.link.includes("bit.ly") && showBitlyClick) {
+            getBitlyShortClick();
         }
-    }, [item.link]);
+    }, [item.link, showBitlyClick]);
 
     return (
         <div>
@@ -79,10 +79,14 @@ const LinkCard = ({ item }) => {
                                     <b>{item.totalclick}</b>
                                 </h5>
 
-                                <h5>Bit.ly Click : </h5>
-                                <h5 className={styles.jd_date}>
-                                    <b>{linkClickCount}</b>
-                                </h5>
+                                {showBitlyClick && (
+                                    <>
+                                        <h5>Bit.ly Click : </h5>
+                                        <h5 className={styles.jd_date}>
+                                            <b>{linkClickCount}</b>
+                                        </h5>
+                                    </>
+                                )}
                             </div>
                         </a>
                         {isUserLogedIn && (
