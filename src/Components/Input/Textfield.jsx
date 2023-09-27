@@ -25,6 +25,7 @@ const CustomTextField = (props) => {
                     onChange={(e) => props.onChange(e.target.value)}
                     sx={!!props.sx ? props.sx : {}}
                     InputProps={!!props.InputProps ? props.InputProps : {}}
+                    onBlur={(e) => props.onBlur(e.target.value)}
                 />
             )}
             {type === "select" && (

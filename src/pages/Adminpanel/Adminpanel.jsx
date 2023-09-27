@@ -5,6 +5,7 @@ import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import Joblinks from "../../widgets/Joblinks/Joblinks";
 import Adpoptype from "../../widgets/Dapoptype/Adpoptype";
 import AddBanner from "../../widgets/AD/Addbanner";
+import CompanyLogo from "../../widgets/CompanyLogo/CompanyLogo";
 
 // context
 import { UserContext } from "../../Context/userContext";
@@ -62,8 +63,16 @@ const AdminPanel = () => {
                         className={styles.tab}>
                         Job Dashboard
                     </Tab>
-                    {isUserLogedIn && (
+                    {(true || isUserLogedIn) && (
                         <>
+                            <Tab
+                                style={
+                                    currState === "companylogo" ? active : inactive
+                                }
+                                onClick={() => setCurrState("companylogo")}
+                                className={styles.tab}>
+                                Add Company logo
+                            </Tab>
                             <Tab
                                 style={
                                     currState === "ad_link" ? active : inactive
@@ -104,6 +113,9 @@ const AdminPanel = () => {
                 <div className={styles.part2}>
                     <TabPanel>
                         <Joblinks />
+                    </TabPanel>
+                    <TabPanel>
+                        <CompanyLogo />
                     </TabPanel>
                     <TabPanel>
                         <AddLink />

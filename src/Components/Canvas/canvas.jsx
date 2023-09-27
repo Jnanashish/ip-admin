@@ -20,6 +20,7 @@ const Canvas = (props) => {
         imgmleft,
         paddingtop,
         paddingbottom,
+        companyLogoBanner,
     } = props;
 
     var customStyle = {
@@ -46,7 +47,8 @@ const Canvas = (props) => {
 
                 <div className={styles.companylogo}>
                     {companyLogo && <img style={customStyle.imgstyle} src={companyLogo} alt={`${companyName} logo`}></img>}
-                    {!companyLogo && <h1>{companyName}</h1>}
+                    {!companyLogo && companyLogoBanner && <img style={customStyle.imgstyle} src={companyLogoBanner} alt={`${companyName} logo`}></img>}
+                    {!companyLogo && !companyLogoBanner && <h1>{companyName}</h1>}
                 </div>
 
                 <div className={styles.canvas_title}>

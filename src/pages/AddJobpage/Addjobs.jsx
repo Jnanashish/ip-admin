@@ -63,6 +63,12 @@ const Addjobs = () => {
     const [companyLogoSize, setCompanyLogoSize] = useState(0);
     const [resizedImage, setResizedImage] = useState(null);
 
+    const [imagePath, setImagePath] = useState(null);
+    const [companyLogoBanner, setCompanyLogoBanner] = useState(null)
+
+    const [companyBigLogoUrl, setCompanyBigLogoUrl] = useState(null)
+    const [companySmallLogoUrl, setCompanySmallLogoUrl] = useState(null)
+
     const navigate = useNavigate();
     const handleBack = () => {
         navigate("/admin");
@@ -78,6 +84,27 @@ const Addjobs = () => {
     if (!context.user?.email) {
         return <Navigate to="/" />;
     }
+
+    const generateImageCDNlink = async (e, func) => {
+        const formData = new FormData();
+        const file = e.target.files;
+        formData.append("photo", file[0]);
+
+        toast("Generating image url from cloudinary");
+
+        const res = await fetch(`${API}/jd/getposterlink`, {
+            method: "POST",
+            body: formData,
+        });
+
+        const data = await res.json();
+        if (res.status === 201) {
+            toast("Successfully link generated");
+        } else {
+            toast.error("An error Occured");
+        }
+        func(data.url)
+    };
 
     const handleDownloadImage = async (flag) => {
         const element = document.getElementById("htmlToCanvas"),
@@ -135,6 +162,7 @@ const Addjobs = () => {
                     toast.error("Image size should be less than 5kb (After compression), UPLOAD again");
                 } else {
                     setResizedImage(result);
+                    generateImageCDNlink(file, setCompanySmallLogoUrl)
                 }
             },
             error(err) {
@@ -142,6 +170,27 @@ const Addjobs = () => {
             },
         });
     };
+
+    const handleLogoSubmit = async () => {
+        const formData = new FormData();
+        formData.append("companyName", companyName);
+        formData.append("largeLogo", companyBigLogoUrl);
+        formData.append("smallLogo", companySmallLogoUrl);
+
+        const res = await fetch(`${API}/companylogo/add`, {
+            method: "POST",
+            body: formData,
+        });
+
+        if (res.status === 201) {
+            toast("Company logo added Successfully");
+            setCompanyName("")
+            setCompanyBigLogoUrl(null)
+            setCompanySmallLogoUrl(null)
+        } else {
+            toast.error("An error Occured");
+        }
+    }
 
     // handle company logo input for website
     const handleLogoInput = (e, compress) => {
@@ -157,11 +206,13 @@ const Addjobs = () => {
                 resizeImage(file[0]);
             }
         } else {
+            generateImageCDNlink(e, setCompanySmallLogoUrl)
             setResizedImage(file[0]);
         }
     };
 
     const handleCompanyLogoInput = (e) => {
+        generateImageCDNlink(e, setCompanyBigLogoUrl)
         const reader = new FileReader();
         reader.addEventListener("load", () => {
             setCompanyLogo(reader.result);
@@ -181,6 +232,7 @@ const Addjobs = () => {
     };
 
     const addData = async (e) => {
+        handleLogoSubmit()
         e.preventDefault();
 
         formData.append("title", title);
@@ -203,6 +255,9 @@ const Addjobs = () => {
         formData.append("jdbanner", telegrambanner);
         formData.append("companyName", companyName);
         formData.append("photo", resizedImage);
+        if(imagePath){
+            formData.append("imagePath", imagePath);
+        }
 
         const res = await fetch(`${API}/jd/add`, {
             method: "POST",
@@ -228,6 +283,18 @@ const Addjobs = () => {
 
         setLastdate(formattedDate);
     };
+
+    const getCompanyLogo = async () => {
+        if(companyName){
+            const res = await fetch(`${API}/companylogo?companyName=${companyName}`, {
+                method: "GET",
+            });
+            const data = await res.json();
+
+            setCompanyLogoBanner(data?.data[0]?.largeLogo)
+            setImagePath(data?.data[0]?.smallLogo)
+        }
+    }
 
     return (
         <div className={styles.container}>
@@ -266,6 +333,7 @@ const Addjobs = () => {
                                 setCompanyName(val);
                                 setTitle(val + " " + igbannertitle);
                             }}
+                            onBlur={(val) => { getCompanyLogo(val)}}
                             sx={{ width: "20ch" }}
                         />
                         <CustomTextField
@@ -397,6 +465,12 @@ const Addjobs = () => {
                         <input type="file" onChange={(e) => handleLogoInput(e, true)} />
                         <p>File Size : {companyLogoSize}</p>
                     </div>
+                    {imagePath && <div style={{ display: "flex", marginTop: "40px" }}>
+                        <p style={{ paddingRight: "10px" }}>
+                             Logo uploaded :
+                        </p>
+                        <img src ={imagePath} width="50" height="50"/>
+                    </div>}
 
                     {/* <div style={{ display: "flex", marginTop: "30px" }}>
                         <p style={{ paddingRight: "10px" }}>
@@ -585,6 +659,7 @@ const Addjobs = () => {
                 imgmleft={imgmleft}
                 paddingtop={paddingtop}
                 paddingbottom={paddingbottom}
+                companyLogoBanner={companyLogoBanner}
             />
 
             <div style={{ marginTop: "30px", marginBottom: "50px" }} className={styles.flex}>
