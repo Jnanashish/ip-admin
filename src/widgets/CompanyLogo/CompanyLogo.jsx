@@ -134,7 +134,7 @@ const CompanyLogo = () => {
             <div className={`${styles.admin_grid} ${styles.imgWrap}`}>
                 <h3 className={styles.admin_label}>Company small logo : </h3>
                 <input
-                    accept=".jpeg, .jpg, .png, .webp, .heic"
+                    accept=".jpeg, .jpg, .png, .webp, .heic, .svg"
                     className={styles.admin_input}
                     onChange={handleimginp}
                     name="image"
@@ -148,7 +148,7 @@ const CompanyLogo = () => {
             <div className={`${styles.admin_grid} ${styles.imgWrap}`}>
                 <h3 className={styles.admin_label}>Company BIG logo : </h3>
                 <input
-                    accept=".jpeg, .jpg, .png, .webp, .heic"
+                    accept=".jpeg, .jpg, .png, .webp, .heic, .svg"
                     className={styles.admin_input}
                     onChange={handleBigLogoinp}
                     name="image"
@@ -161,7 +161,7 @@ const CompanyLogo = () => {
                 onClick={() => handleLogoSubmit(true)}
                 variant="contained"
                 color="success"
-                disabled={!companyName && !companyBigLogoUrl && !companySmallLogoUrl}
+                disabled={!companyName || !companyBigLogoUrl || !companySmallLogoUrl}
             >
                 Download IG Banner
             </Button>
