@@ -26,10 +26,6 @@ const AdminPanel = () => {
 
     const isUserLogedIn = context.user?.email;
 
-    // if (!context.user?.email) {
-    //     return <Navigate to="/" />;
-    // }
-
     const addJobspage = () => {
         navigate("/addjob");
     };
@@ -41,10 +37,7 @@ const AdminPanel = () => {
 
                 {isUserLogedIn && <h4>Welcome : Jnanashish Handique</h4>}
                 {!isUserLogedIn && (
-                    <Button
-                        onClick={() => navigate("/signin")}
-                        size="medium"
-                        style={{ backgroundColor: "#FFF" }}>
+                    <Button onClick={() => navigate("/signin")} size="medium" style={{ backgroundColor: "#FFF" }}>
                         Sign in
                     </Button>
                 )}
@@ -60,51 +53,45 @@ const AdminPanel = () => {
                     <Tab
                         style={currState === "dashboard" ? active : inactive}
                         onClick={() => setCurrState("dashboard")}
-                        className={styles.tab}>
+                        className={styles.tab}
+                    >
                         Job Dashboard
                     </Tab>
                     {(true || isUserLogedIn) && (
                         <>
                             <Tab
-                                style={
-                                    currState === "companylogo" ? active : inactive
-                                }
+                                style={currState === "companylogo" ? active : inactive}
                                 onClick={() => setCurrState("companylogo")}
-                                className={styles.tab}>
+                                className={styles.tab}
+                            >
                                 Add Company logo
                             </Tab>
                             <Tab
-                                style={
-                                    currState === "ad_link" ? active : inactive
-                                }
+                                style={currState === "ad_link" ? active : inactive}
                                 onClick={() => setCurrState("ad_link")}
-                                className={styles.tab}>
+                                className={styles.tab}
+                            >
                                 + Ad (Link only)
                             </Tab>
                             <Tab
-                                style={
-                                    currState === "ad_img" ? active : inactive
-                                }
+                                style={currState === "ad_img" ? active : inactive}
                                 onClick={() => setCurrState("ad_img")}
-                                className={styles.tab}>
+                                className={styles.tab}
+                            >
                                 + Ad (With Image)
                             </Tab>
                             <Tab
-                                style={
-                                    currState === "ad_banner"
-                                        ? active
-                                        : inactive
-                                }
+                                style={currState === "ad_banner" ? active : inactive}
                                 onClick={() => setCurrState("ad_banner")}
-                                className={styles.tab}>
+                                className={styles.tab}
+                            >
                                 + Add banner
                             </Tab>
                             <Tab
-                                style={
-                                    currState === "ad_pop" ? active : inactive
-                                }
+                                style={currState === "ad_pop" ? active : inactive}
                                 onClick={() => setCurrState("ad_pop")}
-                                className={styles.tab}>
+                                className={styles.tab}
+                            >
                                 Ad pop type
                             </Tab>
                         </>

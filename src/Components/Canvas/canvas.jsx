@@ -2,9 +2,9 @@ import React from "react";
 import styles from "./canvas.module.scss";
 
 // import images
-import linkedin from "../../Image/linkedin.png";
-import instagram from "../../Image/instagram.png";
-import telegram from "../../Image/telegram.png";
+import linkedin from "../../Static/Image/linkedin.png"
+import instagram from "../../Static/Image/instagram.png";
+import telegram from "../../Static/Image/telegram.png";
 
 const Canvas = (props) => {
     const {
@@ -46,7 +46,7 @@ const Canvas = (props) => {
                 </div>
 
                 <div className={styles.companylogo}>
-                    {companyLogo && <img style={customStyle.imgstyle} src={companyLogo} alt={`${companyName} logo`}></img>}
+                    {companyLogo && companyLogo != null && <img style={customStyle.imgstyle} src={companyLogo} alt={`${companyName} logo`}></img>}
                     {!companyLogo && companyLogoBanner && <img style={customStyle.imgstyle} src={companyLogoBanner} alt={`${companyName} logo`}></img>}
                     {!companyLogo && !companyLogoBanner && <h1>{companyName}</h1>}
                 </div>

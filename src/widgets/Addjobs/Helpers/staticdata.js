@@ -22,6 +22,7 @@ export const batchOptions = [
     "2022 / 2021 / 2020",
     "2022 / 2021",
     "2022",
+    "2023 / 2022 / 2021 / 2020",
     "2023 / 2022 / 2021",
     "2023 / 2022",
     "2023",
@@ -42,13 +43,14 @@ export const expOptions = [
     "0 - 4 years",
     "1 - 2 years",
     "1 - 3 years",
+    "1 - 4 years",
     "0+ years",
     "College students",
     "1 years",
     "1+ years",
     "2+ years",
     "3+ years",
-    "Final year student",
+    "Final year students",
     "Any batch",
 ];
 
@@ -72,4 +74,11 @@ export const locOptions = [
     "Gurgaon (Hybrid)",
     "Hyderabad (Hybrid)",
     "Noida (Hybrid)",
+    "Goa",
+    "North India",
 ];
+
+
+export const jobTypeOptions = ["N", "Full time", "Internship", "Part time", "Contractual"];
+
+export const companyTypeOptions = ["N", "product", "service"];
