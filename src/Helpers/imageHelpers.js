@@ -62,7 +62,7 @@ export const downloadImagefromCanvasHelper = async (fileName, canvasId) => {
 
 export const uploadBannertoCDNHelper = async(canvasId) => {
     const element = document.getElementById(canvasId);
-    const canvas = await html2canvas(element);
+    const canvas = await html2canvas(element, {useCORS: true});
 
     const blob = await new Promise(resolve => canvas.toBlob(resolve));
     const bannerUrl = await generateImageCDNlinkHelper(null, blob);
@@ -75,9 +75,10 @@ export const uploadBannertoCDNHelper = async(canvasId) => {
 const resizeImage = async (file) => {
     const compressedImage = await resizeImageHelper(file);
     const compressedImageSize = compressedImage.size;
-
+    console.log('compressedImageSize', compressedImageSize);
+    
     if (compressedImageSize > 5120) {
-        ShowWarnToast("Image size should be less than 5kb (After compression)");
+        ShowErrorToast("Image size should be less than 5kb (After compression)");
         return null;
     } else {
         return compressedImage;
@@ -88,10 +89,11 @@ const resizeImage = async (file) => {
 export const handleImageInputHelper = async (event) => {
     const file = event.target.files[0];
     const fileSize = file.size;
-
+    console.log('file.size', file.size);
+    
     if (fileSize > 4096) {
         if (file.size > 51200) {
-            ShowWarnToast("Image size should be less than 150kb (Before compression)");
+            ShowWarnToast("Image size should be less than 50kb (Before compression)");
             return null;
         } else {
             return await resizeImage(file);

@@ -1,6 +1,5 @@
+import { ShowErrorToast, ShowSuccessToast, ShowInfoToast, ShowWarnToast } from "./toast";
 const BOT_API_KEY = process.env.REACT_APP_BOT_API_KEY;
-// import { ToastContainer, toast } from "react-toastify";
-
 
 const translate = (char) => {
     let diff;
@@ -9,55 +8,48 @@ const translate = (char) => {
     return String.fromCodePoint(char.codePointAt(0) + diff);
 };
 
-const sendTelegramMsg = async (chanelName, title, batch, degree, link) => {
+const sendTelegramMsgHelper = async (chanelName, title, batch, degree, link) => {
     const btitle = title.replace(/[A-Za-z]/g, translate);
-    const msg =
-        btitle + "%0A%0ABatch%20%3A%20" + batch + "%0A%0ADegree%20%3A%20" + degree + "%0A%0AApply Link%20%3A%20" + link;
+    const msg = btitle + "%0A%0ABatch%20%3A%20" + batch + "%0A%0ADegree%20%3A%20" + degree + "%0A%0AApply Link%20%3A%20" + link;
 
-    return fetch(
-        `https://api.telegram.org/botw${BOT_API_KEY}/sendMessage?chat_id=${chanelName}&text=${msg}&disable_web_page_preview=true&disable_notification=true`,
-        { method: "POST" }
-    )
+    return fetch(`https://api.telegram.org/botw${BOT_API_KEY}/sendMessage?chat_id=${chanelName}&text=${msg}&disable_web_page_preview=true&disable_notification=true`, { method: "POST" })
         .then((res) => {
-            // toast("Message sent");
+            ShowSuccessToast("Message sent");
         })
         .catch((err) => {
-            // toast.error("An error Occured", err);
+            ShowErrorToast("An error occured", err);
         });
 };
 
-const sendTelegramMsgwithImage = async (chanelName, title, link, telegrambanner) => {
+const sendTelegramMsgwithImageHelper = async (chanelName, title, link, telegrambanner) => {
     const btitle = title.replace(/[A-Za-z]/g, translate);
     const msg = btitle + "%0A%0AApply Link%20%3A%20" + link;
 
-    return fetch(
-        `https://api.telegram.org/botw${BOT_API_KEY}/sendPhoto?chat_id=${chanelName}&photo=${telegrambanner}&caption=${msg}&disable_web_page_preview=true&disable_notification=true`,
-        {
-            method: "POST",
-        }
-    )
+    return fetch(`https://api.telegram.org/botw${BOT_API_KEY}/sendPhoto?chat_id=${chanelName}&photo=${telegrambanner}&caption=${msg}&disable_web_page_preview=true&disable_notification=true`, {
+        method: "POST",
+    })
         .then((res) => {
-            // toast("Message sent");
+            ShowSuccessToast("Message sent");
         })
         .catch((err) => {
-            // toast.error("An error Occured", err);
+            ShowErrorToast("An error occured", err);
         });
 };
 
-const handleTelegramSubmit = (batch, telegrambanner, title, degree, link) => {
+export const handleTelegramSubmitHelper = (batch, telegrambanner, title, degree, link) => {
     if (batch.includes("2022")) {
         const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME_2022;
-        if (telegrambanner === "N") sendTelegramMsg(MY_CHANNEL_NAME, title, batch, degree, link);
-        else sendTelegramMsgwithImage(MY_CHANNEL_NAME, title, link, telegrambanner);
+        if (telegrambanner === "N") sendTelegramMsgHelper(MY_CHANNEL_NAME, title, batch, degree, link);
+        else sendTelegramMsgwithImageHelper(MY_CHANNEL_NAME, title, link, telegrambanner);
     }
 
     if (batch.includes("2023")) {
         const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME_2023;
-        if (telegrambanner === "N") sendTelegramMsg(MY_CHANNEL_NAME, title, batch, degree, link);
-        else sendTelegramMsgwithImage(MY_CHANNEL_NAME, title, link, telegrambanner);
+        if (telegrambanner === "N") sendTelegramMsgHelper(MY_CHANNEL_NAME, title, batch, degree, link);
+        else sendTelegramMsgwithImageHelper(MY_CHANNEL_NAME, title, link, telegrambanner);
     }
 
     const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME;
-    if (telegrambanner === "N") sendTelegramMsg(MY_CHANNEL_NAME, title, batch, degree, link);
-    else sendTelegramMsgwithImage(MY_CHANNEL_NAME, title, link, telegrambanner);
+    if (telegrambanner === "N") sendTelegramMsgHelper(MY_CHANNEL_NAME, title, batch, degree, link);
+    else sendTelegramMsgwithImageHelper(MY_CHANNEL_NAME, title, link, telegrambanner);
 };

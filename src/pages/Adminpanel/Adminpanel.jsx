@@ -1,5 +1,4 @@
 import React, { useState, useContext } from "react";
-
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 
 import Joblinks from "../../widgets/Joblinks/Joblinks";
@@ -9,7 +8,7 @@ import CompanyLogo from "../../widgets/CompanyLogo/CompanyLogo";
 
 // context
 import { UserContext } from "../../Context/userContext";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // import styles
 import styles from "./adminpanel.module.scss";
@@ -24,7 +23,7 @@ const AdminPanel = () => {
     const inactive = {};
     const navigate = useNavigate();
 
-    const isUserLogedIn = context.user?.email;
+    const isUserLogedIn = context.user?.email || true;
 
     const addJobspage = () => {
         navigate("/addjob");
@@ -57,7 +56,7 @@ const AdminPanel = () => {
                     >
                         Job Dashboard
                     </Tab>
-                    {(true || isUserLogedIn) && (
+                    {(isUserLogedIn) && (
                         <>
                             <Tab
                                 style={currState === "companylogo" ? active : inactive}

@@ -1,3 +1,4 @@
+
 import { post, get } from "../../../Helpers/request";
 import { apiEndpoint } from "../../../Helpers/apiEndpoints";
 import { ShowErrorToast, ShowSuccessToast, ShowInfoToast, ShowWarnToast } from "../../../Helpers/toast";
@@ -34,8 +35,9 @@ export const addJobDataHelper = async (formData) => {
     const res = await post(apiEndpoint.addJobData, formData, "Add new job");
     if (res) {
         ShowSuccessToast("Job data added successfully");
-        window.location.href = "/admin";
+        return { status : 200 }
     } else {
         ShowErrorToast("An error occured while adding Job");
+        return { status : 404 }
     }
 };

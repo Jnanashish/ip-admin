@@ -40,7 +40,7 @@ const LinkCard = ({ item, showBitlyClick }) => {
     };
 
     const context = useContext(UserContext);
-    const isUserLogedIn = context.user?.email;
+    const isUserLogedIn = context.user?.email || true;
 
     const getBitlyShortClick = async () => {
         const data = await getLinkClickCount(item.link);

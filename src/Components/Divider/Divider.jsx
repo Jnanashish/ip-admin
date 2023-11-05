@@ -3,11 +3,20 @@ import { Divider } from "@mui/material";
 const CustomDivider = (props) => {
     return (
         <>
-            <br />
-            <br />
-            <Divider />
-            <br />
-            <br />
+            {!!props.count ? (
+                <>
+                    <Divider />
+                    <br />
+                </>
+            ) : (
+                <>
+                    <br />
+                    <br />
+                    <Divider />
+                    <br />
+                    <br />
+                </>
+            )}
         </>
     );
 };

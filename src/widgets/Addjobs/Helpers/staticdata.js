@@ -81,4 +81,4 @@ export const locOptions = [
 
 export const jobTypeOptions = ["N", "Full time", "Internship", "Part time", "Contractual"];
 
-export const companyTypeOptions = ["N", "product", "service"];
+export const companyTypeOptions = ["N", "product", "service", "jobs"];

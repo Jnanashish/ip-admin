@@ -13,9 +13,10 @@ import Signin from "./pages/Signinpage/Signin";
 
 function App() {
     const [user, setUser] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(null);
     return (
         <BrowserRouter>
-            <UserContext.Provider value={{ user, setUser }}>
+            <UserContext.Provider value={{ user, setUser, isAdmin, setIsAdmin }}>
                 <div className="App">
                     <ToastContainer autoClose={2000}/>
                     <Routes>

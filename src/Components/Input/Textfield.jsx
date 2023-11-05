@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 
 const CustomTextField = (props) => {
-    const { label, value, type, size } = props;
+    const { label, value, type, size, disabled, error } = props;
     return (
         <>
             {type !== "select" && (
@@ -26,6 +26,8 @@ const CustomTextField = (props) => {
                     sx={!!props.sx ? props.sx : {}}
                     InputProps={!!props.InputProps ? props.InputProps : {}}
                     onBlur={(e) => props.onBlur(e.target.value)}
+                    disabled={disabled ? disabled : false}
+                    error={error ? error : false}
                 />
             )}
             {type === "select" && (
@@ -39,6 +41,7 @@ const CustomTextField = (props) => {
                     onChange={(e) => props.onChange(e.target.value)}
                     sx={!!props.sx ? props.sx : {}}
                     InputProps={!!props.InputProps ? props.InputProps : {}}
+                    disabled={disabled ? disabled : false}
                 >
                     {props?.optionData.map((option) => (
                         <MenuItem key={option} value={option}>

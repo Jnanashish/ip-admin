@@ -6,6 +6,8 @@ import Canvas from "../../Components/Canvas/canvas";
 import CustomTextField from "../../Components/Input/Textfield";
 import CustomCKEditor from "../../Components/CkEditor/CkEditor";
 import CustomDivider from "../../Components/Divider/Divider";
+import Backtodashboard from "./Components/Backtodashboard";
+import JobsattechBanner from "../../Components/Canvas/jobsattechBanner";
 
 // mui import
 import { TextField, Button, IconButton, FormGroup, Switch, FormControlLabel, InputAdornment } from "@mui/material";
@@ -24,8 +26,11 @@ import { generateLastDatetoApplyHelper, getCompanyLogoHelper, addJobDataHelper }
 import { copyToClipBoard, uploadCompanyLogoHelper } from "../../Helpers/utility";
 
 const AddjobsComponent = () => {
+    const [isAdmin, setIsAdmin] = useState(false)
+
     const [igbannertitle, setIgbannertitle] = useState("");
     const [link, setLink] = useState("");
+
     const [degree, setDegree] = useState("B.E / B.Tech / M.Tech");
     const [batch, setBatch] = useState("2022 / 2021 / 2020");
     const [experience, setExperience] = useState("0 - 2 years");
@@ -35,7 +40,7 @@ const AddjobsComponent = () => {
     const [companyName, setCompanyName] = useState("");
     const [title, setTitle] = useState("");
 
-    const [companytype, setCompanytype] = useState("product");
+    const [companytype, setCompanytype] = useState(isAdmin ? "product" : "jobs");
     const [lastdate, setLastdate] = useState(null);
     const [role, setRole] = useState("N");
 
@@ -64,6 +69,7 @@ const AddjobsComponent = () => {
 
     const context = useContext(UserContext);
     const formData = new FormData();
+    const canvasId = isAdmin ? "htmlToCanvas" : "jobsattechCanvas";
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -73,10 +79,9 @@ const AddjobsComponent = () => {
     if (!context.user?.email) {
         return <Navigate to="/" />;
     }
-
-    const handleBack = () => {
-        navigate("/admin");
-    };
+    if(context.isAdmin){
+        setIsAdmin(true)
+    }
 
     // upload image to cloudinary and return cdn url
     const generateImageCDNlink = async (e, setter, blob) => {
@@ -86,13 +91,13 @@ const AddjobsComponent = () => {
 
     // download the banner for social media
     const handleDownloadBanner = async () => {
-        const bannerUrl = await downloadImagefromCanvasHelper(companyName, "htmlToCanvas");
+        const bannerUrl = await downloadImagefromCanvasHelper(companyName, canvasId);
         if (bannerUrl) setTelegrambanner(bannerUrl);
     };
 
     const uploadBannertoCDN = async () =>{
         if(!telegrambanner || telegrambanner === "" || telegrambanner === "N"){
-            const bannerUrl = await uploadBannertoCDNHelper("htmlToCanvas");
+            const bannerUrl = await uploadBannertoCDNHelper(canvasId);
             if (bannerUrl) setTelegrambanner(bannerUrl);    
             return bannerUrl;
         }    
@@ -105,17 +110,20 @@ const AddjobsComponent = () => {
 
     // handle company logo (small) input for website
     const handleCompanySmallLogoInput = async (e) => {
+        const file = e.target.files[0];
+        setCompanyLogoSize(file.size / 1024);
         const image = await handleImageInputHelper(e);
+        
         if (image) {
-            generateImageCDNlink(e, setCompanySmallLogoUrl);
             setCompanyLogoSize(image.size / 1024);
+            generateImageCDNlink(e, setCompanySmallLogoUrl);
             setResizedImage(image);
-        }
+        } 
     };
 
     // handle company logo (small) input for website and prepare for display
     const handleCompanyBigLogoInput = (e) => {
-        generateImageCDNlink(e, setCompanyBigLogoUrl);
+        // generateImageCDNlink(e, setCompanyBigLogoUrl);
         const reader = new FileReader();
         reader.addEventListener("load", () => {
             setCompanyLogo(reader.result);
@@ -140,7 +148,7 @@ const AddjobsComponent = () => {
     const getCompanyLogo = async () => {
         if (companyName) {
             const data = await getCompanyLogoHelper(companyName);
-            if(data?.data[0]?.largeLogo != "null") setCompanyLogoBanner(data?.data[0]?.largeLogo);
+            // if(data?.data[0]?.largeLogo != "null") setCompanyLogoBanner(data?.data[0]?.largeLogo);
             if(data?.data[0]?.smallLogo != "null") setImagePath(data?.data[0]?.smallLogo);
         }
     };
@@ -159,7 +167,7 @@ const AddjobsComponent = () => {
 
     // add form data
     const addJobDetails = async (e) => {
-        if(companyBigLogoUrl && companySmallLogoUrl){
+        if(companySmallLogoUrl){
             handleCompanyLogoSubmit();
         }
         e.preventDefault();
@@ -190,22 +198,13 @@ const AddjobsComponent = () => {
         console.log("bannerlink", bannerlink)
         if(telegrambanner === "N") formData.append("jdbanner", bannerlink);
 
-        addJobDataHelper(formData);
+        const res = addJobDataHelper(formData);
+        if(res.status === 200) navigate("/admin")
     };
 
     return (
         <div className={styles.container}>
-            <div
-                onClick={handleBack}
-                style={{
-                    display: "flex",
-                    alignItems: "center",
-                    cursor: "pointer",
-                }}
-            >
-                <img style={{ width: "30px", marginRight: "10px" }} src="https://img.icons8.com/ios-filled/100/null/circled-left-2.png" alt="back button" />
-                <h3>Back to dashboard</h3>
-            </div>
+            <Backtodashboard/>
 
             <div className={styles.maininput_con}>
                 <div className={styles.input_fields}>
@@ -224,16 +223,17 @@ const AddjobsComponent = () => {
                         />
                         <CustomTextField
                             fullWidth
-                            label="Title for Instagram banner"
+                            label={igbannertitle?.length > 26 ? "Max length is 26" : "Title for Instagram banner"}
                             value={igbannertitle}
                             onChange={(val) => {handleJobTitleChange(val)}}
+                            error={igbannertitle?.length > 26}
                         />
                     </div>
                     <div className={styles.flex}>
                         <CustomTextField label="Link for the job application *" value={link} onBlur={shortenLink} onChange={(val) => setLink(val)} fullWidth />
-                        <IconButton sx={{ mt: 1 }} color="secondary" aria-label="delete" size="large" onClick={shortenLink}>
+                        {isAdmin && <IconButton sx={{ mt: 1 }} color="secondary" aria-label="delete" size="large" onClick={shortenLink}>
                             <CloudDownloadIcon fontSize="inherit" />
-                        </IconButton>
+                        </IconButton>}
                     </div>
 
                     <CustomTextField label="Degree *" value={degree} onChange={(val) => setDegree(val)} fullWidth type="select" optionData={degreeOptions} />
@@ -246,9 +246,6 @@ const AddjobsComponent = () => {
                             onChange={(val) => setSalary(val)}
                             fullWidth
                             optionData={batchOptions}
-                            InputProps={{
-                                endAdornment: <InputAdornment position="start">₹</InputAdornment>,
-                            }}
                         />
                     </div>
 
@@ -257,7 +254,7 @@ const AddjobsComponent = () => {
                         <CustomTextField label="Location *" value={location} onChange={(val) => setLocation(val)} fullWidth type="select" optionData={locOptions} />
                     </div>
                     <div className={styles.flex_con}>
-                        <CustomTextField label="Type of the company" value={companytype} onChange={(val) => setCompanytype(val)} fullWidth type="select" optionData={companyTypeOptions} />
+                        <CustomTextField disabled={!isAdmin} label="Type of the company" value={companytype} onChange={(val) => setCompanytype(val)} fullWidth type="select" optionData={companyTypeOptions} />
                         <CustomTextField label="Type of Job" value={jobtype} onChange={(val) => setJobtype(val)} fullWidth type="select" optionData={jobTypeOptions} />
                     </div>
 
@@ -278,7 +275,7 @@ const AddjobsComponent = () => {
                             <b>
                                 <span style={{ color: "red" }}>**</span> Upload Company logo
                             </b>
-                            (150kb) :
+                            (50kb) :
                         </p>
                         <input type="file" onChange={(e) => handleCompanySmallLogoInput(e, true)} />
                         <p>File Size : {companyLogoSize}</p>
@@ -299,9 +296,7 @@ const AddjobsComponent = () => {
                                 <input accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleCompanyBigLogoInput(e)} />
                             </label>
                         </div>
-                        <IconButton sx={{ mt: 1 }} color="warning" aria-label="delete" size="large" onClick={() => setCompanyLogo(null)}>
-                            <DeleteIcon fontSize="inherit" />
-                        </IconButton>
+    
                     </div>
                     <div className={styles.flex} style={{ width: "50%", marginTop: "30px" }}>
                         <TextField size="small" sx={{ width: "10ch" }} label="Img Size" value={imgsize} onChange={(e) => setImgsize(e.target.value)} />
@@ -338,7 +333,7 @@ const AddjobsComponent = () => {
 
                 {jdpage && (
                     <div className={styles.editor_fields}>
-                        <CustomTextField label="Role of the Job" value={role} onChange={(val) => setRole(val)} fullWidth />
+                        <CustomTextField disabled label="Role of the Job" value={role} onChange={(val) => setRole(val)} fullWidth />
 
                         <div className={styles.ck_grid}>
                             <CustomCKEditor label="Job Description : " value={jobdesc} onChange={(val) => setJobdesc(val)} />
@@ -357,8 +352,8 @@ const AddjobsComponent = () => {
                     Submit Job details
                 </Button>
             </div>
-
-            <Canvas
+            
+            {isAdmin ? <Canvas
                 companyName={companyName}
                 companyLogo={companyLogo}
                 igbannertitle={igbannertitle}
@@ -373,6 +368,21 @@ const AddjobsComponent = () => {
                 paddingbottom={paddingbottom}
                 companyLogoBanner={companyLogoBanner}
             />
+             : <JobsattechBanner
+                companyName={companyName}
+                companyLogo={companyLogo}
+                igbannertitle={igbannertitle}
+                degree={degree}
+                batch={batch}
+                experience={experience}
+                salary={salary}
+                location={location}
+                imgsize={imgsize}
+                imgmleft={imgmleft}
+                paddingtop={paddingtop}
+                paddingbottom={paddingbottom}
+                companyLogoBanner={companyLogoBanner}
+            />}
 
             <div style={{ marginTop: "30px", marginBottom: "50px" }} className={styles.flex}>
                 <Button style={{ textTransform: "capitalize" }} onClick={() => handleDownloadBanner()} variant="contained" color="success" endIcon={<CloudDownloadIcon />}>
