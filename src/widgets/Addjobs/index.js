@@ -72,16 +72,25 @@ const AddjobsComponent = () => {
     const canvasId = isAdmin ? "htmlToCanvas" : "jobsattechCanvas";
     const navigate = useNavigate();
 
+    const generateLastDatetoApply = () => {
+        const formattedDate = generateLastDatetoApplyHelper();
+        if (formattedDate) setLastdate(formattedDate);
+    };
+
     useEffect(() => {
         generateLastDatetoApply();
     }, []);
 
+    useEffect(() => {
+        if(context.isAdmin){
+            setIsAdmin(true)
+        }
+    }, [context.isAdmin]);
+
     if (!context.user?.email) {
-        return <Navigate to="/" />;
+        return <Navigate to="/"/>;
     }
-    if(context.isAdmin){
-        setIsAdmin(true)
-    }
+    
 
     // upload image to cloudinary and return cdn url
     const generateImageCDNlink = async (e, setter, blob) => {
@@ -137,11 +146,6 @@ const AddjobsComponent = () => {
             const tempLink = await shortenurl(link);
             if (tempLink) setLink(tempLink);
         }
-    };
-
-    const generateLastDatetoApply = () => {
-        const formattedDate = generateLastDatetoApplyHelper();
-        if (formattedDate) setLastdate(formattedDate);
     };
 
     // get logo of entered company on blur company input
@@ -201,6 +205,8 @@ const AddjobsComponent = () => {
         const res = addJobDataHelper(formData);
         if(res.status === 200) navigate("/admin")
     };
+
+    
 
     return (
         <div className={styles.container}>

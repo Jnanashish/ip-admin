@@ -10,7 +10,7 @@ function Backtodashboard() {
 
     return (
         <div
-            onClick={handleBack}
+            onClick={()=>handleBack()}
             style={{
                 display: "flex",
                 alignItems: "center",
