@@ -23,6 +23,16 @@
         align-items: flex-start;
     }
 }
+.overlayContainer{
+    height: 100vh;
+    width: 100%;
+    background-color: rgba(0,0,0,0.2);
+    z-index: 2;
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 .container {
     background-color: #e1ebff;
     padding: 20px;
@@ -42,6 +52,7 @@
     justify-content: space-between;
     gap: 10px;
     width: 100%;
+    margin-top: 16px;
 }
 .input_fields {
     width: 60%;

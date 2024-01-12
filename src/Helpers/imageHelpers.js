@@ -1,5 +1,7 @@
 import Compressor from "compressorjs";
 import html2canvas from "html2canvas";
+import * as htmlToImage from 'html-to-image';
+import { toPng, toJpeg, toBlob, toPixelData, toSvg } from 'html-to-image';
 
 // helper methods
 import { API } from "../Backend"
@@ -37,38 +39,73 @@ export const generateImageCDNlinkHelper = async (event, blob) => {
     return res.url
 };
 
-
-// -- convert and canvas to image and download it, get image cdn url
 export const downloadImagefromCanvasHelper = async (fileName, canvasId) => {
     const element = document.getElementById(canvasId);
-    const canvas = await html2canvas(element);
 
-    var data = canvas.toDataURL("image/jpg");
-    var link = document.createElement("a");
+    try {
+        const dataUrl = await htmlToImage.toJpeg(element);
+        const link = document.createElement("a");
 
-    link.href = data;
-    link.download = fileName + ".jpg";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+        link.href = dataUrl;
+        link.download = fileName + ".jpg";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
-    const blob = await new Promise(resolve => canvas.toBlob(resolve));
-    const bannerUrl = await generateImageCDNlinkHelper(null, blob);
+        const blob = await fetch(dataUrl).then(res => res.blob());
+        const bannerUrl = await generateImageCDNlinkHelper(null, blob);
 
-
-    return bannerUrl;
+        return bannerUrl;
+    } catch (error) {
+        console.error("Error converting HTML to image:", error);
+        // Handle error as needed
+        return null;
+    }
 };
-
+// -- convert and canvas to image and download it, get image cdn url
+//export const downloadImagefromCanvasHelper = async (fileName, canvasId) => {
+//    const element = document.getElementById(canvasId);
+//    const canvas = await html2canvas(element);
+//
+//    var data = canvas.toDataURL("image/jpg");
+//    var link = document.createElement("a");
+//
+//    link.href = data;
+//    link.download = fileName + ".jpg";
+//    document.body.appendChild(link);
+//    link.click();
+//    document.body.removeChild(link);
+//
+//    const blob = await new Promise(resolve => canvas.toBlob(resolve));
+//    const bannerUrl = await generateImageCDNlinkHelper(null, blob);
+//
+//
+//    return bannerUrl;
+//};
 
 export const uploadBannertoCDNHelper = async(canvasId) => {
     const element = document.getElementById(canvasId);
-    const canvas = await html2canvas(element, {useCORS: true});
 
-    const blob = await new Promise(resolve => canvas.toBlob(resolve));
-    const bannerUrl = await generateImageCDNlinkHelper(null, blob);
+    try {
+        const dataUrl = await htmlToImage.toBlob(element);
+        const bannerUrl = await generateImageCDNlinkHelper(null, dataUrl);
 
-    return bannerUrl;
+        return bannerUrl;
+    } catch (error) {
+        console.error("Error converting HTML to image:", error);
+        // Handle error as needed
+        return null;
+    }
 }
+//export const uploadBannertoCDNHelper = async(canvasId) => {
+//    const element = document.getElementById(canvasId);
+//    const canvas = await html2canvas(element, {useCORS: true, proxy : "https://res.cloudinary.com", });
+//
+//    const blob = await new Promise(resolve => canvas.toBlob(resolve));
+//    const bannerUrl = await generateImageCDNlinkHelper(null, blob);
+//
+//    return bannerUrl;
+//}
 
 
 

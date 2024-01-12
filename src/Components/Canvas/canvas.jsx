@@ -46,7 +46,7 @@ const Canvas = (props) => {
                 </div>
 
                 <div className={styles.companylogo}>
-                    {companyLogo && companyLogo != null && <img style={customStyle.imgstyle} src={companyLogo} alt={`${companyName} logo`}></img>}
+                    {companyLogo && <img style={customStyle.imgstyle} src={companyLogo} alt={`${companyName} logo`}></img>}
                     {!companyLogo && companyLogoBanner && <img style={customStyle.imgstyle} src={companyLogoBanner} alt={`${companyName} logo`}></img>}
                     {!companyLogo && !companyLogoBanner && <h1>{companyName}</h1>}
                 </div>
