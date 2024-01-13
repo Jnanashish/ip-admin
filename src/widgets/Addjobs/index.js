@@ -131,7 +131,7 @@ const AddjobsComponent = () => {
 
     // handle company logo (small) input for website and prepare for display
     const handleCompanyBigLogoInput = (e) => {
-        // generateImageCDNlink(e, setCompanyBigLogoUrl);
+         generateImageCDNlink(e, setCompanyBigLogoUrl);
         const reader = new FileReader();
         reader.addEventListener("load", () => {
             setCompanyLogo(reader.result);
