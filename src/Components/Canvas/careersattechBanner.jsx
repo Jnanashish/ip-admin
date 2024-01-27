@@ -6,7 +6,7 @@ import linkedin from "../../Static/Image/linkedin.png"
 import instagram from "../../Static/Image/instagram.png";
 import telegram from "../../Static/Image/telegram.png";
 
-const Canvas = (props) => {
+const CareersattechBanner = (props) => {
     const {
         companyName,
         companyLogo,
@@ -23,14 +23,13 @@ const Canvas = (props) => {
         companyLogoBanner,
     } = props;
 
-    var customStyle = {
+    const customStyle = {
         imgstyle: {
             height: imgsize,
             marginLeft: imgmleft,
             marginTop: paddingtop,
             marginBottom: paddingbottom,
         },
-        imgContainerstyle: {},
     };
 
     return (
@@ -46,13 +45,15 @@ const Canvas = (props) => {
                 </div>
 
                 <div className={styles.companylogo}>
-                    {companyLogo && <img style={customStyle.imgstyle} src={companyLogo} alt={`${companyName} logo`}></img>}
-                    {!companyLogo && companyLogoBanner && <img style={customStyle.imgstyle} src={companyLogoBanner} alt={`${companyName} logo`}></img>}
+                    {companyLogo &&
+                        <img style={customStyle.imgstyle} src={companyLogo} alt={`${companyName} logo`}></img>}
+                    {!companyLogo && companyLogoBanner &&
+                        <img style={customStyle.imgstyle} src={companyLogoBanner} alt={`${companyName} logo`}></img>}
                     {!companyLogo && !companyLogoBanner && <h1>{companyName}</h1>}
                 </div>
 
                 <div className={styles.canvas_title}>
-                    <h1>{`${igbannertitle.length > 30 ? "":"is hiring "}` + igbannertitle}</h1>
+                    <h1>{`${igbannertitle.length > 30 ? "" : "is hiring "}` + igbannertitle}</h1>
                 </div>
             </div>
 
@@ -85,14 +86,14 @@ const Canvas = (props) => {
                     )}
                     <p>
                         <span className={styles.tag}>Apply Link : </span>
-                        <span style={{ color: "#0069ff" }}>Link in Bio (visit : careersat.tech)</span>
+                        <span style={{color: "#0069ff"}}>Link in Bio (visit : careersat.tech)</span>
                     </p>
                 </div>
 
                 <div className={styles.footer}>
-                    <img src={instagram} alt="instagram-logo" />
-                    <img src={telegram} alt="telegram-logo" />
-                    <img src={linkedin} alt="linkedin-logo" />
+                    <img src={instagram} alt="instagram-logo"/>
+                    <img src={telegram} alt="telegram-logo"/>
+                    <img src={linkedin} alt="linkedin-logo"/>
                     <p>
                         Follow <span>@carrersattech</span> to get regular Job updates.
                     </p>
@@ -102,4 +103,4 @@ const Canvas = (props) => {
     );
 };
 
-export default Canvas;
+export default CareersattechBanner;

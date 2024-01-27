@@ -6,9 +6,9 @@ import AddjobsComponent from "../../widgets/Addjobs";
 
 function Addjobs() {
     const context = useContext(UserContext);
-    if (!context.user?.email) {
-        return <Navigate to="/"/>;
-    }
+//    if (!context.user?.email) {
+//        return <Navigate to="/"/>;
+//    }
     return (
         <>
             <AddjobsComponent />

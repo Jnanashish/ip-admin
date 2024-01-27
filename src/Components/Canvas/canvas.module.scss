@@ -22,6 +22,7 @@ $gridBoxSize: 30px;
     height: 24 * $gridBoxSize;
     // background-color: #b3b3b3;
 }
+
 .lower {
     padding: 0px;
     // height: 14 * $gridBoxSize;
@@ -38,20 +39,25 @@ $gridBoxSize: 30px;
     .weblink {
         // font-size: 14px;
         font-weight: 600;
+
         span {
             font-weight: 700;
             color: #0069ff;
         }
+
         font-size: 28px;
         z-index: 99;
     }
+
     .logo {
         height: 30px;
     }
-    .logoText{
+
+    .logoText {
         font-size: 28px;
         font-weight: 600;
-        span{
+
+        span {
             background-color: #0069ff;
             color: #FFFFFF;
             padding: 4px 6px;
@@ -67,6 +73,7 @@ $gridBoxSize: 30px;
     width: 100%;
     display: flex;
     align-items: center;
+
     h1 {
         font-weight: 600;
         color: #0069ff;
@@ -74,6 +81,7 @@ $gridBoxSize: 30px;
         -webkit-text-stroke-width: 1px;
         -webkit-text-stroke-color: #0050ff;
     }
+
     grid-row-start: 6;
     grid-row-end: 9;
     padding-top: 64px;
@@ -92,6 +100,7 @@ $gridBoxSize: 30px;
         font-size: $titleFontSize;
         line-height: 120px;
     }
+
     z-index: 99;
     height: calc(12 * $gridBoxSize);
     padding-bottom: 60px;
@@ -107,6 +116,7 @@ $gridBoxSize: 30px;
     border-radius: 50px 50px 0px 0px;
     justify-content: center;
     flex-direction: column;
+
     p {
         color: #000000;
         margin: 4.5px 0px;
@@ -114,10 +124,12 @@ $gridBoxSize: 30px;
         font-size: $detailFontSize;
         line-height: 70px;
     }
+
     .tag {
         font-weight: 600;
         color: #000000;
     }
+
     padding: 0px 0px 0px 120px;
 }
 
@@ -130,15 +142,19 @@ $gridBoxSize: 30px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
+
     p {
         font-weight: 500;
         color: #ffffff;
         margin-left: 10px;
     }
+
     span {
         font-weight: 600;
     }
+
     font-size: 28px;
+
     img {
         width: 24px;
         margin-right: 5px;

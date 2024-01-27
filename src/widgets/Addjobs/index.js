@@ -2,12 +2,13 @@ import React, { useContext, useEffect, useState } from "react";
 import styles from "./addjobs.module.scss";
 
 // custom components
-import Canvas from "../../Components/Canvas/canvas";
+import CareersattechBanner from "../../Components/Canvas/careersattechBanner"
+import JobsattechBanner from "../../Components/Canvas/jobsattechBanner";
+
 import CustomTextField from "../../Components/Input/Textfield";
 import CustomCKEditor from "../../Components/CkEditor/CkEditor";
 import CustomDivider from "../../Components/Divider/Divider";
 import Backtodashboard from "./Components/Backtodashboard";
-import JobsattechBanner from "../../Components/Canvas/jobsattechBanner";
 
 // mui import
 import { TextField, Button, IconButton, FormGroup, Switch, FormControlLabel } from "@mui/material";
@@ -26,7 +27,7 @@ import { generateLastDatetoApplyHelper, getCompanyLogoHelper, addJobDataHelper }
 import { copyToClipBoard, uploadCompanyLogoHelper } from "../../Helpers/utility";
 
 const AddjobsComponent = () => {
-    const [isAdmin, setIsAdmin] = useState(false)
+    const [isAdmin, setIsAdmin] = useState(true)
 
     const [igbannertitle, setIgbannertitle] = useState("");
     const [link, setLink] = useState("");
@@ -40,7 +41,7 @@ const AddjobsComponent = () => {
     const [companyName, setCompanyName] = useState("");
     const [title, setTitle] = useState("");
 
-    const [companytype, setCompanytype] = useState(isAdmin ? "product" : "jobs");
+    const [companytype, setCompanytype] = useState(isAdmin ? "product" : "service");
     const [lastdate, setLastdate] = useState(null);
     const [role, setRole] = useState("N");
 
@@ -90,6 +91,19 @@ const AddjobsComponent = () => {
             setIsAdmin(true)
         }
     }, [context.isAdmin]);
+
+    useEffect(() => {
+        if(experience === "0 - 1 years") setBatch("2023 / 2022");
+        if(experience === "0 - 2 years") setBatch("2023 / 2022 / 2021");
+        if(experience === "0 - 3 years") setBatch("2023 / 2022 / 2021 / 2020");
+        if(experience === "0 - 4 years") setBatch("2023 / 2022 / 2021 / 2020 / 2019");
+        if(experience === "0+ years") setBatch("2023 / 2022 / 2021 / 2020 / 2019");
+        if(experience === "1+ years") setBatch("2023 / 2022 / 2021 / 2020 / 2019");
+        if(experience === "2+ years") setBatch("2022 / 2021 / 2020 / 2019");
+        if(experience === "3+ years") setBatch("2021 / 2020 / 2019");
+        if(experience === "College students" || experience === "Final year students") setBatch("2025 / 2024");
+        if(experience === "Freshers") setBatch("2024 / 2023 / 2022");
+    }, [experience])
 
     // upload image to cloudinary and return cdn url
     const generateImageCDNlink = async (e, setter, blob) => {
@@ -152,7 +166,7 @@ const AddjobsComponent = () => {
         if (companyName) {
             const data = await getCompanyLogoHelper(companyName);
              if(data?.data[0]?.largeLogo != "null") setCompanyLogoBanner(data?.data[0]?.largeLogo);
-            if(data?.data[0]?.smallLogo != "null") setImagePath(data?.data[0]?.smallLogo);
+             if(data?.data[0]?.smallLogo != "null") setImagePath(data?.data[0]?.smallLogo);
         }
     };
 
@@ -218,7 +232,7 @@ const AddjobsComponent = () => {
 
             <div className={styles.maininput_con}>
                 <div className={styles.input_fields}>
-                    {/*<CustomTextField disabled label="Title of the job *" value={title} onChange={(val) => setTitle(val)} fullWidth />*/}
+                    <CustomTextField label="Title of the job *" value={title} onChange={(val) => setTitle(val)} fullWidth />
 
                     <div className={styles.flex_con}>
                         <CustomTextField
@@ -227,13 +241,13 @@ const AddjobsComponent = () => {
                             onChange={(val) => {
                                 setCompanyName(val);
                                 setTitle(val + " is hiring " + igbannertitle);
-                            }}
+                        }}
                             onBlur={getCompanyLogo}
                             sx={{ width: "20ch" }}
                         />
                         <CustomTextField
                             fullWidth
-                            label={igbannertitle?.length > 26 ? "Max length is 26" : "Title of the job"}
+                            label={igbannertitle?.length > 26 ? "Max length is 26" : "Banner title of the job"}
                             value={igbannertitle}
                             onChange={(val) => {handleJobTitleChange(val)}}
                             error={igbannertitle?.length > 26}
@@ -249,6 +263,11 @@ const AddjobsComponent = () => {
                     <CustomTextField label="Degree *" value={degree} onChange={(val) => setDegree(val)} fullWidth type="select" optionData={degreeOptions} />
 
                     <div className={styles.flex_con}>
+                        <CustomTextField label="Experience needed *" value={experience} onChange={(val) => setExperience(val)} fullWidth type="select" optionData={expOptions} />
+                        <CustomTextField label="Location *" value={location} onChange={(val) => setLocation(val)} fullWidth type="select" optionData={locOptions} />
+                    </div>
+                    <br/>
+                    <div className={styles.flex_con}>
                         <CustomTextField label="Batch *" value={batch} onChange={(val) => setBatch(val)} fullWidth type="select" optionData={batchOptions} />
                         <CustomTextField
                             label="Salary"
@@ -258,13 +277,8 @@ const AddjobsComponent = () => {
                             optionData={batchOptions}
                         />
                     </div>
-
                     <div className={styles.flex_con}>
-                        <CustomTextField label="Experience needed *" value={experience} onChange={(val) => setExperience(val)} fullWidth type="select" optionData={expOptions} />
-                        <CustomTextField label="Location *" value={location} onChange={(val) => setLocation(val)} fullWidth type="select" optionData={locOptions} />
-                    </div>
-                    <div className={styles.flex_con}>
-                        {isAdmin && <CustomTextField disabled={!isAdmin} label="Type of the company" value={companytype} onChange={(val) => setCompanytype(val)} fullWidth type="select" optionData={companyTypeOptions} />}
+                        {true && <CustomTextField disabled={!isAdmin} label="Type of the company" value={companytype} onChange={(val) => setCompanytype(val)} fullWidth type="select" optionData={companyTypeOptions} />}
                         <CustomTextField label="Type of Job" sx={{ width: "50%" }} value={jobtype} onChange={(val) => setJobtype(val)} fullWidth type="select" optionData={jobTypeOptions} />
                     </div>
 
@@ -363,7 +377,7 @@ const AddjobsComponent = () => {
                 </Button>
             </div>
             
-            {isAdmin ? <Canvas
+            {isAdmin ? <CareersattechBanner
                 companyName={companyName}
                 companyLogo={companyLogo}
                 igbannertitle={igbannertitle}

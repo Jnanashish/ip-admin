@@ -5,12 +5,12 @@ export const degreeOptions = [
     "B.E / B.Tech",
     "BBA / MBA",
     "Any Graduate",
-    "Any Engineering graduate",
-    "Any Bachelor's degree",
-    "Diploma students",
+    "Any Engineering Graduate",
+    "Any Bachelor's Degree",
+    "Diploma Students",
     "Bachelor's in Computer Science",
-    "Bachelor's degree in CSE and IT",
-    "Computer science degree",
+    "Bachelor's Degree in CSE and IT",
+    "Computer Science Degree",
 ]
 
 export const batchOptions = [
@@ -22,6 +22,7 @@ export const batchOptions = [
     "2022 / 2021 / 2020",
     "2022 / 2021",
     "2022",
+    "2023 / 2022 / 2021 / 2020 / 2019",
     "2023 / 2022 / 2021 / 2020",
     "2023 / 2022 / 2021",
     "2023 / 2022",
@@ -31,6 +32,7 @@ export const batchOptions = [
     "2024",
     "2025 / 2024 / 2023",
     "2025 / 2024",
+    "2025",
     "Any graduate",
 ];
 
@@ -76,9 +78,10 @@ export const locOptions = [
     "Noida (Hybrid)",
     "Goa",
     "North India",
+    "Multiple locations"
 ];
 
 
 export const jobTypeOptions = ["N", "Full time", "Internship", "Part time", "Contractual"];
 
-export const companyTypeOptions = ["N", "product", "service", "jobs"];
+export const companyTypeOptions = ["N", "product", "service"];
