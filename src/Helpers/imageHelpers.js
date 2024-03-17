@@ -1,11 +1,8 @@
 import Compressor from "compressorjs";
-import html2canvas from "html2canvas";
 import * as htmlToImage from 'html-to-image';
-import { toPng, toJpeg, toBlob, toPixelData, toSvg } from 'html-to-image';
 
 // helper methods
-import { API } from "../Backend"
-import { ShowErrorToast, ShowInfoToast, ShowWarnToast } from "./toast";
+import { showErrorToast, showInfoToast, showWarnToast } from "./toast";
 import { post, get } from "./request";
 import { apiEndpoint } from "./apiEndpoints";
 
@@ -22,22 +19,75 @@ export const resizeImageHelper = (file) =>{
             },
             error(err) {
                 reject(err); 
-                ShowErrorToast("Error in resizing image");
+                showErrorToast("Error in resizing image");
             },
         });
     });
 }
 
-// -- upload image to cloudinary and return cdn url
+// compress and resize image helper
+const resizeImage = async (file) => {
+    const compressedImage = await resizeImageHelper(file);
+    const compressedImageSize = compressedImage.size;
+    console.log("compressedImage", compressedImage, compressedImageSize);
+    
+    // if compressed image size is more then 10kb return null
+    if (compressedImageSize > 10240) {
+        showErrorToast("Image size should be less than 10kb (After compression)");
+        return null;
+    } else {
+        compressedImageSize > 5120 && showWarnToast("Image size should be less than 5kb (After compression)");
+        console.log("HERE");
+        return compressedImage;
+    }
+};
+
+// accept an file change event and return compressed file
+export const handleImageInputHelper = async (event) => {
+    const file = event.target.files[0];
+    const fileSize = file.size;
+    console.log("FILE", file);
+    
+    // if file size is more then 4kb then compress it
+    if (fileSize > 4096) {
+        // if file size is more then 50kb before compresion, don't accept it
+        if (file.size > 51200) {
+    console.log("LARGE", file.size);
+
+            showWarnToast("Image size should be less than 50kb (Before compression)");
+            return null;
+        } else {
+    console.log("IN ELSE");
+
+            // compress and resize file
+            return await resizeImage(file);
+        }
+    } else {
+        console.log("FILE IN ELSE", file);
+        return file;
+    }
+}
+
+// -- upload image to cloudinary and return cdn url (accept event or blob)
 export const generateImageCDNlinkHelper = async (event, blob) => {
     const file = !!event ? event.target.files[0] : blob;
     const formData = new FormData();
     formData.append("photo", file);
 
-    ShowInfoToast("Generating image url from cloudinary");
+    showInfoToast("Generating image url from cloudinary");
     const res = await post(apiEndpoint.getImagecdnUrl, formData, "Generate URL from image");
     return res.url
 };
+
+// upload any image to cdn return image url, accept event
+export const generateLinkfromImage = async (event, compressImage = true) => {
+    if(compressImage){
+        const imageFile = await handleImageInputHelper(event);
+        return await generateImageCDNlinkHelper(null, imageFile);
+    }
+    return await generateImageCDNlinkHelper(event);
+}
+
 
 export const downloadImagefromCanvasHelper = async (fileName, canvasId) => {
     const element = document.getElementById(canvasId);
@@ -58,10 +108,10 @@ export const downloadImagefromCanvasHelper = async (fileName, canvasId) => {
         return bannerUrl;
     } catch (error) {
         console.error("Error converting HTML to image:", error);
-        // Handle error as needed
         return null;
     }
 };
+
 // -- convert and canvas to image and download it, get image cdn url
 //export const downloadImagefromCanvasHelper = async (fileName, canvasId) => {
 //    const element = document.getElementById(canvasId);
@@ -93,49 +143,20 @@ export const uploadBannertoCDNHelper = async(canvasId) => {
         return bannerUrl;
     } catch (error) {
         console.error("Error converting HTML to image:", error);
-        // Handle error as needed
         return null;
     }
 }
-//export const uploadBannertoCDNHelper = async(canvasId) => {
-//    const element = document.getElementById(canvasId);
-//    const canvas = await html2canvas(element, {useCORS: true, proxy : "https://res.cloudinary.com", });
-//
-//    const blob = await new Promise(resolve => canvas.toBlob(resolve));
-//    const bannerUrl = await generateImageCDNlinkHelper(null, blob);
-//
-//    return bannerUrl;
-//}
 
+// download an image from image link, accept image link and filename
+export const generateImageFromLink = async (imagelink, fileName) => {
+    const image = await fetch(imagelink);
+    const imageBlog = await image.blob();
+    const imageURL = URL.createObjectURL(imageBlog);
 
-
-const resizeImage = async (file) => {
-    const compressedImage = await resizeImageHelper(file);
-    const compressedImageSize = compressedImage.size;
-    console.log('compressedImageSize', compressedImageSize);
-    
-    if (compressedImageSize > 5120) {
-        ShowErrorToast("Image size should be less than 5kb (After compression)");
-        return null;
-    } else {
-        return compressedImage;
-    }
-};
-
-// return image 
-export const handleImageInputHelper = async (event) => {
-    const file = event.target.files[0];
-    const fileSize = file.size;
-    console.log('file.size', file.size);
-    
-    if (fileSize > 4096) {
-        if (file.size > 51200) {
-            ShowWarnToast("Image size should be less than 50kb (Before compression)");
-            return null;
-        } else {
-            return await resizeImage(file);
-        }
-    } else {
-        return file;
-    }
+    const link = document.createElement("a");
+    link.href = imageURL;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }

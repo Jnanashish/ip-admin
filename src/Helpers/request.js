@@ -1,5 +1,5 @@
 import { API } from "../Backend";
-import { ShowSuccessToast, ShowErrorToast } from "./toast";
+import { showSuccessToast, showErrorToast } from "./toast";
 
 export const post = async (url, formData, apiname) => {
     const res = await fetch(`${API}${url}`, {
@@ -7,11 +7,11 @@ export const post = async (url, formData, apiname) => {
         body: formData,
     });
     if (res.status === 201 || res.status === 200) {
-        ShowSuccessToast(`${!!apiname ? apiname : "Request"} successed (POST)`);
+        showSuccessToast(`${!!apiname ? apiname : "Request"} successed (POST)`);
         const data = await res.json();
         return data;
     } else {
-        ShowErrorToast(`Error occured in ${!!apiname ? apiname : ""} POST request.`);
+        showErrorToast(`Error occured in ${!!apiname ? apiname : ""} POST request.`);
     }
 };
 
@@ -22,10 +22,24 @@ export const get = async (url, apiname) => {
     });
 
     if (res.status === 201 || res.status === 200) {
-        // ShowSuccessToast(`${!!apiname ? apiname : "Request"} successed (GET)`);
+        showSuccessToast(`${!!apiname ? apiname : "Request"} successed (GET)`);
         const data = await res.json();
         return data;
     } else {
-        ShowErrorToast(`Error occured in ${!!apiname ? apiname : ""} GET request.`);
+        showErrorToast(`Error occured in ${!!apiname ? apiname : ""} GET request.`);
+    }
+}
+
+export const deleteData = async (url, apiname) => {
+    const res = await fetch(`${API}${url}`, {
+        method: "DELETE",
+    });
+
+    if (res.status === 201 || res.status === 200) {
+        showSuccessToast(`${!!apiname ? apiname : "Request"} successed (DELETE)`);
+        const data = await res.json();
+        return data;
+    } else {
+        showErrorToast(`Error occured in ${!!apiname ? apiname : ""} DELETE request.`);
     }
 }

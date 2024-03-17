@@ -1,14 +1,14 @@
 import { toast } from "react-toastify";
 
-export function ShowSuccessToast(message) {
+export function showSuccessToast(message) {
     toast.success(message)
 }
-export function ShowErrorToast(message) {
+export function showErrorToast(message) {
     toast.error(message)
 }
-export function ShowInfoToast(message) {
+export function showInfoToast(message) {
     toast.info(message)
 }
-export function ShowWarnToast(message) {
+export function showWarnToast(message) {
     toast.warn(message)
 }

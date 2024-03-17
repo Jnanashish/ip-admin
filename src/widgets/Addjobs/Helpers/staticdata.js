@@ -27,12 +27,16 @@ export const batchOptions = [
     "2023 / 2022 / 2021",
     "2023 / 2022",
     "2023",
+    "2024 / 2023 / 2022 / 2021",
     "2024 / 2023 / 2022",
     "2024 / 2023",
     "2024",
     "2025 / 2024 / 2023",
     "2025 / 2024",
     "2025",
+    "2026 / 2025 / 2024",
+    "2026 / 2025",
+    "2026",
     "Any graduate",
 ];
 
@@ -78,10 +82,11 @@ export const locOptions = [
     "Noida (Hybrid)",
     "Goa",
     "North India",
-    "Multiple locations"
+    "Multiple locations",
+    "Ahmedabad"
 ];
 
 
 export const jobTypeOptions = ["N", "Full time", "Internship", "Part time", "Contractual"];
 
-export const companyTypeOptions = ["N", "product", "service"];
+export const companyTypeOptions = ["N", "product", "service", "promo"];

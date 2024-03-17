@@ -1,4 +1,4 @@
-import { ShowErrorToast, ShowSuccessToast, ShowInfoToast, ShowWarnToast } from "./toast";
+import { showErrorToast, showSuccessToast, showInfoToast, showWarnToast } from "./toast";
 const BOT_API_KEY = process.env.REACT_APP_BOT_API_KEY;
 
 const translate = (char) => {
@@ -14,10 +14,10 @@ const sendTelegramMsgHelper = async (chanelName, title, batch, degree, link) => 
 
     return fetch(`https://api.telegram.org/botw${BOT_API_KEY}/sendMessage?chat_id=${chanelName}&text=${msg}&disable_web_page_preview=true&disable_notification=true`, { method: "POST" })
         .then((res) => {
-            ShowSuccessToast("Message sent");
+            showSuccessToast("Message sent");
         })
         .catch((err) => {
-            ShowErrorToast("An error occured", err);
+            showErrorToast("An error occured", err);
         });
 };
 
@@ -29,10 +29,10 @@ const sendTelegramMsgwithImageHelper = async (chanelName, title, link, telegramb
         method: "POST",
     })
         .then((res) => {
-            ShowSuccessToast("Message sent");
+            showSuccessToast("Message sent");
         })
         .catch((err) => {
-            ShowErrorToast("An error occured", err);
+            showErrorToast("An error occured", err);
         });
 };
 

@@ -72,18 +72,12 @@
   }
 }
 
-.admin_btn {
-  background-color: #0000ff;
-  border: none;
-  color: #fff;
-  width: 41%;
-  margin-bottom: 20px;
-  padding: 12px;
-  font-size: 1.2rem;
-  border-radius: 4px;
+.button_container{
+  display: flex;
+  column-gap: 20px;
+  margin-bottom: 30px;
+}
 
-  &:hover {
-    background-color: #0c66ff;
-    cursor: pointer;
-  }
+.button_container > *{
+  width: 260px;
 }

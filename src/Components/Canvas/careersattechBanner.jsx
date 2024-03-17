@@ -21,6 +21,7 @@ const CareersattechBanner = (props) => {
         paddingtop,
         paddingbottom,
         companyLogoBanner,
+        ctaDetails
     } = props;
 
     const customStyle = {
@@ -85,8 +86,8 @@ const CareersattechBanner = (props) => {
                         </p>
                     )}
                     <p>
-                        <span className={styles.tag}>Apply Link : </span>
-                        <span style={{color: "#0069ff"}}>Link in Bio (visit : careersat.tech)</span>
+                        <span className={styles.tag}>{ctaDetails?.ctaTitle}</span>
+                        <span className={styles.tag} style={{color: "#0069ff"}}>{ctaDetails?.ctaLine}</span>
                     </p>
                 </div>
 

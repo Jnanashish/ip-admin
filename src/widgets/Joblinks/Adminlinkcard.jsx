@@ -1,54 +1,45 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import styles from "./adminlinkcard.module.scss";
 import EditData from "./Editdata";
-import { ToastContainer, toast } from "react-toastify";
 
-import { API } from "../../Backend";
 import { UserContext } from "../../Context/userContext";
 import { getLinkClickCount } from "../../Helpers/utility";
+import Custombutton from "../../Components/Button/Custombutton";
+import { deleteData } from "../../Helpers/request";
+import { apiEndpoint } from "../../Helpers/apiEndpoints";
+import { generateDateFromISOString } from "../../Helpers/utility";
 
 const LinkCard = ({ item, showBitlyClick }) => {
-    const [flag, setFlag] = useState("");
+    const [seletedJobId, setSeletedJobId] = useState("");
     const [deletedId, setDeletedId] = useState("");
     const [linkClickCount, setLinkClickCount] = useState(null);
 
-    var date = "";
-    if (item.createdAt) {
-        date = new Date(item.createdAt);
-        date = date.toISOString().substring(0, 10);
-    }
-    const handleClick = (id) => {
-        if (flag !== "") {
-            setFlag("");
-        } else {
-            setFlag(id);
-        }
+    const handleUpdateClick = (id) => {
+        seletedJobId !== "" ? setSeletedJobId("") : setSeletedJobId(id);
     };
 
-    const deleteData = (id) => {
+    // when delete button is clicked delete a particular job
+    const deleteJobData = (id) => {
         if (id === item._id) {
-            fetch(`${API}/jd/delete/${id}`, { method: "DELETE" })
-                .then((res) => setDeletedId(id), toast("Job deleted Successfully"))
-                .catch((err) => {
-                    toast.error("An error Occured");
-                    console.log(err);
-                });
+            deleteData(`${apiEndpoint.deleteJob}/${id}`, "Job")
+            setDeletedId(id)
         }
     };
 
     const context = useContext(UserContext);
     const isUserLogedIn = context.user?.email || true;
 
+    // get bit.ly link count
     const getBitlyShortClick = async () => {
         const data = await getLinkClickCount(item.link);
         setLinkClickCount(data?.link_clicks[0]?.clicks);
     };
 
+    // when show bit.ly is clicke
     useEffect(() => {
-        if (item.link.includes("bit.ly") && showBitlyClick) {
+        if (showBitlyClick) {
             getBitlyShortClick();
         }
     }, [item.link, showBitlyClick]);
@@ -63,8 +54,9 @@ const LinkCard = ({ item, showBitlyClick }) => {
                             <h2>{item.title}</h2>
                             <div className={styles.adminlink_item}>
                                 <h5>Created At : </h5>
-                                <h5> {date}</h5>
+                                <h5>{generateDateFromISOString(item.createdAt)}</h5>
                             </div>
+
                             {item.lastdate !== "2022-11-00-" && (
                                 <div className={styles.adminlink_item}>
                                     <h5>Last date : </h5>
@@ -73,13 +65,14 @@ const LinkCard = ({ item, showBitlyClick }) => {
                                     </h5>
                                 </div>
                             )}
+
                             <div className={styles.adminlink_item}>
                                 <h5>Total Click : </h5>
                                 <h5 className={styles.jd_date}>
                                     <b>{item.totalclick}</b>
                                 </h5>
 
-                                {showBitlyClick && (
+                                {!!showBitlyClick && (
                                     <>
                                         <h5>Bit.ly Click : </h5>
                                         <h5 className={styles.jd_date}>
@@ -89,38 +82,29 @@ const LinkCard = ({ item, showBitlyClick }) => {
                                 )}
                             </div>
                         </a>
-                        {isUserLogedIn && (
-                            <div className={styles.buttonContainer}>
-                                <Button
-                                    size="small"
-                                    disableElevation
-                                    style={{ backgroundColor: "red" }}
-                                    className={styles.btn}
-                                    fullWidth
-                                    onClick={() => deleteData(item._id)}
-                                    variant="contained"
-                                    startIcon={<DeleteIcon />}
-                                >
-                                    Delete
-                                </Button>
 
-                                <Button
-                                    size="small"
+                        {/* button section  */}
+                        {isUserLogedIn && (
+                            <>
+                            <div className={styles.buttonContainer}>
+                                <Custombutton
+                                    startIcon={<DeleteIcon />}
                                     disableElevation
+                                    size="small"
+                                    onClick={() => deleteJobData(item._id)}
+                                    style={{ backgroundColor: "red" }}
+                                    label="Delete"
                                     className={styles.btn}
-                                    onClick={() => handleClick(item._id)}
-                                    fullWidth
-                                    variant="contained"
-                                >
-                                    Update
-                                </Button>
+                                />
+
+                                <Custombutton disableElevation size="small" onClick={() => handleUpdateClick(item._id)} label="Update" className={styles.btn} />
                             </div>
+                            </>
                         )}
                     </div>
                 </div>
             )}
-            {flag === item._id && <EditData data={item} />}
-            {deletedId === item._id && <ToastContainer />}
+            {seletedJobId === item._id && <EditData data={item} setSeletedJobId={setSeletedJobId} />}
         </div>
     );
 };

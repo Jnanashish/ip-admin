@@ -3,18 +3,19 @@ import { Button } from "@mui/material";
 import styles from "./custom.module.scss";
 
 function Custombutton(props) {
-    const { size, disableElevation, fullWidth, label, variant, endIcon, disabled, style } = props;
+    const { size, disableElevation, fullWidth, label, variant, endIcon, disabled, style, startIcon, className } = props;
     return (
         <div>
             <Button
                 size={!!size ? size : "medium"}
                 disableElevation={!!disableElevation ? disableElevation : true}
-                // className={styles.btn}
+                className={!!className ? className : {}}
                 fullWidth={!!fullWidth ? fullWidth : true}
                 disabled={!!disabled ? disabled : false}
                 onClick={() => props.onClick()}
                 variant={!!variant ? variant : "contained"}
                 endIcon={!!endIcon ? endIcon : ""}
+                startIcon={!!startIcon ? startIcon : ""}
                 style={!!style ? style : {}}
             >
                 {label}

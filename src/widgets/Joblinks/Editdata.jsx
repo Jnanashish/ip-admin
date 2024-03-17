@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // import css
 import styles from "./editdata.module.scss";
@@ -13,6 +13,10 @@ import { API } from "../../Backend";
 // import react toast
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Custombutton from "../../Components/Button/Custombutton";
+import { addJobDataHelper } from "../Addjobs/Helpers";
+import { showErrorToast, showInfoToast, showWarnToast, showSuccessToast } from "../../Helpers/toast";
+import CustomDivider from "../../Components/Divider/Divider";
 
 const EditData = (props) => {
     ClassicEditor.defaultConfig = config;
@@ -29,9 +33,7 @@ const EditData = (props) => {
     const [experience, setExperience] = useState(props.data.experience);
     const [lastdate, setLastdate] = useState(props.data.lastdate);
     const [skills, setSkills] = useState(props.data.skills);
-    const [responsibility, setResponsibility] = useState(
-        props.data.responsibility
-    );
+    const [responsibility, setResponsibility] = useState(props.data.responsibility);
     const [aboutCompany, setAboutCompany] = useState(props.data.aboutCompany);
     const [location, setLocation] = useState(props.data.location);
     const [imagePath, setImagepath] = useState(props.data.imagePath);
@@ -63,114 +65,68 @@ const EditData = (props) => {
             body: formData,
         });
         if (res.status === 200) {
-            toast("Data Updated Successfully");
+            showInfoToast("Data Updated Successfully");
+            props.setSeletedJobId(true);
         } else {
-            toast.error("An error Occured");
+            showErrorToast("An error Occured");
         }
     };
+
+    const repostJob = async () => {
+        const res = await addJobDataHelper(title,link, batch, role, jobtype, degree, salary, jobdesc, eligibility, experience, lastdate, skills, responsibility, aboutCompany, location, props?.data?.jdpage, props?.data?.companytype, props?.data?.jdbanner, props?.data?.companyName, "N", imagePath, props?.data?.jdbanner)
+
+        if(res?.status === 200){
+            showSuccessToast("Job reposted")
+            props.setSeletedJobId(true);
+        }
+    }
 
     return (
         <div className="admin">
             <form method="POST">
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Title of the Job : </h3>
-                    <input
-                        className={styles.admin_input}
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        type="text"
-                        placeholder="Title of the job"
-                    />
+                    <input className={styles.admin_input} value={title} onChange={(e) => setTitle(e.target.value)} type="text" placeholder="Title of the job" />
                 </div>
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Link to register : </h3>
-                    <input
-                        className={styles.admin_input}
-                        value={link}
-                        onChange={(e) => setLink(e.target.value)}
-                        type="text"
-                        placeholder="Link"
-                    />
+                    <input className={styles.admin_input} value={link} onChange={(e) => setLink(e.target.value)} type="text" placeholder="Link" />
                 </div>
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Batch : </h3>
-                    <input
-                        className={styles.admin_input}
-                        value={batch}
-                        onChange={(e) => setBatch(e.target.value)}
-                        type="text"
-                    />
+                    <input className={styles.admin_input} value={batch} onChange={(e) => setBatch(e.target.value)} type="text" />
                 </div>
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Role for the job : </h3>
-                    <input
-                        className={styles.admin_input}
-                        value={role}
-                        onChange={(e) => setRole(e.target.value)}
-                        type="text"
-                    />
+                    <input className={styles.admin_input} value={role} onChange={(e) => setRole(e.target.value)} type="text" />
                 </div>
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Job Type : </h3>
-                    <input
-                        className={styles.admin_input}
-                        value={jobtype}
-                        onChange={(e) => setJobtype(e.target.value)}
-                        type="text"
-                    />
+                    <input className={styles.admin_input} value={jobtype} onChange={(e) => setJobtype(e.target.value)} type="text" />
                 </div>
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Degree : </h3>
-                    <input
-                        className={styles.admin_input}
-                        value={degree}
-                        onChange={(e) => setDegree(e.target.value)}
-                        type="text"
-                    />
+                    <input className={styles.admin_input} value={degree} onChange={(e) => setDegree(e.target.value)} type="text" />
                 </div>
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Salary : </h3>
-                    <input
-                        className={styles.admin_input}
-                        value={salary}
-                        onChange={(e) => setSalary(e.target.value)}
-                        type="text"
-                    />
+                    <input className={styles.admin_input} value={salary} onChange={(e) => setSalary(e.target.value)} type="text" />
                 </div>
                 <div className={styles.admin_grid}>
-                    <h3 className={styles.admin_label}>
-                        Last application date :{" "}
-                    </h3>
-                    <input
-                        className={styles.admin_input}
-                        value={lastdate}
-                        onChange={(e) => setLastdate(e.target.value)}
-                        type="text"
-                    />
+                    <h3 className={styles.admin_label}>Last application date : </h3>
+                    <input className={styles.admin_input} value={lastdate} onChange={(e) => setLastdate(e.target.value)} type="text" />
                 </div>
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Experience needed : </h3>
-                    <input
-                        className={styles.admin_input}
-                        value={experience}
-                        onChange={(e) => setExperience(e.target.value)}
-                        type="text"
-                    />
+                    <input className={styles.admin_input} value={experience} onChange={(e) => setExperience(e.target.value)} type="text" />
                 </div>
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Location : </h3>
-                    <input
-                        className={styles.admin_input}
-                        value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        type="text"
-                    />
+                    <input className={styles.admin_input} value={location} onChange={(e) => setLocation(e.target.value)} type="text" />
                 </div>
 
                 <div className={styles.ck_grid}>
-                    <h3 className={styles.admin_label}>
-                        Description of job :{" "}
-                    </h3>
+                    <h3 className={styles.admin_label}>Description of job : </h3>
                     <CKEditor
                         className={styles.ck_input}
                         editor={ClassicEditor}
@@ -183,9 +139,7 @@ const EditData = (props) => {
                 </div>
 
                 <div className={styles.ck_grid}>
-                    <h3 className={styles.admin_label}>
-                        Eligibility Criteria :{" "}
-                    </h3>
+                    <h3 className={styles.admin_label}>Eligibility Criteria : </h3>
                     <CKEditor
                         className={styles.ck_input}
                         editor={ClassicEditor}
@@ -198,9 +152,7 @@ const EditData = (props) => {
                 </div>
 
                 <div className={styles.ck_grid}>
-                    <h3 className={styles.admin_label}>
-                        Responsibility of the job :{" "}
-                    </h3>
+                    <h3 className={styles.admin_label}>Responsibility of the job : </h3>
                     <CKEditor
                         className={styles.ck_input}
                         editor={ClassicEditor}
@@ -239,22 +191,18 @@ const EditData = (props) => {
                 </div>
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Image Path : </h3>
-                    <input
-                        className={styles.admin_input}
-                        value={imagePath}
-                        onChange={(e) => setImagepath(e.target.value)}
-                        type="text"
-                    />
+                    <input className={styles.admin_input} value={imagePath} onChange={(e) => setImagepath(e.target.value)} type="text" />
                 </div>
                 <br />
-                <button
-                    className={styles.admin_btn}
-                    type="button"
-                    onClick={addData}>
-                    Update
-                </button>
+
+                <div className={styles.button_container}>
+                    <Custombutton type="button" onClick={addData} label="Update" />
+                    <Custombutton type="button" onClick={repostJob} label="Repost" />
+                </div>
+
                 <ToastContainer />
             </form>
+            <CustomDivider count />
         </div>
     );
 };

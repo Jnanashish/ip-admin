@@ -13,7 +13,7 @@ import Signin from "./pages/Signinpage/Signin";
 
 function App() {
     const [user, setUser] = useState(null);
-    const [isAdmin, setIsAdmin] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(false);
     return (
         <BrowserRouter>
             <UserContext.Provider value={{ user, setUser, isAdmin, setIsAdmin }}>

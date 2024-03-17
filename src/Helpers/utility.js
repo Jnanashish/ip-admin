@@ -1,7 +1,4 @@
-import Compressor from "compressorjs";
-import html2canvas from "html2canvas";
-
-import { ShowErrorToast, ShowInfoToast, ShowWarnToast, ShowSuccessToast } from "./toast";
+import { showErrorToast, showSuccessToast } from "./toast";
 import { post, get } from "./request";
 import { apiEndpoint } from "./apiEndpoints";
 
@@ -67,10 +64,16 @@ export const uploadCompanyLogoHelper = async (companyName, companyBigLogoUrl, co
     const res = await post(apiEndpoint.addCompanyLogo, formData);
 
     if (res) {
-        ShowSuccessToast("Company logo added Successfully");
+        showSuccessToast("Company logo added Successfully");
     } else {
-        ShowErrorToast("An error Occured");
+        showErrorToast("An error Occured");
     }
 
     return res;
 };
+
+// generate date from ISO date string
+export const generateDateFromISOString = (isoDate) => {
+    const date = new Date(isoDate);
+    return date.toISOString().substring(0, 10);
+}

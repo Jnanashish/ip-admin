@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import styles from "./addjobs.module.scss";
 
 // custom components
-import CareersattechBanner from "../../Components/Canvas/careersattechBanner"
+import CareersattechBanner from "../../Components/Canvas/careersattechBanner";
 import JobsattechBanner from "../../Components/Canvas/jobsattechBanner";
 
 import CustomTextField from "../../Components/Input/Textfield";
@@ -14,7 +14,7 @@ import Backtodashboard from "./Components/Backtodashboard";
 import { TextField, Button, IconButton, FormGroup, Switch, FormControlLabel } from "@mui/material";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import CircularProgress from '@mui/material/CircularProgress';
+import CircularProgress from "@mui/material/CircularProgress";
 
 // import helpers
 import { shortenurl } from "../../Helpers/utility";
@@ -27,7 +27,7 @@ import { generateLastDatetoApplyHelper, getCompanyLogoHelper, addJobDataHelper }
 import { copyToClipBoard, uploadCompanyLogoHelper } from "../../Helpers/utility";
 
 const AddjobsComponent = () => {
-    const [isAdmin, setIsAdmin] = useState(true)
+    const [isAdmin, setIsAdmin] = useState(true);
 
     const [igbannertitle, setIgbannertitle] = useState("");
     const [link, setLink] = useState("");
@@ -67,15 +67,16 @@ const AddjobsComponent = () => {
 
     const [companyBigLogoUrl, setCompanyBigLogoUrl] = useState(null);
     const [companySmallLogoUrl, setCompanySmallLogoUrl] = useState(null);
-    const [showLoader, setShowLoader] = useState(false)
+
+    const [ctaDetails, setCtaDetails] = useState({
+        ctaTitle: "Apply Link : ",
+        ctaLine: "Link in Bio (visit : careersat.tech)",
+    });
+
+    const [showLoader, setShowLoader] = useState(false);
     const context = useContext(UserContext);
-    const formData = new FormData();
     const canvasId = isAdmin ? "htmlToCanvas" : "jobsattechCanvas";
     const navigate = useNavigate();
-
-//    const [jobinfo, setJobInfo] = useState({
-//        degree : ""
-//    })
 
     const generateLastDatetoApply = () => {
         const formattedDate = generateLastDatetoApplyHelper();
@@ -87,23 +88,23 @@ const AddjobsComponent = () => {
     }, []);
 
     useEffect(() => {
-        if(context.isAdmin){
-            setIsAdmin(true)
+        if (context.isAdmin) {
+            setIsAdmin(true);
         }
     }, [context.isAdmin]);
 
     useEffect(() => {
-        if(experience === "0 - 1 years") setBatch("2023 / 2022");
-        if(experience === "0 - 2 years") setBatch("2023 / 2022 / 2021");
-        if(experience === "0 - 3 years") setBatch("2023 / 2022 / 2021 / 2020");
-        if(experience === "0 - 4 years") setBatch("2023 / 2022 / 2021 / 2020 / 2019");
-        if(experience === "0+ years") setBatch("2023 / 2022 / 2021 / 2020 / 2019");
-        if(experience === "1+ years") setBatch("2023 / 2022 / 2021 / 2020 / 2019");
-        if(experience === "2+ years") setBatch("2022 / 2021 / 2020 / 2019");
-        if(experience === "3+ years") setBatch("2021 / 2020 / 2019");
-        if(experience === "College students" || experience === "Final year students") setBatch("2025 / 2024");
-        if(experience === "Freshers") setBatch("2024 / 2023 / 2022");
-    }, [experience])
+        if (experience === "0 - 1 years") setBatch("2023 / 2022");
+        if (experience === "0 - 2 years") setBatch("2023 / 2022 / 2021");
+        if (experience === "0 - 3 years") setBatch("2023 / 2022 / 2021 / 2020");
+        if (experience === "0 - 4 years") setBatch("2023 / 2022 / 2021 / 2020 / 2019");
+        if (experience === "0+ years") setBatch("2023 / 2022 / 2021 / 2020 / 2019");
+        if (experience === "1+ years") setBatch("2023 / 2022 / 2021 / 2020 / 2019");
+        if (experience === "2+ years") setBatch("2022 / 2021 / 2020 / 2019");
+        if (experience === "3+ years") setBatch("2021 / 2020 / 2019");
+        if (experience === "College students" || experience === "Final year students") setBatch("2025 / 2024");
+        if (experience === "Freshers") setBatch("2024 / 2023 / 2022");
+    }, [experience]);
 
     // upload image to cloudinary and return cdn url
     const generateImageCDNlink = async (e, setter, blob) => {
@@ -117,17 +118,17 @@ const AddjobsComponent = () => {
         if (bannerUrl) setTelegrambanner(bannerUrl);
     };
 
-    const uploadBannertoCDN = async () =>{
-        if(!telegrambanner || telegrambanner === "" || telegrambanner === "N"){
+    const uploadBannertoCDN = async () => {
+        if (!telegrambanner || telegrambanner === "" || telegrambanner === "N") {
             const bannerUrl = await uploadBannertoCDNHelper(canvasId);
-            if (bannerUrl) setTelegrambanner(bannerUrl);    
+            if (bannerUrl) setTelegrambanner(bannerUrl);
             return bannerUrl;
-        }    
-    }
+        }
+    };
 
     // upload the company logo url before submitting
     const handleCompanyLogoSubmit = async () => {
-        const data = await uploadCompanyLogoHelper(companyName, companyBigLogoUrl, companySmallLogoUrl); 
+        const data = await uploadCompanyLogoHelper(companyName, companyBigLogoUrl, companySmallLogoUrl);
     };
 
     // handle company logo (small) input for website
@@ -135,17 +136,17 @@ const AddjobsComponent = () => {
         const file = e.target.files[0];
         setCompanyLogoSize(file.size / 1024);
         const image = await handleImageInputHelper(e);
-        
+
         if (image) {
             setCompanyLogoSize(image.size / 1024);
             generateImageCDNlink(e, setCompanySmallLogoUrl);
             setResizedImage(image);
-        } 
+        }
     };
 
     // handle company logo (small) input for website and prepare for display
     const handleCompanyBigLogoInput = (e) => {
-         generateImageCDNlink(e, setCompanyBigLogoUrl);
+        generateImageCDNlink(e, setCompanyBigLogoUrl);
         const reader = new FileReader();
         reader.addEventListener("load", () => {
             setCompanyLogo(reader.result);
@@ -155,7 +156,7 @@ const AddjobsComponent = () => {
 
     // shorten link using bit.ly
     const shortenLink = async () => {
-        if(link.length > 10){
+        if (link.length > 10) {
             const tempLink = await shortenurl(link);
             if (tempLink) setLink(tempLink);
         }
@@ -165,70 +166,69 @@ const AddjobsComponent = () => {
     const getCompanyLogo = async () => {
         if (companyName) {
             const data = await getCompanyLogoHelper(companyName);
-             if(data?.data[0]?.largeLogo != "null") setCompanyLogoBanner(data?.data[0]?.largeLogo);
-             if(data?.data[0]?.smallLogo != "null") setImagePath(data?.data[0]?.smallLogo);
+            if (data?.data[0]?.largeLogo != "null") setCompanyLogoBanner(data?.data[0]?.largeLogo);
+            if (data?.data[0]?.smallLogo != "null") setImagePath(data?.data[0]?.smallLogo);
         }
     };
 
-    const handleJobTitleChange = (val) =>{
+    const handleJobTitleChange = (val) => {
         setIgbannertitle(val);
         setTitle(companyName + " is hiring " + val);
         setRole(val);
 
-        if(val.toLowerCase().includes("intern")){
-            setBatch("2025 / 2024 / 2023")
-            setExperience("College students")
-            setJobtype("Internship")
+        if (val.toLowerCase().includes("intern")) {
+            setBatch("2025 / 2024 / 2023");
+            setExperience("College students");
+            setJobtype("Internship");
         }
-    }
+    };
 
     // add form data
     const addJobDetails = async (e) => {
-        setShowLoader(true)
-        if(companySmallLogoUrl){
+        setShowLoader(true);
+        if (companySmallLogoUrl) {
             handleCompanyLogoSubmit();
         }
         e.preventDefault();
 
-        formData.append("title", title);
-        formData.append("link", link);
-        formData.append("batch", batch);
-        formData.append("role", role);
-        formData.append("jobtype", jobtype);
-        formData.append("degree", degree);
-        formData.append("salary", salary);
-        formData.append("jobdesc", jobdesc);
-        formData.append("eligibility", eligibility);
-        formData.append("experience", experience);
-        formData.append("lastdate", lastdate);
-        formData.append("skills", skills);
-        formData.append("responsibility", responsibility);
-        formData.append("aboutCompany", aboutCompany);
-        formData.append("location", location);
-        formData.append("jdpage", jdpage);
-        formData.append("companytype", companytype);
-        if(telegrambanner !== "N") formData.append("jdbanner", telegrambanner);
-        formData.append("companyName", companyName);
-        formData.append("photo", resizedImage);
-        if (imagePath) formData.append("imagePath", imagePath);
-        
-        const bannerlink = await uploadBannertoCDN()
-        console.log("bannerlink", bannerlink)
-        if(telegrambanner === "N") formData.append("jdbanner", bannerlink);
+        const bannerlink = await uploadBannertoCDN();
 
-        const res = await addJobDataHelper(formData);
-        console.log("RES", res, res.status)
-        if(res.status === 200 || res.status === 201) navigate("/admin")
+        const res = await addJobDataHelper(
+            title,
+            link,
+            batch,
+            role,
+            jobtype,
+            degree,
+            salary,
+            jobdesc,
+            eligibility,
+            experience,
+            lastdate,
+            skills,
+            responsibility,
+            aboutCompany,
+            location,
+            jdpage,
+            companytype,
+            telegrambanner,
+            companyName,
+            resizedImage,
+            imagePath,
+            bannerlink
+        );
+
+        if (res.status === 200 || res.status === 201) navigate("/admin");
     };
-
-    
 
     return (
         <div className={styles.container}>
-            {showLoader && <div className={styles.overlayContainer}>
-                <CircularProgress size={80} color="primary"/>
-            </div>}
-            <Backtodashboard/>
+            {showLoader && (
+                <div className={styles.overlayContainer}>
+                    <CircularProgress size={80} color="primary" />
+                </div>
+            )}
+            <Backtodashboard />
 
             <div className={styles.maininput_con}>
                 <div className={styles.input_fields}>
@@ -241,7 +241,7 @@ const AddjobsComponent = () => {
                             onChange={(val) => {
                                 setCompanyName(val);
                                 setTitle(val + " is hiring " + igbannertitle);
-                        }}
+                            }}
                             onBlur={getCompanyLogo}
                             sx={{ width: "20ch" }}
                         />
@@ -249,15 +249,19 @@ const AddjobsComponent = () => {
                             fullWidth
                             label={igbannertitle?.length > 26 ? "Max length is 26" : "Banner title of the job"}
                             value={igbannertitle}
-                            onChange={(val) => {handleJobTitleChange(val)}}
+                            onChange={(val) => {
+                                handleJobTitleChange(val);
+                            }}
                             error={igbannertitle?.length > 26}
                         />
                     </div>
                     <div className={styles.flex}>
                         <CustomTextField label="Link for the job application *" value={link} onBlur={shortenLink} onChange={(val) => setLink(val)} fullWidth />
-                        {!!isAdmin && <IconButton sx={{ mt: 1 }} color="secondary" aria-label="delete" size="large" onClick={shortenLink}>
-                            <CloudDownloadIcon fontSize="inherit" />
-                        </IconButton>}
+                        {!!isAdmin && (
+                            <IconButton sx={{ mt: 1 }} color="secondary" aria-label="delete" size="large" onClick={shortenLink}>
+                                <CloudDownloadIcon fontSize="inherit" />
+                            </IconButton>
+                        )}
                     </div>
 
                     <CustomTextField label="Degree *" value={degree} onChange={(val) => setDegree(val)} fullWidth type="select" optionData={degreeOptions} />
@@ -266,19 +270,23 @@ const AddjobsComponent = () => {
                         <CustomTextField label="Experience needed *" value={experience} onChange={(val) => setExperience(val)} fullWidth type="select" optionData={expOptions} />
                         <CustomTextField label="Location *" value={location} onChange={(val) => setLocation(val)} fullWidth type="select" optionData={locOptions} />
                     </div>
-                    <br/>
+                    <br />
                     <div className={styles.flex_con}>
                         <CustomTextField label="Batch *" value={batch} onChange={(val) => setBatch(val)} fullWidth type="select" optionData={batchOptions} />
-                        <CustomTextField
-                            label="Salary"
-                            value={salary}
-                            onChange={(val) => setSalary(val)}
-                            fullWidth
-                            optionData={batchOptions}
-                        />
+                        <CustomTextField label="Salary" value={salary} onChange={(val) => setSalary(val)} fullWidth optionData={batchOptions} />
                     </div>
                     <div className={styles.flex_con}>
-                        {true && <CustomTextField disabled={!isAdmin} label="Type of the company" value={companytype} onChange={(val) => setCompanytype(val)} fullWidth type="select" optionData={companyTypeOptions} />}
+                        {true && (
+                            <CustomTextField
+                                disabled={!isAdmin}
+                                label="Type of the company"
+                                value={companytype}
+                                onChange={(val) => setCompanytype(val)}
+                                fullWidth
+                                type="select"
+                                optionData={companyTypeOptions}
+                            />
+                        )}
                         <CustomTextField label="Type of Job" sx={{ width: "50%" }} value={jobtype} onChange={(val) => setJobtype(val)} fullWidth type="select" optionData={jobTypeOptions} />
                     </div>
 
@@ -307,11 +315,18 @@ const AddjobsComponent = () => {
                     {imagePath && (
                         <div style={{ display: "flex", marginTop: "40px" }}>
                             <p style={{ paddingRight: "10px" }}>Logo uploaded :</p>
-                            <img src={imagePath} width="50" height="50" alt="logo"/>
+                            <img src={imagePath} width="50" height="50" alt="logo" />
                         </div>
                     )}
 
                     <CustomDivider />
+                    <div style={{ display: "flex", marginBottom: "10px", gap: "10px" }}>
+                            <CustomTextField label="CTA Title" sx={{ width: "30%" }} value={ctaDetails.ctaTitle} onChange={(val) => setCtaDetails({ ...ctaDetails, ctaTitle: val })} fullWidth />
+                            <CustomTextField label="CTA Line" sx={{ width: "70%" }} value={ctaDetails.ctaLine} onChange={(val) => setCtaDetails({ ...ctaDetails, ctaLine: val })} fullWidth />
+                    </div>
+                    <p>Join instagram chanel for apply link</p>
+                    <p>Commnet YES for the apply link</p>
+                    <br/><br/>
 
                     <div style={{ justifyContent: "flex-start" }} className={styles.flex}>
                         <div className={styles.flex}>
@@ -320,7 +335,6 @@ const AddjobsComponent = () => {
                                 <input accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleCompanyBigLogoInput(e)} />
                             </label>
                         </div>
-    
                     </div>
                     <div className={styles.flex} style={{ width: "50%", marginTop: "30px" }}>
                         <TextField size="small" sx={{ width: "10ch" }} label="Img Size" value={imgsize} onChange={(e) => setImgsize(e.target.value)} />
@@ -333,80 +347,88 @@ const AddjobsComponent = () => {
                             Download IG Banner
                         </Button>
                     </div>
-                    {isAdmin && <div style={{ marginTop: "30px" }}>
-                        <div style={{ display: "flex" }}>
-                            <p style={{ paddingRight: "10px" }}>Upload JD banner : </p>
-                            <input type="file" onChange={(e) => generateImageCDNlink(e, setTelegrambanner)} />
+                    {isAdmin && (
+                        <div style={{ marginTop: "30px" }}>
+                            <div style={{ display: "flex" }}>
+                                <p style={{ paddingRight: "10px" }}>Upload JD banner : </p>
+                                <input type="file" onChange={(e) => generateImageCDNlink(e, setTelegrambanner)} />
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center" }}>
+                                <p style={{ fontSize: "10px" }}>Banner Link : {telegrambanner}</p>
+                                <IconButton color="secondary" aria-label="delete" size="small" onClick={() => copyToClipBoard(telegrambanner)}>
+                                    <ContentCopyIcon fontSize="inherit" />
+                                </IconButton>
+                            </div>
                         </div>
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                            <p style={{ fontSize: "10px" }}>Banner Link : {telegrambanner}</p>
-                            <IconButton color="secondary" aria-label="delete" size="small" onClick={() => copyToClipBoard(telegrambanner)}>
-                                <ContentCopyIcon fontSize="inherit" />
-                            </IconButton>
-                        </div>
-                    </div>}
+                    )}
                 </div>
             </div>
 
             <CustomDivider />
 
-            {isAdmin && <div>
-                <FormGroup>
-                    <FormControlLabel onChange={() => setJdpage(!jdpage)} control={<Switch />} label="Add Job description fields (Optional)" />
-                </FormGroup>
+            {isAdmin && (
+                <div>
+                    <FormGroup>
+                        <FormControlLabel onChange={() => setJdpage(!jdpage)} control={<Switch />} label="Add Job description fields (Optional)" />
+                    </FormGroup>
 
-                {jdpage && (
-                    <div className={styles.editor_fields}>
-                        <CustomTextField disabled label="Role of the Job" value={role} onChange={(val) => setRole(val)} fullWidth />
+                    {jdpage && (
+                        <div className={styles.editor_fields}>
+                            <CustomTextField disabled label="Role of the Job" value={role} onChange={(val) => setRole(val)} fullWidth />
 
-                        <div className={styles.ck_grid}>
-                            <CustomCKEditor label="Job Description : " value={jobdesc} onChange={(val) => setJobdesc(val)} />
-                            <CustomCKEditor label="Eligibility Criteria : " value={eligibility} onChange={(val) => setEligibility(val)} />
-                            <CustomCKEditor label="Responsibility of the job : " value={responsibility} onChange={(val) => setResponsibility(val)} />
-                            <CustomCKEditor label="Skills needed : " value={skills} onChange={(val) => setSkills(val)} />
-                            <CustomCKEditor label="About the company : " value={aboutCompany} onChange={(val) => setAboutCompany(val)} />
+                            <div className={styles.ck_grid}>
+                                <CustomCKEditor label="Job Description : " value={jobdesc} onChange={(val) => setJobdesc(val)} />
+                                <CustomCKEditor label="Eligibility Criteria : " value={eligibility} onChange={(val) => setEligibility(val)} />
+                                <CustomCKEditor label="Responsibility of the job : " value={responsibility} onChange={(val) => setResponsibility(val)} />
+                                <CustomCKEditor label="Skills needed : " value={skills} onChange={(val) => setSkills(val)} />
+                                <CustomCKEditor label="About the company : " value={aboutCompany} onChange={(val) => setAboutCompany(val)} />
+                            </div>
                         </div>
-                    </div>
                     )}
-                <CustomDivider />
-        </div>}
+                    <CustomDivider />
+                </div>
+            )}
 
             <div className={styles.submitbtn_zone}>
                 <Button style={{ textTransform: "capitalize" }} className={styles.submitbtn} onClick={addJobDetails} disabled={link.length === 0} variant="contained" color="primary" size="large">
                     Submit Job details
                 </Button>
             </div>
-            
-            {isAdmin ? <CareersattechBanner
-                companyName={companyName}
-                companyLogo={companyLogo}
-                igbannertitle={igbannertitle}
-                degree={degree}
-                batch={batch}
-                experience={experience}
-                salary={salary}
-                location={location}
-                imgsize={imgsize}
-                imgmleft={imgmleft}
-                paddingtop={paddingtop}
-                paddingbottom={paddingbottom}
-                companyLogoBanner={companyLogoBanner}
-            />
-             : <JobsattechBanner
-                companyName={companyName}
-                companyLogo={companyLogo}
-                igbannertitle={igbannertitle}
-                degree={degree}
-                batch={batch}
-                experience={experience}
-                salary={salary}
-                location={location}
-                imgsize={imgsize}
-                imgmleft={imgmleft}
-                paddingtop={paddingtop}
-                paddingbottom={paddingbottom}
-                companyLogoBanner={companyLogoBanner}
-            />}
+
+            {isAdmin ? (
+                <CareersattechBanner
+                    companyName={companyName}
+                    companyLogo={companyLogo}
+                    igbannertitle={igbannertitle}
+                    degree={degree}
+                    batch={batch}
+                    experience={experience}
+                    salary={salary}
+                    location={location}
+                    imgsize={imgsize}
+                    imgmleft={imgmleft}
+                    paddingtop={paddingtop}
+                    paddingbottom={paddingbottom}
+                    companyLogoBanner={companyLogoBanner}
+                    ctaDetails={ctaDetails}
+                />
+            ) : (
+                <JobsattechBanner
+                    companyName={companyName}
+                    companyLogo={companyLogo}
+                    igbannertitle={igbannertitle}
+                    degree={degree}
+                    batch={batch}
+                    experience={experience}
+                    salary={salary}
+                    location={location}
+                    imgsize={imgsize}
+                    imgmleft={imgmleft}
+                    paddingtop={paddingtop}
+                    paddingbottom={paddingbottom}
+                    companyLogoBanner={companyLogoBanner}
+                />
+            )}
 
             <div style={{ marginTop: "30px", marginBottom: "50px" }} className={styles.flex}>
                 <Button style={{ textTransform: "capitalize" }} onClick={() => handleDownloadBanner()} variant="contained" color="success" endIcon={<CloudDownloadIcon />}>
