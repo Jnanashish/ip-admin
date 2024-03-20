@@ -100,8 +100,6 @@ const UpdateData = () => {
             <CustomTextField onBlur={(val) => handleInputBlur(val)} label="Company name" value={companyName} onChange={(val) => setCompanyName(val)} fullWidth className={styles.companyNameInput} />
             <div className={styles.captionButton_container}>
                 <Custombutton onClick={()=>generateCombinedWhatsAppMessage(selectedJob)} label="Message" endIcon={<WhatsAppIcon />}/>
-                {/* <Custombutton label="Instagram caption" />
-                <Custombutton label="Linkedin caption" /> */}
             </div>
 
             <div>

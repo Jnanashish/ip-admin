@@ -1,15 +1,5 @@
 import React from "react";
-import {
-    TextField,
-    Button,
-    IconButton,
-    FormGroup,
-    Switch,
-    FormControlLabel,
-    Divider,
-    InputAdornment,
-    MenuItem,
-} from "@mui/material";
+import { TextField, Button, IconButton, FormGroup, Switch, FormControlLabel, Divider, InputAdornment, MenuItem } from "@mui/material";
 
 const CustomTextField = (props) => {
     const { label, value, type, size, disabled, error, multiline, rows } = props;
@@ -29,7 +19,7 @@ const CustomTextField = (props) => {
                     disabled={disabled ? disabled : false}
                     error={error ? error : false}
                     className={!!props.className ? props.className : ""}
-                    style={{backgroundColor : "#FFF", borderRadius : "8px"}}
+                    style={{ backgroundColor: "#FFF", borderRadius: "8px" }}
                     multiline={!!multiline ? multiline : false}
                     rows={!!rows ? rows : 1}
                 />
@@ -46,7 +36,7 @@ const CustomTextField = (props) => {
                     sx={!!props.sx ? props.sx : {}}
                     InputProps={!!props.InputProps ? props.InputProps : {}}
                     disabled={disabled ? disabled : false}
-                    style={{backgroundColor : "#FFF", borderRadius : "8px"}}
+                    style={{ backgroundColor: "#FFF", borderRadius: "8px" }}
                 >
                     {props?.optionData.map((option) => (
                         <MenuItem key={option} value={option}>

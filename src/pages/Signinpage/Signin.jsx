@@ -22,7 +22,7 @@ const Signin = () => {
         signInWithEmailAndPassword(auth, email, password)
             .then((res) => {
                 context.setUser({ email: res.user?.email });
-                if (res?.user?.email === "jhandique1999@gmail.com") {
+                if (res?.user?.email === process.env.REACT_APP_ADMIN_EMAIL) {
                     context.setIsAdmin(true);
                 }
             })

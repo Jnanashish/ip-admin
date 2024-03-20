@@ -16,7 +16,7 @@ import AddLink from "../../widgets/AD/Addlink";
 import { Button } from "@mui/material";
 
 const AdminPanel = () => {
-    const [currState, setCurrState] = useState("companylogo");
+    const [currState, setCurrState] = useState("dashboard");
     const navigate = useNavigate();
 
     const context = useContext(UserContext);
@@ -76,10 +76,9 @@ const AdminPanel = () => {
                     )}
                 </TabList>
 
-                
                 <div className={styles.part2}>
                     <TabPanel>
-                        <Joblinks /> 
+                        <Joblinks />
                     </TabPanel>
                     <TabPanel>
                         <CompanyDetails />

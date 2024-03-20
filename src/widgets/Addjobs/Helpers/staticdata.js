@@ -11,7 +11,7 @@ export const degreeOptions = [
     "Bachelor's in Computer Science",
     "Bachelor's Degree in CSE and IT",
     "Computer Science Degree",
-]
+];
 
 export const batchOptions = [
     "N",
@@ -83,9 +83,8 @@ export const locOptions = [
     "Goa",
     "North India",
     "Multiple locations",
-    "Ahmedabad"
+    "Ahmedabad",
 ];
-
 
 export const jobTypeOptions = ["N", "Full time", "Internship", "Part time", "Contractual"];
 

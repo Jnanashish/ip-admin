@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./ckeditor.module.scss"
+import styles from "./ckeditor.module.scss";
 
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
@@ -17,7 +17,7 @@ const CustomCKEditor = (props) => {
                 value={value}
                 onChange={(e, editor) => {
                     const data = editor.getData();
-                    props.onChange(data)
+                    props.onChange(data);
                 }}
             />
         </>

@@ -10,15 +10,15 @@ import Addjobs from "./pages/AddJobpage";
 import Adminpanel from "./pages/Adminpanel/Adminpanel";
 import Signin from "./pages/Signinpage/Signin";
 
-
 function App() {
+    // context set
     const [user, setUser] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
     return (
         <BrowserRouter>
             <UserContext.Provider value={{ user, setUser, isAdmin, setIsAdmin }}>
                 <div className="App">
-                    <ToastContainer autoClose={2000}/>
+                    <ToastContainer autoClose={2000} />
                     <Routes>
                         <Route exact path="/signin" element={<Signin />} />
                         <Route exact path="/admin" element={<Adminpanel />} />

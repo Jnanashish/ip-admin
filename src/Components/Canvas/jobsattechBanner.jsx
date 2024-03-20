@@ -2,21 +2,7 @@ import React from "react";
 import styles from "./canvas.module.scss";
 
 const JobsattechBanner = (props) => {
-    const {
-        companyName,
-        companyLogo,
-        igbannertitle,
-        degree,
-        batch,
-        experience,
-        salary,
-        location,
-        imgsize,
-        imgmleft,
-        paddingtop,
-        paddingbottom,
-        companyLogoBanner,
-    } = props;
+    const { companyName, companyLogo, igbannertitle, degree, batch, experience, salary, location, imgsize, imgmleft, paddingtop, paddingbottom, companyLogoBanner } = props;
 
     const customStyle = {
         imgstyle: {
@@ -31,7 +17,7 @@ const JobsattechBanner = (props) => {
         header: {
             span: {
                 backgroundColor: "#002C9B",
-            }
+            },
         },
         jobtite: {
             paddingBottom: "0px",
@@ -45,15 +31,14 @@ const JobsattechBanner = (props) => {
             margin: "0px auto 40px",
             height: "530px",
             borderRadius: "36px",
-
         },
         companyLogo: {
-            justifyContent: "center"
+            justifyContent: "center",
         },
         footer: {
             justifyContent: "center",
             backgroundColor: "#002C9B",
-        }
+        },
     };
 
     return (
@@ -61,18 +46,16 @@ const JobsattechBanner = (props) => {
             <div className={styles.upper}>
                 <div className={styles.canvas_header} style={customStyle.header}>
                     <p className={styles.weblink}>
-                        Visit <span style={{color: "#002C9B"}}>jobsat.tech</span>
+                        Visit <span style={{ color: "#002C9B" }}>jobsat.tech</span>
                     </p>
                     <p className={styles.logoText}>
-                        Jobs@<span style={{backgroundColor: "#002C9B"}}>tech</span>
+                        Jobs@<span style={{ backgroundColor: "#002C9B" }}>tech</span>
                     </p>
                 </div>
 
                 <div className={styles.companylogo} style={customStyle.companyLogo}>
-                    {companyLogo != null &&
-                        <img style={customStyle.imgstyle} src={companyLogo} alt={`${companyName} logo`}></img>}
-                    {companyLogoBanner &&
-                        <img style={customStyle.imgstyle} src={companyLogoBanner} alt={`${companyName} logo`}></img>}
+                    {companyLogo != null && <img style={customStyle.imgstyle} src={companyLogo} alt={`${companyName} logo`}></img>}
+                    {companyLogoBanner && <img style={customStyle.imgstyle} src={companyLogoBanner} alt={`${companyName} logo`}></img>}
                     {!companyLogo && !companyLogoBanner && <h1>{companyName}</h1>}
                 </div>
 
@@ -110,14 +93,14 @@ const JobsattechBanner = (props) => {
                     )}
                     <p>
                         <span className={styles.tag}>Apply Link : </span>
-                        <span style={{color: "#002C9B"}}><b>Link in Bio</b></span>
+                        <span style={{ color: "#002C9B" }}>
+                            <b>Link in Bio</b>
+                        </span>
                     </p>
                 </div>
 
                 <div className={styles.footer} style={customStyle.footer}>
-                    <p>
-                        👉 Visit Link in Bio for IT / Software Jobs Links
-                    </p>
+                    <p>👉 Visit Link in Bio for IT / Software Jobs Links</p>
                 </div>
             </div>
         </div>

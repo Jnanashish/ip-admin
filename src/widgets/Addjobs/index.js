@@ -2,8 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import styles from "./addjobs.module.scss";
 
 // custom components
-import CareersattechBanner from "../../Components/Canvas/careersattechBanner";
-import JobsattechBanner from "../../Components/Canvas/jobsattechBanner";
+import Canvas from "../../Components/Canvas";
 
 import CustomTextField from "../../Components/Input/Textfield";
 import CustomCKEditor from "../../Components/CkEditor/CkEditor";
@@ -22,65 +21,190 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../Context/userContext";
 
 import { degreeOptions, batchOptions, expOptions, locOptions, jobTypeOptions, companyTypeOptions } from "./Helpers/staticdata";
-import { downloadImagefromCanvasHelper, generateImageCDNlinkHelper, handleImageInputHelper, uploadBannertoCDNHelper } from "../../Helpers/imageHelpers";
-import { generateLastDatetoApplyHelper, getCompanyLogoHelper, addJobDataHelper } from "./Helpers";
+import { downloadImagefromCanvasHelper, generateImageCDNlinkHelper, uploadBannertoCDNHelper } from "../../Helpers/imageHelpers";
+import { generateLastDatetoApplyHelper, getCompanyLogoHelper, addJobDataHelper, mapExperiencetoBatch } from "./Helpers";
 import { copyToClipBoard, uploadCompanyLogoHelper } from "../../Helpers/utility";
+import { generateLinkfromImage } from "../../Helpers/imageHelpers";
+
+import { showErrorToast } from "../../Helpers/toast";
 
 const AddjobsComponent = () => {
     const [isAdmin, setIsAdmin] = useState(true);
-
     const [igbannertitle, setIgbannertitle] = useState("");
-    const [link, setLink] = useState("");
-
-    const [degree, setDegree] = useState("B.E / B.Tech / M.Tech");
-    const [batch, setBatch] = useState("2022 / 2021 / 2020");
-    const [experience, setExperience] = useState("0 - 2 years");
-    const [location, setLocation] = useState("Bengaluru");
-    const [salary, setSalary] = useState("N");
-    const [jdpage, setJdpage] = useState(false);
-    const [companyName, setCompanyName] = useState("");
-    const [title, setTitle] = useState("");
-
-    const [companytype, setCompanytype] = useState(isAdmin ? "product" : "service");
-    const [lastdate, setLastdate] = useState(null);
-    const [role, setRole] = useState("N");
-
-    const [jobtype, setJobtype] = useState("Full time");
-    const [jobdesc, setJobdesc] = useState("N");
-    const [eligibility, setEligibility] = useState("N");
-    const [responsibility, setResponsibility] = useState("N");
-    const [skills, setSkills] = useState("N");
-    const [aboutCompany, setAboutCompany] = useState("N");
-
-    const [telegrambanner, setTelegrambanner] = useState("N");
-    const [companyLogo, setCompanyLogo] = useState(null);
-
-    const [imgsize, setImgsize] = useState("60%");
-    const [imgmleft, setiImgmleft] = useState("0px");
-    const [paddingtop, setPaddingtop] = useState("0px");
-    const [paddingbottom, setPaddingbottom] = useState("0px");
+    const [showLoader, setShowLoader] = useState(false);
     const [companyLogoSize, setCompanyLogoSize] = useState(0);
-    const [resizedImage, setResizedImage] = useState(null);
 
-    const [imagePath, setImagePath] = useState(null);
-    const [companyLogoBanner, setCompanyLogoBanner] = useState(null);
+    const [comapnyDetails, setComapnyDetails] = useState({
+        name: "",
+        info: "",
+        linkedinLink: "",
+        careersPageLink: "",
+        companyType: "",
+        smallLogoUrl: "",
+        bigLogoUrl: "",
+    });
 
-    const [companyBigLogoUrl, setCompanyBigLogoUrl] = useState(null);
-    const [companySmallLogoUrl, setCompanySmallLogoUrl] = useState(null);
+    useEffect(() => {
+        console.log("comapnyDetails", comapnyDetails);
+    }, [comapnyDetails]);
+
+    const [jobdetails, setJobdetails] = useState({
+        degree: "B.E / B.Tech / M.Tech",
+        batch: "2022 / 2021 / 2020",
+        experience: "0 - 2 years",
+        location: "Bengaluru",
+        salary: "N",
+        jdpage: false,
+        companyName: "",
+        title: "",
+        companytype: isAdmin ? "product" : "service",
+        lastdate: null,
+        role: "N",
+        jobtype: "Full time",
+        jobdesc: "N",
+        eligibility: "N",
+        responsibility: "N",
+        skills: "N",
+        aboutCompany: "N",
+        jdBanner: "N",
+        link: "",
+        imagePath: comapnyDetails.smallLogoUrl,
+    });
+
+    const [canvasCss, setCanvasCss] = useState({
+        imgsize: "60%",
+        imgleft: "0px",
+        paddingtop: "0px",
+        paddingbottom: "0px",
+    });
 
     const [ctaDetails, setCtaDetails] = useState({
         ctaTitle: "Apply Link : ",
         ctaLine: "Link in Bio (visit : careersat.tech)",
     });
 
-    const [showLoader, setShowLoader] = useState(false);
     const context = useContext(UserContext);
     const canvasId = isAdmin ? "htmlToCanvas" : "jobsattechCanvas";
     const navigate = useNavigate();
 
+    // handle job details input change
+    const handleJobdetailsChange = (key, value) => {
+        setJobdetails((prevState) => ({
+            ...prevState,
+            [key]: value,
+        }));
+    };
+
+    // handle company details input change
+    const handleCompanyDetailChange = (key, value) => {
+        console.log("KEYYYY", key, value);
+
+        setComapnyDetails((prevState) => ({
+            ...prevState,
+            [key]: value,
+        }));
+    };
+
+    // handle canvas css input change
+    const handleCanvasCssChange = (key, value) => {
+        setCanvasCss({ ...canvasCss, [key]: value });
+    };
+
+    // generate the last date to apply based on current date
     const generateLastDatetoApply = () => {
         const formattedDate = generateLastDatetoApplyHelper();
-        if (formattedDate) setLastdate(formattedDate);
+        if (!!formattedDate) handleJobdetailsChange("lastdate", formattedDate);
+    };
+
+    // upload image to cloudinary and return cdn url
+    const generateImageCDNlink = async (e, blob) => {
+        const imageUrl = await generateImageCDNlinkHelper(e, blob);
+        if (!!imageUrl) handleJobdetailsChange("jdBanner", imageUrl);
+    };
+
+    // download the banner for social media
+    const handleDownloadBanner = async () => {
+        const bannerUrl = await downloadImagefromCanvasHelper(jobdetails.companyName, canvasId);
+        if (!!bannerUrl) handleJobdetailsChange("jdBanner", bannerUrl);
+    };
+
+    // upload banner to cdn and get link (accept html canvas id)
+    const uploadBannertoCDN = async () => {
+        if (!jobdetails.jdBanner || jobdetails.jdBanner === "" || jobdetails.jdBanner === "N") {
+            const bannerUrl = await uploadBannertoCDNHelper(canvasId);
+            if (bannerUrl) handleJobdetailsChange("jdBanner", bannerUrl);
+            return bannerUrl;
+        }
+        return null;
+    };
+
+    // shorten link using bit.ly if link length is greater then 10
+    const shortenLink = async () => {
+        if (jobdetails.link.length > 10) {
+            const tempLink = await shortenurl(jobdetails.link);
+            if (!!tempLink) handleJobdetailsChange("link", tempLink);
+        }
+    };
+
+    // get logo of entered company on blur company input
+    const getCompanyLogo = async () => {
+        if (jobdetails.companyName) {
+            const data = await getCompanyLogoHelper(jobdetails.companyName);
+            if (!!data?.data[0]?.largeLogo) handleCompanyDetailChange("bigLogoUrl", data?.data[0]?.largeLogo);
+            if (!!data?.data[0]?.smallLogo) handleCompanyDetailChange("smallLogoUrl", data?.data[0]?.smallLogo);
+        }
+    };
+
+    // handle company logo submit set cdn url
+    const handleCompanyLogoInput = async (e, compressImage = true) => {
+        const file = e.target.files;
+        const fileSize = file[0].size;
+
+        if (compressImage) {
+            setCompanyLogoSize(fileSize / 1024);
+            const link = await generateLinkfromImage(e);
+            console.log("LINK", link);
+            if(!!link) handleCompanyDetailChange("smallLogoUrl", link); 
+        } else {
+            if (fileSize < 1000000) {
+                const link = await generateLinkfromImage(e, false);
+                handleCompanyDetailChange("bigLogoUrl", link);
+            } else {
+                showErrorToast("Image size should be less than 1mb");
+            }
+        }
+    };
+
+    // add form data
+    const addJobDetails = async (e) => {
+        e.preventDefault();
+        setShowLoader(true);
+        // TODO: addCompanyDetails();
+
+        // upload banner to cdn if banner link is not present
+        const bannerlink = await uploadBannertoCDN();
+
+        const res = await addJobDataHelper(jobdetails, bannerlink);
+        if (res.status === 200 || res.status === 201) navigate("/admin");
+    };
+
+    // handle company job title change
+    const handleJobTitleChange = (val) => {
+        setIgbannertitle(val);
+        handleJobdetailsChange("title", jobdetails.companyName + " is hiring " + val);
+        handleJobdetailsChange("role", val);
+
+        if (val.toLowerCase().includes("intern")) {
+            handleJobdetailsChange("batch", "2025 / 2024 / 2023");
+            handleJobdetailsChange("experience", "College students");
+            handleJobdetailsChange("jobtype", "Internship");
+        }
+    };
+
+    // handle company name change
+    const handleCompanyNameChange = (value) => {
+        handleJobdetailsChange("companyName", value);
+        handleJobdetailsChange("title", value + " is hiring " + igbannertitle);
     };
 
     useEffect(() => {
@@ -93,269 +217,140 @@ const AddjobsComponent = () => {
         }
     }, [context.isAdmin]);
 
+    // map the experience to relevant batch
     useEffect(() => {
-        if (experience === "0 - 1 years") setBatch("2023 / 2022");
-        if (experience === "0 - 2 years") setBatch("2023 / 2022 / 2021");
-        if (experience === "0 - 3 years") setBatch("2023 / 2022 / 2021 / 2020");
-        if (experience === "0 - 4 years") setBatch("2023 / 2022 / 2021 / 2020 / 2019");
-        if (experience === "0+ years") setBatch("2023 / 2022 / 2021 / 2020 / 2019");
-        if (experience === "1+ years") setBatch("2023 / 2022 / 2021 / 2020 / 2019");
-        if (experience === "2+ years") setBatch("2022 / 2021 / 2020 / 2019");
-        if (experience === "3+ years") setBatch("2021 / 2020 / 2019");
-        if (experience === "College students" || experience === "Final year students") setBatch("2025 / 2024");
-        if (experience === "Freshers") setBatch("2024 / 2023 / 2022");
-    }, [experience]);
-
-    // upload image to cloudinary and return cdn url
-    const generateImageCDNlink = async (e, setter, blob) => {
-        const imageUrl = await generateImageCDNlinkHelper(e, blob);
-        if (imageUrl) setter(imageUrl);
-    };
-
-    // download the banner for social media
-    const handleDownloadBanner = async () => {
-        const bannerUrl = await downloadImagefromCanvasHelper(companyName, canvasId);
-        if (bannerUrl) setTelegrambanner(bannerUrl);
-    };
-
-    const uploadBannertoCDN = async () => {
-        if (!telegrambanner || telegrambanner === "" || telegrambanner === "N") {
-            const bannerUrl = await uploadBannertoCDNHelper(canvasId);
-            if (bannerUrl) setTelegrambanner(bannerUrl);
-            return bannerUrl;
-        }
-    };
-
-    // upload the company logo url before submitting
-    const handleCompanyLogoSubmit = async () => {
-        const data = await uploadCompanyLogoHelper(companyName, companyBigLogoUrl, companySmallLogoUrl);
-    };
-
-    // handle company logo (small) input for website
-    const handleCompanySmallLogoInput = async (e) => {
-        const file = e.target.files[0];
-        setCompanyLogoSize(file.size / 1024);
-        const image = await handleImageInputHelper(e);
-
-        if (image) {
-            setCompanyLogoSize(image.size / 1024);
-            generateImageCDNlink(e, setCompanySmallLogoUrl);
-            setResizedImage(image);
-        }
-    };
-
-    // handle company logo (small) input for website and prepare for display
-    const handleCompanyBigLogoInput = (e) => {
-        generateImageCDNlink(e, setCompanyBigLogoUrl);
-        const reader = new FileReader();
-        reader.addEventListener("load", () => {
-            setCompanyLogo(reader.result);
-        });
-        reader.readAsDataURL(e.target.files[0]);
-    };
-
-    // shorten link using bit.ly
-    const shortenLink = async () => {
-        if (link.length > 10) {
-            const tempLink = await shortenurl(link);
-            if (tempLink) setLink(tempLink);
-        }
-    };
-
-    // get logo of entered company on blur company input
-    const getCompanyLogo = async () => {
-        if (companyName) {
-            const data = await getCompanyLogoHelper(companyName);
-            if (data?.data[0]?.largeLogo != "null") setCompanyLogoBanner(data?.data[0]?.largeLogo);
-            if (data?.data[0]?.smallLogo != "null") setImagePath(data?.data[0]?.smallLogo);
-        }
-    };
-
-    const handleJobTitleChange = (val) => {
-        setIgbannertitle(val);
-        setTitle(companyName + " is hiring " + val);
-        setRole(val);
-
-        if (val.toLowerCase().includes("intern")) {
-            setBatch("2025 / 2024 / 2023");
-            setExperience("College students");
-            setJobtype("Internship");
-        }
-    };
-
-    // add form data
-    const addJobDetails = async (e) => {
-        setShowLoader(true);
-        if (companySmallLogoUrl) {
-            handleCompanyLogoSubmit();
-        }
-        e.preventDefault();
-
-        const bannerlink = await uploadBannertoCDN();
-
-        const res = await addJobDataHelper(
-            title,
-            link,
-            batch,
-            role,
-            jobtype,
-            degree,
-            salary,
-            jobdesc,
-            eligibility,
-            experience,
-            lastdate,
-            skills,
-            responsibility,
-            aboutCompany,
-            location,
-            jdpage,
-            companytype,
-            telegrambanner,
-            companyName,
-            resizedImage,
-            imagePath,
-            bannerlink
-        );
-
-        if (res.status === 200 || res.status === 201) navigate("/admin");
-    };
+        const mappedBatch = mapExperiencetoBatch(jobdetails.experience);
+        handleJobdetailsChange("batch", mappedBatch);
+    }, [jobdetails.experience]);
 
     return (
         <div className={styles.container}>
-            {showLoader && (
+            {/* circular loader  */}
+            {!!showLoader && (
                 <div className={styles.overlayContainer}>
-                    <CircularProgress size={80} color="primary" />
+                    <CircularProgress size={90} color="primary" />
                 </div>
             )}
+
+            {/* back to dashboard header  */}
             <Backtodashboard />
 
             <div className={styles.maininput_con}>
                 <div className={styles.input_fields}>
-                    <CustomTextField label="Title of the job *" value={title} onChange={(val) => setTitle(val)} fullWidth />
+                    <CustomTextField label="Title of the job *" value={jobdetails.title} onChange={(val) => handleJobdetailsChange("title", val)} fullWidth />
 
                     <div className={styles.flex_con}>
-                        <CustomTextField
-                            label="Company Name"
-                            value={companyName}
-                            onChange={(val) => {
-                                setCompanyName(val);
-                                setTitle(val + " is hiring " + igbannertitle);
-                            }}
-                            onBlur={getCompanyLogo}
-                            sx={{ width: "20ch" }}
-                        />
+                        <CustomTextField label="Company name *" value={jobdetails.companyName} onChange={(val) => handleCompanyNameChange(val)} onBlur={getCompanyLogo} sx={{ width: "22ch" }} />
                         <CustomTextField
                             fullWidth
-                            label={igbannertitle?.length > 26 ? "Max length is 26" : "Banner title of the job"}
+                            label={igbannertitle?.length > 30 ? "Max length is 30" : "Banner title of the job"}
                             value={igbannertitle}
-                            onChange={(val) => {
-                                handleJobTitleChange(val);
-                            }}
+                            onChange={(val) => handleJobTitleChange(val)}
                             error={igbannertitle?.length > 26}
                         />
                     </div>
-                    <div className={styles.flex}>
-                        <CustomTextField label="Link for the job application *" value={link} onBlur={shortenLink} onChange={(val) => setLink(val)} fullWidth />
-                        {!!isAdmin && (
-                            <IconButton sx={{ mt: 1 }} color="secondary" aria-label="delete" size="large" onClick={shortenLink}>
-                                <CloudDownloadIcon fontSize="inherit" />
-                            </IconButton>
-                        )}
-                    </div>
 
-                    <CustomTextField label="Degree *" value={degree} onChange={(val) => setDegree(val)} fullWidth type="select" optionData={degreeOptions} />
+                    <CustomTextField label="Link for the job application *" value={jobdetails.link} onBlur={shortenLink} onChange={(val) => handleJobdetailsChange("link", val)} fullWidth />
+                    <CustomTextField label="Degree *" value={jobdetails.degree} onChange={(val) => handleJobdetailsChange("degree", val)} fullWidth type="select" optionData={degreeOptions} />
 
                     <div className={styles.flex_con}>
-                        <CustomTextField label="Experience needed *" value={experience} onChange={(val) => setExperience(val)} fullWidth type="select" optionData={expOptions} />
-                        <CustomTextField label="Location *" value={location} onChange={(val) => setLocation(val)} fullWidth type="select" optionData={locOptions} />
+                        <CustomTextField
+                            label="Experience needed *"
+                            value={jobdetails.experience}
+                            onChange={(val) => handleJobdetailsChange("experience", val)}
+                            fullWidth
+                            type="select"
+                            optionData={expOptions}
+                        />
+                        <CustomTextField label="Location *" value={jobdetails.location} onChange={(val) => handleJobdetailsChange("location", val)} fullWidth type="select" optionData={locOptions} />
                     </div>
                     <br />
                     <div className={styles.flex_con}>
-                        <CustomTextField label="Batch *" value={batch} onChange={(val) => setBatch(val)} fullWidth type="select" optionData={batchOptions} />
-                        <CustomTextField label="Salary" value={salary} onChange={(val) => setSalary(val)} fullWidth optionData={batchOptions} />
+                        <CustomTextField label="Batch *" value={jobdetails.batch} onChange={(val) => handleJobdetailsChange("batch", val)} fullWidth type="select" optionData={batchOptions} />
+                        <CustomTextField label="Salary" value={jobdetails.salary} onChange={(val) => handleJobdetailsChange("salary", val)} fullWidth optionData={batchOptions} />
                     </div>
                     <div className={styles.flex_con}>
-                        {true && (
-                            <CustomTextField
-                                disabled={!isAdmin}
-                                label="Type of the company"
-                                value={companytype}
-                                onChange={(val) => setCompanytype(val)}
-                                fullWidth
-                                type="select"
-                                optionData={companyTypeOptions}
-                            />
-                        )}
-                        <CustomTextField label="Type of Job" sx={{ width: "50%" }} value={jobtype} onChange={(val) => setJobtype(val)} fullWidth type="select" optionData={jobTypeOptions} />
+                        <CustomTextField
+                            disabled={!isAdmin}
+                            label="Type of the company"
+                            value={jobdetails.companytype}
+                            onChange={(val) => handleJobdetailsChange("companytype", val)}
+                            sx={{ width: "50%" }}
+                            type="select"
+                            optionData={companyTypeOptions}
+                        />
+                        <CustomTextField
+                            label="Type of Job"
+                            sx={{ width: "50%" }}
+                            value={jobdetails.jobtype}
+                            onChange={(val) => handleJobdetailsChange("jobtype", val)}
+                            type="select"
+                            optionData={jobTypeOptions}
+                        />
                     </div>
 
-                    <div
-                        style={{
-                            marginTop: "10px",
-                            alignItems: "start",
-                            flexDirection: "column",
-                        }}
-                        className={styles.flex}
-                    >
+                    <div className={`${styles.flex} ${styles.lastDateContainer}`}>
                         <label className={styles.lastDateLabel}>Last date to apply</label>
-                        <input className={styles.datePicker} type="date" value={lastdate} min="2018-01-01" max="2026-12-31" onChange={(e) => setLastdate(e.target.value)} />
+                        <input
+                            className={styles.datePicker}
+                            type="date"
+                            value={jobdetails.lastdate}
+                            min="2018-01-01"
+                            max="2026-12-31"
+                            onChange={(e) => handleJobdetailsChange("lastdate", e.target.value)}
+                        />
                     </div>
 
                     <div style={{ display: "flex", marginTop: "40px" }}>
-                        <p style={{ paddingRight: "10px" }}>
-                            <b>
-                                <span style={{ color: "red" }}>**</span> Upload Company logo
-                            </b>
-                            (50kb) :
+                        <p style={{ paddingRight: "10px", fontWeight : "600" }}>
+                                <span style={{ color: "red" }}>**</span> Upload Company logo (50kb) :
                         </p>
-                        <input type="file" onChange={(e) => handleCompanySmallLogoInput(e, true)} />
+
+                        <input type="file" onChange={(e) => handleCompanyLogoInput(e)} />
                         <p>File Size : {companyLogoSize}</p>
                     </div>
-                    {imagePath && (
+
+                    {comapnyDetails.smallLogoUrl && (
                         <div style={{ display: "flex", marginTop: "40px" }}>
                             <p style={{ paddingRight: "10px" }}>Logo uploaded :</p>
-                            <img src={imagePath} width="50" height="50" alt="logo" />
+                            <img src={comapnyDetails.smallLogoUrl} width="50" height="50" alt="logo" />
                         </div>
                     )}
 
                     <CustomDivider />
                     <div style={{ display: "flex", marginBottom: "10px", gap: "10px" }}>
-                            <CustomTextField label="CTA Title" sx={{ width: "30%" }} value={ctaDetails.ctaTitle} onChange={(val) => setCtaDetails({ ...ctaDetails, ctaTitle: val })} fullWidth />
-                            <CustomTextField label="CTA Line" sx={{ width: "70%" }} value={ctaDetails.ctaLine} onChange={(val) => setCtaDetails({ ...ctaDetails, ctaLine: val })} fullWidth />
+                        <CustomTextField label="CTA Title" sx={{ width: "30%" }} value={ctaDetails.ctaTitle} onChange={(val) => setCtaDetails({ ...ctaDetails, ctaTitle: val })} fullWidth />
+                        <CustomTextField label="CTA Line" sx={{ width: "70%" }} value={ctaDetails.ctaLine} onChange={(val) => setCtaDetails({ ...ctaDetails, ctaLine: val })} fullWidth />
                     </div>
                     <p>Join instagram chanel for apply link</p>
+                    <br />
                     <p>Commnet YES for the apply link</p>
-                    <br/><br/>
+                    <CustomDivider />
 
                     <div style={{ justifyContent: "flex-start" }} className={styles.flex}>
                         <div className={styles.flex}>
                             <h4>* Company Logo for Banner : </h4>
                             <label htmlFor="contained-button-file">
-                                <input accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleCompanyBigLogoInput(e)} />
+                                <input accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleCompanyLogoInput(e, false)} />
                             </label>
                         </div>
                     </div>
-                    <div className={styles.flex} style={{ width: "50%", marginTop: "30px" }}>
-                        <TextField size="small" sx={{ width: "10ch" }} label="Img Size" value={imgsize} onChange={(e) => setImgsize(e.target.value)} />
-                        <TextField size="small" sx={{ width: "10ch" }} label="Margin left" value={imgmleft} onChange={(e) => setiImgmleft(e.target.value)} />
-                        <TextField size="small" sx={{ width: "10ch" }} label="Margin Top" value={paddingtop} onChange={(e) => setPaddingtop(e.target.value)} />
-                        <TextField size="small" sx={{ width: "10ch" }} label="Margin Bottom" value={paddingbottom} onChange={(e) => setPaddingbottom(e.target.value)} />
-                    </div>
+
                     <div style={{ marginTop: "30px" }} className={styles.flex}>
                         <Button style={{ textTransform: "capitalize" }} onClick={() => handleDownloadBanner()} variant="contained" color="success" endIcon={<CloudDownloadIcon />}>
                             Download IG Banner
                         </Button>
                     </div>
-                    {isAdmin && (
+
+                    {!!isAdmin && (
                         <div style={{ marginTop: "30px" }}>
                             <div style={{ display: "flex" }}>
                                 <p style={{ paddingRight: "10px" }}>Upload JD banner : </p>
-                                <input type="file" onChange={(e) => generateImageCDNlink(e, setTelegrambanner)} />
+                                <input type="file" onChange={(e) => generateImageCDNlink(e)} />
                             </div>
                             <div style={{ display: "flex", alignItems: "center" }}>
-                                <p style={{ fontSize: "10px" }}>Banner Link : {telegrambanner}</p>
-                                <IconButton color="secondary" aria-label="delete" size="small" onClick={() => copyToClipBoard(telegrambanner)}>
+                                <p style={{ fontSize: "10px" }}>Banner Link : {jobdetails.jdBanner}</p>
+                                <IconButton color="secondary" aria-label="delete" size="small" onClick={() => copyToClipBoard(jobdetails.jdBanner)}>
                                     <ContentCopyIcon fontSize="inherit" />
                                 </IconButton>
                             </div>
@@ -366,69 +361,42 @@ const AddjobsComponent = () => {
 
             <CustomDivider />
 
-            {isAdmin && (
-                <div>
-                    <FormGroup>
-                        <FormControlLabel onChange={() => setJdpage(!jdpage)} control={<Switch />} label="Add Job description fields (Optional)" />
-                    </FormGroup>
+            <div>
+                <FormGroup>
+                    <FormControlLabel onChange={() => handleJobdetailsChange("jdpage", !jobdetails.jdpage)} control={<Switch />} label="Add Job description fields (Optional)" />
+                </FormGroup>
 
-                    {jdpage && (
-                        <div className={styles.editor_fields}>
-                            <CustomTextField disabled label="Role of the Job" value={role} onChange={(val) => setRole(val)} fullWidth />
+                {jobdetails.jdpage && (
+                    <div className={styles.editor_fields}>
+                        <CustomTextField disabled label="Role of the Job" value={jobdetails.role} onChange={(val) => handleJobdetailsChange("role", val)} fullWidth />
 
-                            <div className={styles.ck_grid}>
-                                <CustomCKEditor label="Job Description : " value={jobdesc} onChange={(val) => setJobdesc(val)} />
-                                <CustomCKEditor label="Eligibility Criteria : " value={eligibility} onChange={(val) => setEligibility(val)} />
-                                <CustomCKEditor label="Responsibility of the job : " value={responsibility} onChange={(val) => setResponsibility(val)} />
-                                <CustomCKEditor label="Skills needed : " value={skills} onChange={(val) => setSkills(val)} />
-                                <CustomCKEditor label="About the company : " value={aboutCompany} onChange={(val) => setAboutCompany(val)} />
-                            </div>
+                        <div className={styles.ck_grid}>
+                            <CustomCKEditor label="Job Description : " value={jobdetails.jobdesc} onChange={(val) => handleJobdetailsChange("jobdesc", val)} />
+                            <CustomCKEditor label="Eligibility Criteria : " value={jobdetails.eligibility} onChange={(val) => handleJobdetailsChange("eligibility", val)} />
+                            <CustomCKEditor label="Responsibility of the job : " value={jobdetails.responsibility} onChange={(val) => handleJobdetailsChange("responsibility", val)} />
+                            <CustomCKEditor label="Skills needed : " value={jobdetails.skills} onChange={(val) => handleJobdetailsChange("skills", val)} />
+                            <CustomCKEditor label="About the company : " value={jobdetails.aboutCompany} onChange={(val) => handleJobdetailsChange("aboutCompany", val)} />
                         </div>
-                    )}
-                    <CustomDivider />
-                </div>
-            )}
+                    </div>
+                )}
+                <CustomDivider />
+            </div>
 
             <div className={styles.submitbtn_zone}>
-                <Button style={{ textTransform: "capitalize" }} className={styles.submitbtn} onClick={addJobDetails} disabled={link.length === 0} variant="contained" color="primary" size="large">
+                <Button
+                    style={{ textTransform: "capitalize" }}
+                    className={styles.submitbtn}
+                    onClick={addJobDetails}
+                    disabled={jobdetails.link.length === 0}
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                >
                     Submit Job details
                 </Button>
             </div>
 
-            {isAdmin ? (
-                <CareersattechBanner
-                    companyName={companyName}
-                    companyLogo={companyLogo}
-                    igbannertitle={igbannertitle}
-                    degree={degree}
-                    batch={batch}
-                    experience={experience}
-                    salary={salary}
-                    location={location}
-                    imgsize={imgsize}
-                    imgmleft={imgmleft}
-                    paddingtop={paddingtop}
-                    paddingbottom={paddingbottom}
-                    companyLogoBanner={companyLogoBanner}
-                    ctaDetails={ctaDetails}
-                />
-            ) : (
-                <JobsattechBanner
-                    companyName={companyName}
-                    companyLogo={companyLogo}
-                    igbannertitle={igbannertitle}
-                    degree={degree}
-                    batch={batch}
-                    experience={experience}
-                    salary={salary}
-                    location={location}
-                    imgsize={imgsize}
-                    imgmleft={imgmleft}
-                    paddingtop={paddingtop}
-                    paddingbottom={paddingbottom}
-                    companyLogoBanner={companyLogoBanner}
-                />
-            )}
+            <Canvas jobdetails={jobdetails} ctaDetails={ctaDetails} comapnyDetails={comapnyDetails} />
 
             <div style={{ marginTop: "30px", marginBottom: "50px" }} className={styles.flex}>
                 <Button style={{ textTransform: "capitalize" }} onClick={() => handleDownloadBanner()} variant="contained" color="success" endIcon={<CloudDownloadIcon />}>
