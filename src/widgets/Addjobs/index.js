@@ -68,7 +68,7 @@ const AddjobsComponent = () => {
         aboutCompany: "N",
         jdBanner: "N",
         link: "",
-        imagePath: comapnyDetails.smallLogoUrl,
+        imagePath: "",
     });
 
     const [canvasCss, setCanvasCss] = useState({
@@ -94,6 +94,10 @@ const AddjobsComponent = () => {
             [key]: value,
         }));
     };
+
+    useEffect(() => {
+        console.log("jobdetails", jobdetails);
+    }, [jobdetails]);
 
     // handle company details input change
     const handleCompanyDetailChange = (key, value) => {
@@ -150,8 +154,11 @@ const AddjobsComponent = () => {
     const getCompanyDetails = async () => {
         if (jobdetails.companyName) {
             const data = await getCompanyDetailsHelper(jobdetails.companyName);
-            if (!!data?.data[0]?.largeLogo) handleCompanyDetailChange("bigLogoUrl", data?.data[0]?.largeLogo);
-            if (!!data?.data[0]?.smallLogo) handleCompanyDetailChange("smallLogoUrl", data?.data[0]?.smallLogo);
+            if (!!data?.largeLogo) handleCompanyDetailChange("bigLogoUrl", data?.largeLogo);
+            if (!!data?.smallLogo) {
+                handleCompanyDetailChange("smallLogoUrl", data?.smallLogo);
+                handleJobdetailsChange("imagePath", data?.smallLogo)
+            }
         }
     };
 
@@ -163,8 +170,10 @@ const AddjobsComponent = () => {
         if (compressImage) {
             setCompanyLogoSize(fileSize / 1024);
             const link = await generateLinkfromImage(e);
-            console.log("LINK", link);
-            if (!!link) handleCompanyDetailChange("smallLogoUrl", link);
+            if (!!link){
+                handleCompanyDetailChange("smallLogoUrl", link);
+                handleJobdetailsChange("imagePath", link)
+            }
         } else {
             if (fileSize < 1000000) {
                 const link = await generateLinkfromImage(e, false);

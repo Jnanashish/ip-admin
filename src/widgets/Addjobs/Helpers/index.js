@@ -20,8 +20,8 @@ export const generateLastDatetoApplyHelper = () => {
 // ---------------------------------------------------------
 // get company details if there is any based on company name
 export const getCompanyDetailsHelper = async (companyName) => {
-    const data = await get(`${apiEndpoint.get_company_details}?companyName=${companyName}`);
-    if (!!data?.data[0]?.largeLogo || !!data?.data[0]?.smallLogo) {
+    const data = await get(`${apiEndpoint.get_company_details}?companyname=${companyName}`);
+    if (!!data?.largeLogo || !!data?.smallLogo) {
         showInfoToast(`${companyName} Logo found in database`);
     } else {
         showWarnToast(`${companyName} Logo not found, upload manually`);
@@ -32,6 +32,7 @@ export const getCompanyDetailsHelper = async (companyName) => {
 // ---------------------------------------------------------
 // add job details data and redirect to admin page if success
 export const addJobDataHelper = async (jobdetails, bannerlink) => {
+    console.log("jobdetails", jobdetails);
     const formData = new FormData();
 
     formData.append("title", jobdetails.title);
