@@ -43,3 +43,18 @@ export const deleteData = async (url, apiname) => {
         showErrorToast(`Error occured in ${!!apiname ? apiname : ""} DELETE request.`);
     }
 }
+
+export const updateData = async (url, formData, apiname) => {
+    const res = await fetch(`${API}${url}`, {
+        method: "PUT",
+        body: formData,
+    });
+
+    if (res.status === 201 || res.status === 200) {
+        showSuccessToast(`${!!apiname ? apiname : "Request"} successed (UPDATE)`);
+        const data = await res.json();
+        return data;
+    } else {
+        showErrorToast(`Error occured in ${!!apiname ? apiname : ""} UPDATE request.`);
+    }
+}

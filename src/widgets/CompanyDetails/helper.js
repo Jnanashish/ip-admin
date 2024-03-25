@@ -1,5 +1,6 @@
 import { post } from "../../Helpers/request";
 import { apiEndpoint } from "../../Helpers/apiEndpoints";
+
 export const submitCompanyDetailsHelper = async (comapnyDetails) => {
     const formData = new FormData();
     formData.append("companyLogo", comapnyDetails.smallLogoUrl);

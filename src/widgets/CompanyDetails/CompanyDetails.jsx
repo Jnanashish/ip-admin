@@ -103,7 +103,8 @@ const CompanyDetails = () => {
             </div>
 
             <Custombutton disabled={!comapnyDetails.name || !comapnyDetails.bigLogoUrl || !comapnyDetails.smallLogoUrl} onClick={submitCompanyDetails} label="Submit job details" />
-            <br/><br/>
+            <br />
+            <br />
         </div>
     );
 };

@@ -30,7 +30,7 @@ function Canvas(props) {
                 <TextField size="small" sx={{ width: "12ch" }} label="Margin Bottom" value={canvasCss.marginBottom} onChange={(e) => handleCanvasCssChange("marginBottom", e.target.value)} />
             </div>
 
-            {bannerType === "careersattech" || (!bannerType && <CareersattechBanner {...props} canvasCss={canvasCss} />)}
+            {bannerType === "careersattech" || (!bannerType && <CareersattechBanner {...props} canvasCss={canvasCss}/>)}
             {bannerType === "jobsattech" && <JobsattechBanner {...props} canvasCss={canvasCss} />}
         </div>
     );

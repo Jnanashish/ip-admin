@@ -13,7 +13,7 @@ import Custombutton from "../../Components/Button/Custombutton";
 import { addJobDataHelper } from "../Addjobs/Helpers";
 import { showErrorToast, showInfoToast, showWarnToast, showSuccessToast } from "../../Helpers/toast";
 import CustomDivider from "../../Components/Divider/Divider";
-import { updateData } from "../../widgets/Addjobs/Helpers";
+import { updateJobDetails } from "../../widgets/Addjobs/Helpers";
 
 const EditData = (props) => {
     ClassicEditor.defaultConfig = config;
@@ -44,7 +44,7 @@ const EditData = (props) => {
     const id = props.data._id;
 
     const addData = async (e) => {
-        const res = await updateData(jobDetails, id);
+        const res = await updateJobDetails(jobDetails, id);
 
         if (res.status === 200) {
             showInfoToast("Data Updated Successfully");

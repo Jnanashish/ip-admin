@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./canvas.module.scss";
 
 // import images
@@ -7,9 +7,10 @@ import instagram from "../../Static/Image/instagram.png";
 import telegram from "../../Static/Image/telegram.png";
 
 const CareersattechBanner = (props) => {
-    const { jobdetails, ctaDetails, canvasCss, comapnyDetails } = props;
-    const { companyName, igbannertitle, degree, batch, experience, salary, location } = jobdetails;
+    const { jobdetails, ctaDetails, canvasCss, comapnyDetails, igbannertitle } = props;
+    const { companyName, degree, batch, experience, salary, location, role } = jobdetails;
     const { smallLogoUrl, bigLogoUrl } = comapnyDetails;
+    const [bannerTitle, setBannerTitle] = useState(null)
 
     const customStyle = {
         imgstyle: {
@@ -22,7 +23,12 @@ const CareersattechBanner = (props) => {
             fontSize: canvasCss.fontSize,
         },
     };
-    console.log("jobdetails", props);
+
+    useEffect(() => {
+        const title = !!igbannertitle ? igbannertitle : role;
+        const formettedTitle = title?.length < 30 ? `is hiring ${title}` : title;
+        setBannerTitle(formettedTitle)
+    }, [igbannertitle, role]);
 
     return (
         <div>
@@ -41,9 +47,8 @@ const CareersattechBanner = (props) => {
                         {!!bigLogoUrl && <img style={customStyle.imgstyle} src={bigLogoUrl} alt={`${companyName} logo`}></img>}
                         {!smallLogoUrl && !bigLogoUrl && <h1>{companyName}</h1>}
                     </div>
-
                     <div style={customStyle.fontStyle} className={styles.canvas_title}>
-                        <h1>{`${igbannertitle?.length > 30 ? "" : "is hiring "}` + jobdetails?.role}</h1>
+                        <h1 style={role?.length > 27 ? { fontSize : "88px"} : {}}>{bannerTitle}</h1>
                     </div>
                 </div>
 

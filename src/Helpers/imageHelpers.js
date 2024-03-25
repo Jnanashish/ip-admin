@@ -79,7 +79,7 @@ export const generateLinkfromImage = async (event, compressImage = true) => {
         // get the compressed image
         const imageFile = await handleImageInputHelper(event);
         console.log("imageFile", imageFile);
-        if(!!imageFile){
+        if (!!imageFile) {
             return await generateImageCDNlinkHelper(null, imageFile);
         }
         return null;
