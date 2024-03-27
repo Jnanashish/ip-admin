@@ -39,9 +39,8 @@ const CompanyDetails = () => {
 
     // submit company details
     const submitCompanyDetails = async () => {
-        const res = submitCompanyDetailsHelper(comapnyDetails);
-        if (!!res) {
-            showSuccessToast("Company logo added Successfully");
+        const res = await submitCompanyDetailsHelper(comapnyDetails);
+        if (!!res?.status === 200) {
             setComapnyDetails({
                 name: "",
                 info: "",

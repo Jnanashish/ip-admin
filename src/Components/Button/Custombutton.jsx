@@ -1,6 +1,5 @@
 import React from "react";
 import { Button } from "@mui/material";
-import styles from "./custom.module.scss";
 
 function Custombutton(props) {
     const { size, disableElevation, fullWidth, label, variant, endIcon, disabled, style, startIcon, className } = props;

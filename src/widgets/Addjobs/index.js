@@ -50,7 +50,7 @@ const AddjobsComponent = () => {
         batch: "2022 / 2021 / 2020",
         experience: "0 - 2 years",
         location: "Bengaluru",
-        salary: "N",
+        salary: "₹0LPA",
         jdpage: false,
         companyName: "",
         title: "",
@@ -68,20 +68,13 @@ const AddjobsComponent = () => {
         imagePath: "",
     });
 
-    const [canvasCss, setCanvasCss] = useState({
-        imgsize: "60%",
-        imgleft: "0px",
-        paddingtop: "0px",
-        paddingbottom: "0px",
-    });
-
     const [ctaDetails, setCtaDetails] = useState({
         ctaTitle: "Apply Link : ",
         ctaLine: "Link in Bio (visit : careersat.tech)",
     });
 
     const context = useContext(UserContext);
-    const canvasId = isAdmin ? "htmlToCanvas" : "jobsattechCanvas";
+    const canvasId = "careersattech";
     const navigate = useNavigate();
 
     // handle job details input change
@@ -98,11 +91,6 @@ const AddjobsComponent = () => {
             ...prevState,
             [key]: value,
         }));
-    };
-
-    // handle canvas css input change
-    const handleCanvasCssChange = (key, value) => {
-        setCanvasCss({ ...canvasCss, [key]: value });
     };
 
     // generate the last date to apply based on current date

@@ -1,6 +1,6 @@
 import { post } from "../../Helpers/request";
 import { apiEndpoint } from "../../Helpers/apiEndpoints";
-
+import { showSuccessToast, showErrorToast } from "../../Helpers/toast";
 export const submitCompanyDetailsHelper = async (comapnyDetails) => {
     const formData = new FormData();
     formData.append("smallLogo", comapnyDetails.smallLogo);
@@ -11,5 +11,12 @@ export const submitCompanyDetailsHelper = async (comapnyDetails) => {
     formData.append("linkedinPageLink", comapnyDetails.linkedinLink);
     formData.append("companyName", comapnyDetails.name);
 
-    return await post(apiEndpoint.addCompanyDetails, formData);
+    const res = await post(apiEndpoint.addCompanyDetails, formData);
+    if (!!res) {
+        showSuccessToast("Company details added successfully");
+        return { status: 200 };
+    } else {
+        showErrorToast("An error occured while adding Job");
+        return { status: 404 };
+    }
 };

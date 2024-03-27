@@ -69,9 +69,9 @@ const CareersattechBanner = (props) => {
                                 <span className={styles.tag}>Experience</span> : <span>{experience}</span>
                             </p>
                         )}
-                        {salary !== "N" && (
+                        {salary !== "N" && salary !== "₹0LPA" && (
                             <p>
-                                <span className={styles.tag}>Salary</span> : <span>₹{salary}</span>
+                                <span className={styles.tag}>Salary</span> : <span>{salary}</span>
                             </p>
                         )}
                         {location !== "N" && (
