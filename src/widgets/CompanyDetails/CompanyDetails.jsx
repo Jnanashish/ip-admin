@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./companydetails.module.scss";
 
 import { companyTypeOptions } from "../Addjobs/Helpers/staticdata";
 import { generateLinkfromImage } from "../../Helpers/imageHelpers";
 import { showErrorToast, showSuccessToast } from "../../Helpers/toast";
-import { submitCompanyDetailsHelper } from "./helper";
+import { submitCompanyDetailsHelper, updateCompanyDetailsHelper } from "./helper";
 import Custombutton from "../../Components/Button/Custombutton";
 import CustomTextField from "../../Components/Input/Textfield";
+
+import { get } from "../../Helpers/request";
+import { apiEndpoint } from "../../Helpers/apiEndpoints";
 
 const CompanyDetails = () => {
     const [comapnyDetails, setComapnyDetails] = useState({
@@ -18,6 +21,8 @@ const CompanyDetails = () => {
         smallLogo: "",
         largeLogo: "",
     });
+    const [isCompanydetailPresent, setIsCompanydetailPresent] = useState(false);
+    const [comapnyId, setCompanyId] = useState()
 
     // handle company logo submit set cdn url
     const handleCompanyLogoInput = async (e, compressImage = true) => {
@@ -53,10 +58,60 @@ const CompanyDetails = () => {
         }
     };
 
+    const updateCompanyDetails = async () => {
+        const res = await updateCompanyDetailsHelper(comapnyDetails, comapnyId);
+        if (!!res?.status === 200) {
+            setComapnyDetails({
+                name: "",
+                info: "",
+                linkedinLink: "",
+                careersPageLink: "",
+                companyType: "",
+                smallLogo: "",
+                largeLogo: "",
+            });
+        }
+    };
+
+    const handleButtonClick = () => {
+        if(isCompanydetailPresent){
+            updateCompanyDetails()
+        } else {
+            submitCompanyDetails()
+        }
+    }
+
     // handle company detail input change
     const handleCompanyDetailChange = (key, value) => {
         setComapnyDetails({ ...comapnyDetails, [key]: value });
     };
+
+    // get company details and job details
+    const getQueryparam = async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const companyid = urlParams.get("companyid");
+        setCompanyId(companyid)
+
+        if (!!companyid) {
+            const data = await get(`${apiEndpoint.get_company_details}?id=${companyid}`);
+            if (!!data) {
+                setIsCompanydetailPresent(true);
+                setComapnyDetails({
+                    name: data?.companyName,
+                    info: data?.companyInfo,
+                    linkedinLink: data?.linkedinPageLink,
+                    careersPageLink: data?.careerPageLink,
+                    companyType: data?.companyType,
+                    smallLogo: data?.smallLogo,
+                    largeLogo: data?.largeLogo,
+                });
+            }
+        }
+    };
+
+    useEffect(() => {
+        getQueryparam();
+    }, []);
 
     return (
         <div className={styles.container}>
@@ -101,7 +156,7 @@ const CompanyDetails = () => {
                 <img src={comapnyDetails.largeLogo} />
             </div>
 
-            <Custombutton disabled={!comapnyDetails.name || !comapnyDetails.largeLogo || !comapnyDetails.smallLogo} onClick={submitCompanyDetails} label="Submit job details" />
+            <Custombutton disabled={!comapnyDetails.name || !comapnyDetails.largeLogo || !comapnyDetails.smallLogo} onClick={handleButtonClick} label={isCompanydetailPresent ? `Update job details` : `Submit job details`} />
             <br />
             <br />
         </div>

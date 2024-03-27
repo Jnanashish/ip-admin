@@ -12,4 +12,6 @@ export const apiEndpoint = {
     addCompanyDetails: "/companydetails/add",
     get_company_details: "/companydetails/get",
     addCompanyLogo: "/companydetails/add",
+    update_company_details : "/companydetails/update",
+    delete_company_details : "/companydetails/delete",
 };

@@ -10,7 +10,7 @@ const CareersattechBanner = (props) => {
     const { jobdetails, ctaDetails, canvasCss, comapnyDetails, igbannertitle } = props;
     const { companyName, degree, batch, experience, salary, location, role } = jobdetails;
     const { largeLogo } = comapnyDetails;
-    const [bannerTitle, setBannerTitle] = useState(null)
+    const [bannerTitle, setBannerTitle] = useState(null);
 
     const customStyle = {
         imgstyle: {

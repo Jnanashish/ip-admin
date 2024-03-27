@@ -202,6 +202,7 @@ const AddjobsComponent = () => {
 
     // handle company name change
     const handleCompanyNameChange = (value) => {
+        handleCompanyDetailChange("name", value)
         handleJobdetailsChange("companyName", value);
         handleJobdetailsChange("title", value + " is hiring " + jobdetails.role);
     };
@@ -221,6 +222,7 @@ const AddjobsComponent = () => {
         const mappedBatch = mapExperiencetoBatch(jobdetails.experience);
         handleJobdetailsChange("batch", mappedBatch);
     }, [jobdetails.experience]);
+
 
     return (
         <div className={styles.container}>
@@ -395,11 +397,6 @@ const AddjobsComponent = () => {
 
             <Canvas jobdetails={jobdetails} ctaDetails={ctaDetails} comapnyDetails={comapnyDetails} igbannertitle={igbannertitle} />
 
-            <div style={{ marginTop: "30px", marginBottom: "50px" }} className={styles.flex}>
-                <Button style={{ textTransform: "capitalize" }} onClick={() => handleDownloadBanner()} variant="contained" color="success" endIcon={<CloudDownloadIcon />}>
-                    Download IG Banner
-                </Button>
-            </div>
         </div>
     );
 };

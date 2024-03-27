@@ -9,6 +9,8 @@ import "./App.css";
 import Addjobs from "./pages/AddJobpage";
 import Adminpanel from "./pages/Adminpanel/Adminpanel";
 import Signin from "./pages/Signinpage/Signin";
+import Banners from "./pages/Banners/index";
+import CompanyDetails from "./widgets/CompanyDetails/CompanyDetails";
 
 function App() {
     // context set
@@ -23,6 +25,8 @@ function App() {
                         <Route exact path="/signin" element={<Signin />} />
                         <Route exact path="/admin" element={<Adminpanel />} />
                         <Route exact path="/addjob" element={<Addjobs />} />
+                        <Route exact path="/canvas" element={<Banners />} />
+                        <Route exact path="/addcompanydetails" element={<CompanyDetails />} />
                         <Route exact path="/" element={<Signin />} />
                     </Routes>
                 </div>

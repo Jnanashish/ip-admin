@@ -1,0 +1,35 @@
+.companylist{
+    padding: 40px;
+}
+.companycard{
+    background-color: #F4FAFF;
+    padding: 20px 40px;
+    border: 0.8px solid #121212;
+    margin-top: 20px;
+    border-radius: 6px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+
+    h2{
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+
+    img {
+        height: 50px;
+    }
+
+    span {
+        display: flex;
+        align-items: center; 
+        gap: 30px;
+
+        button {
+            text-transform: capitalize;
+        }
+    }
+}

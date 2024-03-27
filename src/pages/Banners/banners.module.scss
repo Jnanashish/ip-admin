@@ -1,0 +1,21 @@
+.canvas {
+    padding: 60px;
+    background-color: #F4FAFF;
+
+
+    &_buttoncontainer {
+        display: flex;
+        gap: 20px;
+
+        button {
+            text-transform: capitalize;
+        }
+    }
+
+    &_loader {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 80vh;
+    }
+}

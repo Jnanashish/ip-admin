@@ -6,6 +6,10 @@
     // height: 100vh;
     flex-direction: column;
 
+    button {
+      text-transform: capitalize;
+    }
+
 }
 
 .admin_grid{
@@ -35,7 +39,7 @@
     border-radius: 6px;
 
     img{
-        height: 190px;
+        height: 150px;
         width: auto;
     }
 

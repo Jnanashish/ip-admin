@@ -1,10 +1,11 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 
 import JobListing from "../../widgets/Joblisting";
 import Adpoptype from "../../widgets/Dapoptype/Adpoptype";
 import AddBanner from "../../widgets/AD/Addbanner";
 import CompanyDetails from "../../widgets/CompanyDetails/CompanyDetails";
+import CompanyList from "../../widgets/CompanyList";
 // context
 import { UserContext } from "../../Context/userContext";
 import { useNavigate } from "react-router-dom";
@@ -30,6 +31,7 @@ const AdminPanel = () => {
     // button css
     const activeButtonCss = { backgroundColor: "#0069ff", color: "#FFFFFF" };
     const inactiveButtonCss = {};
+
 
     return (
         <div className={styles.adminpanel}>
@@ -57,8 +59,11 @@ const AdminPanel = () => {
                     </Tab>
                     {isUserLogedIn && (
                         <>
-                            <Tab style={currState === "companylogo" ? activeButtonCss : inactiveButtonCss} onClick={() => setCurrState("companylogo")} className={styles.tab}>
+                            <Tab style={currState === "addcompanydetails" ? activeButtonCss : inactiveButtonCss} onClick={() => setCurrState("addcompanydetails")} className={styles.tab}>
                                 Add company details
+                            </Tab>
+                            <Tab style={currState === "companylist" ? activeButtonCss : inactiveButtonCss} onClick={() => setCurrState("companylist")} className={styles.tab}>
+                                Company list
                             </Tab>
                             {/* <Tab style={currState === "ad_link" ? activeButtonCss : inactiveButtonCss} onClick={() => setCurrState("ad_link")} className={styles.tab}>
                                 + Ad (Link only)
@@ -83,6 +88,10 @@ const AdminPanel = () => {
                     <TabPanel>
                         <CompanyDetails />
                     </TabPanel>
+                    <TabPanel>
+                        <CompanyList />
+                    </TabPanel>
+
                     {/* <TabPanel>
                         <AddLink />
                     </TabPanel>

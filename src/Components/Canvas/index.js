@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { TextField } from "@mui/material";
 import styles from "./canvas.module.scss";
+import { downloadImagefromCanvasHelper } from "../../Helpers/imageHelpers";
+
+import LinkedinBanner from "./LinkedinBanner";
 import CareersattechBanner from "../../Components/Canvas/careersattechBanner";
 import JobsattechBanner from "../../Components/Canvas/jobsattechBanner";
-import { downloadImagefromCanvasHelper } from "../../Helpers/imageHelpers";
-import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 
+import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import { Button } from "@mui/material";
 
 function Canvas(props) {
@@ -26,7 +28,8 @@ function Canvas(props) {
     };
 
     const handleDownloadBanner = async () => {
-        downloadImagefromCanvasHelper(jobdetails.companyName, canvasId, false);
+        const bannername = jobdetails.companyName + "_" + bannerType;
+        downloadImagefromCanvasHelper(bannername, canvasId, false);
     };
 
     return (
@@ -38,14 +41,16 @@ function Canvas(props) {
                 <TextField size="small" sx={{ width: "12ch" }} label="Margin Top" value={canvasCss.marginTop} onChange={(e) => handleCanvasCssChange("marginTop", e.target.value)} />
                 <TextField size="small" sx={{ width: "12ch" }} label="Margin Bottom" value={canvasCss.marginBottom} onChange={(e) => handleCanvasCssChange("marginBottom", e.target.value)} />
             </div>
-            {/* <div className={styles.flex}>
-                <Button style={{ textTransform: "capitalize", marginBottom : "30px" }} onClick={() => handleDownloadBanner()} variant="contained" color="success" endIcon={<CloudDownloadIcon />}>
+
+            {(bannerType === "careersattech" || !bannerType) && <CareersattechBanner {...props} canvasCss={canvasCss} />}
+            {bannerType === "jobsattech" && <JobsattechBanner {...props} canvasCss={canvasCss} />}
+            {bannerType === "linkedinbanner" && <LinkedinBanner {...props} canvasCss={canvasCss} />}
+
+            <div className={styles.flex}>
+                <Button style={{ textTransform: "capitalize", marginTop : "30px" }} onClick={() => handleDownloadBanner()} variant="contained" color="success" endIcon={<CloudDownloadIcon />}>
                     Download Banner
                 </Button>
-            </div> */}
-
-            {bannerType === "careersattech" || (!bannerType && <CareersattechBanner {...props} canvasCss={canvasCss} />)}
-            {bannerType === "jobsattech" && <JobsattechBanner {...props} canvasCss={canvasCss} />}
+            </div>
         </div>
     );
 }

@@ -1,16 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./canvas.module.scss";
 
 const JobsattechBanner = (props) => {
-    const { companyName, companyLogo, igbannertitle, degree, batch, experience, salary, location, imgsize, imgmleft, paddingtop, paddingbottom, companyLogoBanner } = props;
+    const { jobdetails, ctaDetails, canvasCss, comapnyDetails, igbannertitle } = props;
+    const { companyName, degree, batch, experience, salary, location, role } = jobdetails;
+    const { largeLogo, smallLogo } = comapnyDetails;
+    const [bannerTitle, setBannerTitle] = useState(null);
+
+    useEffect(() => {
+        const title = !!igbannertitle ? igbannertitle : role;
+        const formettedTitle = title?.length < 30 ? `is hiring ${title}` : title;
+        setBannerTitle(formettedTitle);
+    }, [igbannertitle, role]);
 
     const customStyle = {
-        imgstyle: {
-            height: imgsize,
-            marginLeft: imgmleft,
-            marginTop: paddingtop,
-            marginBottom: paddingbottom,
-        },
         canvas: {
             backgroundColor: "#f9fafe",
         },
@@ -39,10 +42,19 @@ const JobsattechBanner = (props) => {
             justifyContent: "center",
             backgroundColor: "#002C9B",
         },
+        imgstyle: {
+            height: canvasCss.imgsize,
+            marginLeft: canvasCss.marginLeft,
+            marginTop: canvasCss.marginTop,
+            marginBottom: canvasCss.marginBottom,
+        },
+        fontStyle: {
+            fontSize: canvasCss.fontSize,
+        },
     };
 
     return (
-        <div id="jobsattechCanvas" className={styles.canvas} style={customStyle.canvas}>
+        <div id="jobsattech" className={styles.canvas} style={customStyle.canvas}>
             <div className={styles.upper}>
                 <div className={styles.canvas_header} style={customStyle.header}>
                     <p className={styles.weblink}>
@@ -54,13 +66,12 @@ const JobsattechBanner = (props) => {
                 </div>
 
                 <div className={styles.companylogo} style={customStyle.companyLogo}>
-                    {companyLogo != null && <img style={customStyle.imgstyle} src={companyLogo} alt={`${companyName} logo`}></img>}
-                    {companyLogoBanner && <img style={customStyle.imgstyle} src={companyLogoBanner} alt={`${companyName} logo`}></img>}
-                    {!companyLogo && !companyLogoBanner && <h1>{companyName}</h1>}
+                    {largeLogo && <img style={customStyle.imgstyle} src={largeLogo} alt={`${companyName} logo`}></img>}
+                    {!largeLogo && <h1>{companyName}</h1>}
                 </div>
 
                 <div className={styles.canvas_title} style={customStyle.jobtite}>
-                    <h1>{`${igbannertitle.length > 30 ? "" : "is hiring "}` + igbannertitle}</h1>
+                    <h1>{`${bannerTitle?.length > 30 ? "" : "is hiring "}` + bannerTitle}</h1>
                 </div>
             </div>
 
@@ -83,7 +94,7 @@ const JobsattechBanner = (props) => {
                     )}
                     {salary !== "N" && (
                         <p>
-                            <span className={styles.tag}>Salary</span> : <span>₹{salary}</span>
+                            <span className={styles.tag}>Salary</span> : <span>{salary}</span>
                         </p>
                     )}
                     {location !== "N" && (

@@ -50,7 +50,8 @@ const JobListing = () => {
     // download job details banner
     // TODO: Need to generate multiple banners dynamically
     const downloadBanner = async (item) => {
-        generateImageFromLink(item.jdbanner, item.companyName);
+        // generateImageFromLink(item.jdbanner, item.companyName);
+        window.location.href = `/canvas?jobid=${item._id}&companyname=${item.companyName}`;
     };
 
     // when focus out in input field filter the job data list
