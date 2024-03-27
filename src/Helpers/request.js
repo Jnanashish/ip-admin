@@ -22,11 +22,16 @@ export const get = async (url, apiname) => {
     });
 
     if (res.status === 201 || res.status === 200) {
-        showSuccessToast(`${!!apiname ? apiname : "Request"} successed (GET)`);
-        const data = await res.json();
+        // showSuccessToast(`${!!apiname ? apiname : "Request"} successed (GET)`);
+        console.log("RES",res);
+        let data;
+        if (!!res) {
+            data = await res.json();
+        }
         return data;
     } else {
-        showErrorToast(`Error occured in ${!!apiname ? apiname : ""} GET request.`);
+        const error = res?.error || `Error occured in ${!!apiname ? apiname : ""} get request.`
+        showErrorToast(error);
     }
 }
 

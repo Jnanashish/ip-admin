@@ -9,7 +9,7 @@ import telegram from "../../Static/Image/telegram.png";
 const CareersattechBanner = (props) => {
     const { jobdetails, ctaDetails, canvasCss, comapnyDetails, igbannertitle } = props;
     const { companyName, degree, batch, experience, salary, location, role } = jobdetails;
-    const { smallLogoUrl, bigLogoUrl } = comapnyDetails;
+    const { largeLogo } = comapnyDetails;
     const [bannerTitle, setBannerTitle] = useState(null)
 
     const customStyle = {
@@ -32,7 +32,7 @@ const CareersattechBanner = (props) => {
 
     return (
         <div>
-            <div id="htmlToCanvas" className={styles.canvas}>
+            <div id="careersattech" className={styles.canvas}>
                 <div className={styles.upper}>
                     <div className={styles.canvas_header}>
                         <p className={styles.weblink}>
@@ -44,8 +44,8 @@ const CareersattechBanner = (props) => {
                     </div>
 
                     <div className={styles.companylogo}>
-                        {!!bigLogoUrl && <img style={customStyle.imgstyle} src={bigLogoUrl} alt={`${companyName} logo`}></img>}
-                        {!smallLogoUrl && !bigLogoUrl && <h1>{companyName}</h1>}
+                        {!!largeLogo && <img style={customStyle.imgstyle} src={largeLogo} alt={`${companyName} logo`}></img>}
+                        {!largeLogo && <h1>{companyName}</h1>}
                     </div>
                     <div style={customStyle.fontStyle} className={styles.canvas_title}>
                         <h1 style={role?.length > 27 ? { fontSize : "88px"} : {}}>{bannerTitle}</h1>

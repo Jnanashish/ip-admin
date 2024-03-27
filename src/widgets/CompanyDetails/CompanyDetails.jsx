@@ -15,8 +15,8 @@ const CompanyDetails = () => {
         linkedinLink: "",
         careersPageLink: "",
         companyType: "",
-        smallLogoUrl: "",
-        bigLogoUrl: "",
+        smallLogo: "",
+        largeLogo: "",
     });
 
     // handle company logo submit set cdn url
@@ -26,11 +26,11 @@ const CompanyDetails = () => {
 
         if (compressImage) {
             const link = await generateLinkfromImage(e);
-            handleCompanyDetailChange("smallLogoUrl", link);
+            handleCompanyDetailChange("smallLogo", link);
         } else {
             if (fileSize < 1000000) {
                 const link = await generateLinkfromImage(e, false);
-                handleCompanyDetailChange("bigLogoUrl", link);
+                handleCompanyDetailChange("largeLogo", link);
             } else {
                 showErrorToast("Image size should be less than 1mb");
             }
@@ -48,8 +48,8 @@ const CompanyDetails = () => {
                 linkedinLink: "",
                 careersPageLink: "",
                 companyType: "",
-                smallLogoUrl: "",
-                bigLogoUrl: "",
+                smallLogo: "",
+                largeLogo: "",
             });
         }
     };
@@ -93,16 +93,16 @@ const CompanyDetails = () => {
             <div className={`${styles.admin_grid} ${styles.imgWrap}`}>
                 <h3 className={styles.admin_label}>Company small logo : </h3>
                 <input accept=".jpeg, .jpg, .png, .webp, .heic, .svg" className={styles.admin_input} onChange={(e) => handleCompanyLogoInput(e)} name="image" type="file" />
-                <img src={comapnyDetails.smallLogoUrl} />
+                <img src={comapnyDetails.smallLogo} />
             </div>
 
             <div className={`${styles.admin_grid} ${styles.imgWrap}`}>
                 <h3 className={styles.admin_label}>Company BIG logo : </h3>
                 <input accept=".jpeg, .jpg, .png, .webp, .heic, .svg" className={styles.admin_input} onChange={(e) => handleCompanyLogoInput(e, false)} name="image" type="file" />
-                <img src={comapnyDetails.bigLogoUrl} />
+                <img src={comapnyDetails.largeLogo} />
             </div>
 
-            <Custombutton disabled={!comapnyDetails.name || !comapnyDetails.bigLogoUrl || !comapnyDetails.smallLogoUrl} onClick={submitCompanyDetails} label="Submit job details" />
+            <Custombutton disabled={!comapnyDetails.name || !comapnyDetails.largeLogo || !comapnyDetails.smallLogo} onClick={submitCompanyDetails} label="Submit job details" />
             <br />
             <br />
         </div>

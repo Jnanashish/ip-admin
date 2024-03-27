@@ -87,7 +87,7 @@ export const generateLinkfromImage = async (event, compressImage = true) => {
     return await generateImageCDNlinkHelper(event);
 };
 
-export const downloadImagefromCanvasHelper = async (fileName, canvasId) => {
+export const downloadImagefromCanvasHelper = async (fileName, canvasId, generatelink = true) => {
     const element = document.getElementById(canvasId);
 
     try {
@@ -101,9 +101,11 @@ export const downloadImagefromCanvasHelper = async (fileName, canvasId) => {
         document.body.removeChild(link);
 
         const blob = await fetch(dataUrl).then((res) => res.blob());
-        const bannerUrl = await generateImageCDNlinkHelper(null, blob);
+        if(generatelink){
+            const bannerUrl = await generateImageCDNlinkHelper(null, blob);
+            return bannerUrl;
+        }
 
-        return bannerUrl;
     } catch (error) {
         console.error("Error converting HTML to image:", error);
         return null;

@@ -56,28 +56,28 @@ const UpdateData = () => {
         }
     };
 
-    // download job details banner 
+    // download job details banner
     const downloadBanner = async (item) => {
         generateImageFromLink(item.jdbanner, item.companyName);
     };
 
-    // when focus out in input field filter the job data list 
+    // when focus out in input field filter the job data list
     const handleInputBlur = (searchedText) => {
         const filteredJobData = jobData.filter((item) => {
-            return item.title.toLowerCase().includes(searchedText.toLowerCase())
-        })
+            return item.title.toLowerCase().includes(searchedText.toLowerCase());
+        });
         setFilterdData(filteredJobData);
-    }
+    };
 
     const handleSelectJob = (item) => {
-        setSelectedJob(prevSelectedJob => {
-            if (prevSelectedJob.some(job => job._id === item._id)) {
-                return prevSelectedJob.filter(job => job._id !== item._id);
+        setSelectedJob((prevSelectedJob) => {
+            if (prevSelectedJob.some((job) => job._id === item._id)) {
+                return prevSelectedJob.filter((job) => job._id !== item._id);
             } else {
                 return [...prevSelectedJob, item];
             }
         });
-    }
+    };
 
     // fetch job details on mount
     useEffect(() => {
@@ -86,47 +86,58 @@ const UpdateData = () => {
 
     return (
         <div className={styles.update_data_container}>
-            {/* header part  */}
-            <div className={styles.headerContainer}>
-                <h2 className={styles.adminpanel_title}>List of available Jobs - {jobData.length}</h2>
-                {isApiCalled && (
-                    <div className={styles.loaderCon}>
-                        <CircularProgress size={80} />
+            {isApiCalled ? (
+                <div className={styles.loaderCon}>
+                    <CircularProgress size={80} />
+                </div>
+            ) : (
+                <>
+                    {/* header part  */}
+                    <div className={styles.headerContainer}>
+                        <h2 className={styles.adminpanel_title}>List of available Jobs - {jobData.length}</h2>
+
+                        <FormControlLabel onChange={() => setShowBitlyClick(!showBitlyClick)} control={<Switch />} label="Show Bit.ly click count" />
                     </div>
-                )}
-                <FormControlLabel onChange={() => setShowBitlyClick(!showBitlyClick)} control={<Switch />} label="Show Bit.ly click count" />
-            </div>
 
-            <CustomTextField onBlur={(val) => handleInputBlur(val)} label="Company name" value={companyName} onChange={(val) => setCompanyName(val)} fullWidth className={styles.companyNameInput} />
-            <div className={styles.captionButton_container}>
-                <Custombutton onClick={()=>generateCombinedWhatsAppMessage(selectedJob)} label="Message" endIcon={<WhatsAppIcon />}/>
-            </div>
+                    <CustomTextField
+                        onBlur={(val) => handleInputBlur(val)}
+                        label="Company name"
+                        value={companyName}
+                        onChange={(val) => setCompanyName(val)}
+                        fullWidth
+                        className={styles.companyNameInput}
+                    />
+                    <div className={styles.captionButton_container}>
+                        <Custombutton onClick={() => generateCombinedWhatsAppMessage(selectedJob)} label="Message" endIcon={<WhatsAppIcon />} />
+                    </div>
 
-            <div>
-                {filterdData?.map((item) => {
-                    return (
-                        <div key={item._id} className={styles.updatedata_con}>
-                            <Adminlinkcard showBitlyClick={showBitlyClick} item={item} />
+                    <div>
+                        {filterdData?.map((item) => {
+                            return (
+                                <div key={item._id} className={styles.updatedata_con}>
+                                    <Adminlinkcard showBitlyClick={showBitlyClick} item={item} />
 
-                            {/* button section  */}
-                            <div className={styles.adminlink_con}>
-                                <div className={styles.btn_con}>
-                                    <Checkbox onChange={()=>handleSelectJob(item)}/>
-                                    <Custombutton disabled={item.jdbanner === "N"} onClick={() => downloadBanner(item)} endIcon={<CloudDownloadIcon />} label="Banner" />
-                                    <Custombutton style={{ backgroundColor: "#0069ff" }} onClick={() => copylink(item)} label="Copy Link" />
+                                    {/* button section  */}
+                                    <div className={styles.adminlink_con}>
+                                        <div className={styles.btn_con}>
+                                            <Checkbox onChange={() => handleSelectJob(item)} />
+                                            <Custombutton disabled={item.jdbanner === "N"} onClick={() => downloadBanner(item)} endIcon={<CloudDownloadIcon />} label="Banner" />
+                                            <Custombutton style={{ backgroundColor: "#0069ff" }} onClick={() => copylink(item)} label="Copy Link" />
+                                        </div>
+                                        <div className={styles.btn_con2}>
+                                            <Custombutton disabled={!context.isAdmin} onClick={() => handleTelegramSubmitHelper(item)} endIcon={<SendIcon />} label="Telegram" />
+                                            <Custombutton onClick={() => generateCaptionHelper(item)} label="Caption (IG)" />
+                                            <Custombutton onClick={() => generateLinkedinCaption(item)} label="Caption (Linkedin)" />
+                                            <Custombutton onClick={() => copyWhatsAppMessage(item)} endIcon={<WhatsAppIcon />} label="Message" />
+                                        </div>
+                                    </div>
+                                    <CustomDivider count />
                                 </div>
-                                <div className={styles.btn_con2}>
-                                    <Custombutton disabled={!context.isAdmin} onClick={() => handleTelegramSubmitHelper(item)} endIcon={<SendIcon />} label="Telegram" />
-                                    <Custombutton onClick={() => generateCaptionHelper(item)} label="Caption (IG)" />
-                                    <Custombutton onClick={() => generateLinkedinCaption(item)} label="Caption (Linkedin)" />
-                                    <Custombutton onClick={() => copyWhatsAppMessage(item)} endIcon={<WhatsAppIcon />} label="Message" />
-                                </div>
-                            </div>
-                            <CustomDivider count />
-                        </div>
-                    );
-                })}
-            </div>
+                            );
+                        })}
+                    </div>
+                </>
+            )}
         </div>
     );
 };

@@ -11,12 +11,14 @@ import { config } from "../../Config/editorConfig";
 // import react toast
 import Custombutton from "../../Components/Button/Custombutton";
 import { addJobDataHelper } from "../Addjobs/Helpers";
-import { showErrorToast, showInfoToast, showWarnToast, showSuccessToast } from "../../Helpers/toast";
+import { showErrorToast, showInfoToast, showSuccessToast } from "../../Helpers/toast";
 import CustomDivider from "../../Components/Divider/Divider";
 import { updateJobDetails } from "../../widgets/Addjobs/Helpers";
+import { shortenurl } from "../../Helpers/utility";
 
 const EditData = (props) => {
     ClassicEditor.defaultConfig = config;
+
     // state to store all the links data
     const [jobDetails, setJobDetails] = useState({
         title: props.data.title,
@@ -43,10 +45,11 @@ const EditData = (props) => {
 
     const id = props.data._id;
 
-    const addData = async (e) => {
+    // update the selected job details
+    const updateJobData = async (e) => {
         const res = await updateJobDetails(jobDetails, id);
 
-        if (res.status === 200) {
+        if (!!res) {
             showInfoToast("Data Updated Successfully");
             props.setSeletedJobId(true);
         } else {
@@ -71,6 +74,13 @@ const EditData = (props) => {
         }));
     };
 
+    const shortenLink = async () => {
+        if (jobDetails.link.length > 10) {
+            const tempLink = await shortenurl(jobDetails.link);
+            if (!!tempLink) handleJobdetailsChange("link", tempLink);
+        }
+    };
+
     return (
         <div className="admin">
             <form method="POST">
@@ -80,7 +90,7 @@ const EditData = (props) => {
                 </div>
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Link to register : </h3>
-                    <input className={styles.admin_input} value={jobDetails.link} onChange={(e) => handleJobdetailsChange("link", e.target.value)} type="text" placeholder="Link" />
+                    <input className={styles.admin_input} value={jobDetails.link} onPaste={shortenLink} onChange={(e) => handleJobdetailsChange("link", e.target.value)} type="text" placeholder="Link" />
                 </div>
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Batch : </h3>
@@ -186,7 +196,7 @@ const EditData = (props) => {
                 <br />
 
                 <div className={styles.button_container}>
-                    <Custombutton type="button" onClick={addData} label="Update" />
+                    <Custombutton type="button" onClick={updateJobData} label="Update" />
                     <Custombutton type="button" onClick={repostJob} label="Repost" />
                 </div>
             </form>

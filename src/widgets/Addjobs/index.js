@@ -10,7 +10,7 @@ import CustomDivider from "../../Components/Divider/Divider";
 import Backtodashboard from "./Components/Backtodashboard";
 
 // mui import
-import { TextField, Button, IconButton, FormGroup, Switch, FormControlLabel } from "@mui/material";
+import { Button, IconButton, FormGroup, Switch, FormControlLabel } from "@mui/material";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -23,9 +23,9 @@ import { UserContext } from "../../Context/userContext";
 import { degreeOptions, batchOptions, expOptions, locOptions, jobTypeOptions, companyTypeOptions } from "./Helpers/staticdata";
 import { downloadImagefromCanvasHelper, generateImageCDNlinkHelper, uploadBannertoCDNHelper } from "../../Helpers/imageHelpers";
 import { generateLastDatetoApplyHelper, getCompanyDetailsHelper, addJobDataHelper, mapExperiencetoBatch } from "./Helpers";
-import { copyToClipBoard, uploadCompanyLogoHelper } from "../../Helpers/utility";
+import { copyToClipBoard } from "../../Helpers/utility";
 import { generateLinkfromImage } from "../../Helpers/imageHelpers";
-
+import { submitCompanyDetailsHelper } from "../CompanyDetails/helper";
 import { showErrorToast } from "../../Helpers/toast";
 
 const AddjobsComponent = () => {
@@ -33,6 +33,7 @@ const AddjobsComponent = () => {
     const [igbannertitle, setIgbannertitle] = useState("");
     const [showLoader, setShowLoader] = useState(false);
     const [companyLogoSize, setCompanyLogoSize] = useState(0);
+    const [isCompaneydetailsPresent, setIsCompaneydetailsPresent] = useState(false);
 
     const [comapnyDetails, setComapnyDetails] = useState({
         name: "",
@@ -40,13 +41,9 @@ const AddjobsComponent = () => {
         linkedinLink: "",
         careersPageLink: "",
         companyType: "",
-        smallLogoUrl: "",
-        bigLogoUrl: "",
+        smallLogo: "",
+        largeLogo: "",
     });
-
-    useEffect(() => {
-        console.log("comapnyDetails", comapnyDetails);
-    }, [comapnyDetails]);
 
     const [jobdetails, setJobdetails] = useState({
         degree: "B.E / B.Tech / M.Tech",
@@ -95,14 +92,8 @@ const AddjobsComponent = () => {
         }));
     };
 
-    useEffect(() => {
-        console.log("jobdetails", jobdetails);
-    }, [jobdetails]);
-
     // handle company details input change
     const handleCompanyDetailChange = (key, value) => {
-        console.log("KEYYYY", key, value);
-
         setComapnyDetails((prevState) => ({
             ...prevState,
             [key]: value,
@@ -152,12 +143,18 @@ const AddjobsComponent = () => {
 
     // get details of entered company on blur company input
     const getCompanyDetails = async () => {
-        if (jobdetails.companyName) {
+        // clear all the logo field
+        handleCompanyDetailChange("largeLogo", "");
+        handleCompanyDetailChange("smallLogo", "");
+        handleJobdetailsChange("imagePath", "");
+
+        if (!!jobdetails.companyName) {
             const data = await getCompanyDetailsHelper(jobdetails.companyName);
-            if (!!data?.largeLogo) handleCompanyDetailChange("bigLogoUrl", data?.largeLogo);
+            if (!!data?.largeLogo) handleCompanyDetailChange("largeLogo", data?.largeLogo);
             if (!!data?.smallLogo) {
-                handleCompanyDetailChange("smallLogoUrl", data?.smallLogo);
-                handleJobdetailsChange("imagePath", data?.smallLogo)
+                setIsCompaneydetailsPresent(true)
+                handleCompanyDetailChange("smallLogo", data?.smallLogo);
+                handleJobdetailsChange("imagePath", data?.smallLogo);
             }
         }
     };
@@ -170,16 +167,17 @@ const AddjobsComponent = () => {
         if (compressImage) {
             setCompanyLogoSize(fileSize / 1024);
             const link = await generateLinkfromImage(e);
-            if (!!link){
-                handleCompanyDetailChange("smallLogoUrl", link);
-                handleJobdetailsChange("imagePath", link)
+            if (!!link) {
+                handleCompanyDetailChange("smallLogo", link);
+                handleJobdetailsChange("imagePath", link);
             }
         } else {
-            if (fileSize < 1000000) {
-                const link = await generateLinkfromImage(e, false);
-                handleCompanyDetailChange("bigLogoUrl", link);
+            // TODO: Need to compress big images also
+            if (fileSize < 500000) {
+                const link = await generateLinkfromImage(e, true);
+                handleCompanyDetailChange("largeLogo", link);
             } else {
-                showErrorToast("Image size should be less than 1mb");
+                showErrorToast("Image size should be less than 500kb");
             }
         }
     };
@@ -188,7 +186,11 @@ const AddjobsComponent = () => {
     const addJobDetails = async (e) => {
         e.preventDefault();
         setShowLoader(true);
-        // TODO: addCompanyDetails();
+
+        // if company details not present add company details before adding job details
+        if(!isCompaneydetailsPresent){
+            submitCompanyDetailsHelper(comapnyDetails)
+        }
 
         // upload banner to cdn if banner link is not present
         const bannerlink = await uploadBannertoCDN();
@@ -309,6 +311,7 @@ const AddjobsComponent = () => {
                         />
                     </div>
 
+                    {/* company logo upload section  */}
                     <div style={{ display: "flex", marginTop: "40px" }}>
                         <p style={{ paddingRight: "10px", fontWeight: "600" }}>
                             <span style={{ color: "red" }}>**</span> Upload Company logo (50kb) :
@@ -317,11 +320,19 @@ const AddjobsComponent = () => {
                         <input type="file" onChange={(e) => handleCompanyLogoInput(e)} />
                         <p>File Size : {companyLogoSize}</p>
                     </div>
+                    <div style={{ justifyContent: "flex-start", marginTop: "40px" }} className={styles.flex}>
+                        <div className={styles.flex}>
+                            <h4>* Company Logo for Banner : </h4>
+                            <label htmlFor="contained-button-file">
+                                <input accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleCompanyLogoInput(e, false)} />
+                            </label>
+                        </div>
+                    </div>
 
-                    {comapnyDetails.smallLogoUrl && (
+                    {comapnyDetails.smallLogo && (
                         <div style={{ display: "flex", marginTop: "40px" }}>
                             <p style={{ paddingRight: "10px" }}>Logo uploaded :</p>
-                            <img src={comapnyDetails.smallLogoUrl} width="50" height="50" alt="logo" />
+                            <img src={comapnyDetails.smallLogo} width="50" height="50" alt="logo" />
                         </div>
                     )}
 
@@ -335,16 +346,8 @@ const AddjobsComponent = () => {
                     <p>Comment YES for the apply link</p>
                     <CustomDivider />
 
-                    <div style={{ justifyContent: "flex-start" }} className={styles.flex}>
-                        <div className={styles.flex}>
-                            <h4>* Company Logo for Banner : </h4>
-                            <label htmlFor="contained-button-file">
-                                <input accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleCompanyLogoInput(e, false)} />
-                            </label>
-                        </div>
-                    </div>
-
-                    <div style={{ marginTop: "30px" }} className={styles.flex}>
+                    {/* TODO: Move download banner section to canvas component */}
+                    <div  className={styles.flex}>
                         <Button style={{ textTransform: "capitalize" }} onClick={() => handleDownloadBanner()} variant="contained" color="success" endIcon={<CloudDownloadIcon />}>
                             Download IG Banner
                         </Button>
