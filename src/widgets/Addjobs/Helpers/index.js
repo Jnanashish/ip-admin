@@ -105,6 +105,7 @@ export const updateJobDetails = async (jobdetails, id) => {
     formData.append("aboutCompany", jobdetails?.aboutCompany);
     formData.append("location", jobdetails?.location);
     formData.append("imagePath", jobdetails?.imagePath);
+    // formData.append("companyName", jobdetails?.companyName);
 
 
     const res = await updateData(`${apiEndpoint.updateJobDetails}${id}`, formData)

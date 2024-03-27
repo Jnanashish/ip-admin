@@ -1,5 +1,5 @@
 import { copyToClipBoard } from "../../../Helpers/utility";
-import { showErrorToast, showSuccessToast, showInfoToast, showWarnToast } from "../../../Helpers/toast";
+import { showSuccessToast } from "../../../Helpers/toast";
 
 import { hashtags, captionline } from "./staticdata";
 
@@ -69,5 +69,12 @@ export const generateCombinedWhatsAppMessage = (selectedJobList) => {
     });
 
     navigator.clipboard.writeText(message);
+    showSuccessToast("Copied");
+};
+
+// copy apply link of selected job
+export const copyApplyLink = (item) => {
+    const applyLink = item?.companyName + " apply link : " + item?.link;
+    copyToClipBoard(applyLink);
     showSuccessToast("Copied");
 };

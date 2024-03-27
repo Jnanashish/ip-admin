@@ -174,7 +174,7 @@ const AddjobsComponent = () => {
         } else {
             // TODO: Need to compress big images also
             if (fileSize < 500000) {
-                const link = await generateLinkfromImage(e, true);
+                const link = await generateLinkfromImage(e, false);
                 handleCompanyDetailChange("largeLogo", link);
             } else {
                 showErrorToast("Image size should be less than 500kb");

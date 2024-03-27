@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 
-import Joblinks from "../../widgets/Joblinks/Joblinks";
+import JobListing from "../../widgets/Joblisting";
 import Adpoptype from "../../widgets/Dapoptype/Adpoptype";
 import AddBanner from "../../widgets/AD/Addbanner";
 import CompanyDetails from "../../widgets/CompanyDetails/CompanyDetails";
@@ -60,7 +60,7 @@ const AdminPanel = () => {
                             <Tab style={currState === "companylogo" ? activeButtonCss : inactiveButtonCss} onClick={() => setCurrState("companylogo")} className={styles.tab}>
                                 Add company details
                             </Tab>
-                            <Tab style={currState === "ad_link" ? activeButtonCss : inactiveButtonCss} onClick={() => setCurrState("ad_link")} className={styles.tab}>
+                            {/* <Tab style={currState === "ad_link" ? activeButtonCss : inactiveButtonCss} onClick={() => setCurrState("ad_link")} className={styles.tab}>
                                 + Ad (Link only)
                             </Tab>
                             <Tab style={currState === "ad_img" ? activeButtonCss : inactiveButtonCss} onClick={() => setCurrState("ad_img")} className={styles.tab}>
@@ -71,19 +71,19 @@ const AdminPanel = () => {
                             </Tab>
                             <Tab style={currState === "ad_pop" ? activeButtonCss : inactiveButtonCss} onClick={() => setCurrState("ad_pop")} className={styles.tab}>
                                 Ad pop type
-                            </Tab>
+                            </Tab> */}
                         </>
                     )}
                 </TabList>
 
                 <div className={styles.part2}>
                     <TabPanel>
-                        <Joblinks />
+                        <JobListing />
                     </TabPanel>
                     <TabPanel>
                         <CompanyDetails />
                     </TabPanel>
-                    <TabPanel>
+                    {/* <TabPanel>
                         <AddLink />
                     </TabPanel>
                     <TabPanel>
@@ -94,7 +94,7 @@ const AdminPanel = () => {
                     </TabPanel>
                     <TabPanel>
                         <Adpoptype />
-                    </TabPanel>
+                    </TabPanel> */}
                 </div>
             </Tabs>
             <br />

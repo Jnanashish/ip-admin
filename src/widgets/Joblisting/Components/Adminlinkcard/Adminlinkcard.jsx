@@ -2,14 +2,14 @@ import React, { useState, useContext, useEffect } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import styles from "./adminlinkcard.module.scss";
-import EditData from "./Editdata";
+import EditData from "../Editdata/Editdata";
 
-import { UserContext } from "../../Context/userContext";
-import { getLinkClickCount } from "../../Helpers/utility";
-import Custombutton from "../../Components/Button/Custombutton";
-import { deleteData } from "../../Helpers/request";
-import { apiEndpoint } from "../../Helpers/apiEndpoints";
-import { generateDateFromISOString } from "../../Helpers/utility";
+import { UserContext } from "../../../../Context/userContext";
+import { getLinkClickCount } from "../../../../Helpers/utility";
+import Custombutton from "../../../../Components/Button/Custombutton";
+import { deleteData } from "../../../../Helpers/request";
+import { apiEndpoint } from "../../../../Helpers/apiEndpoints";
+import { generateDateFromISOString } from "../../../../Helpers/utility";
 
 const LinkCard = ({ item, showBitlyClick }) => {
     const [seletedJobId, setSeletedJobId] = useState("");

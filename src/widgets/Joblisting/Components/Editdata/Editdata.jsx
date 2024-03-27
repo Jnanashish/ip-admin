@@ -6,15 +6,15 @@ import styles from "./editdata.module.scss";
 // import ck editior
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import { config } from "../../Config/editorConfig";
+import { config } from "../../../../Config/editorConfig";
 
 // import react toast
-import Custombutton from "../../Components/Button/Custombutton";
-import { addJobDataHelper } from "../Addjobs/Helpers";
-import { showErrorToast, showInfoToast, showSuccessToast } from "../../Helpers/toast";
-import CustomDivider from "../../Components/Divider/Divider";
-import { updateJobDetails } from "../../widgets/Addjobs/Helpers";
-import { shortenurl } from "../../Helpers/utility";
+import Custombutton from "../../../../Components/Button/Custombutton";
+import { addJobDataHelper } from "../../../Addjobs/Helpers";
+import { showErrorToast, showInfoToast, showSuccessToast } from "../../../../Helpers/toast";
+import CustomDivider from "../../../../Components/Divider/Divider";
+import { updateJobDetails } from "../../../Addjobs/Helpers";
+import { shortenurl } from "../../../../Helpers/utility";
 
 const EditData = (props) => {
     ClassicEditor.defaultConfig = config;
@@ -87,6 +87,10 @@ const EditData = (props) => {
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Title of the Job : </h3>
                     <input className={styles.admin_input} value={jobDetails.title} onChange={(e) => handleJobdetailsChange("title", e.target.value)} type="text" placeholder="Title of the job" />
+                </div>
+                <div className={styles.admin_grid}>
+                    <h3 className={styles.admin_label}>Company name : </h3>
+                    <input className={styles.admin_input} value={jobDetails.companyName} onChange={(e) => handleJobdetailsChange("companyName", e.target.value)} type="text" placeholder="Title of the job" />
                 </div>
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Link to register : </h3>

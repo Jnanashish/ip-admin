@@ -4,28 +4,26 @@ import styles from "./joblinks.module.scss";
 import Custombutton from "../../Components/Button/Custombutton";
 import CustomDivider from "../../Components/Divider/Divider";
 
+// mui imports
 import SendIcon from "@mui/icons-material/Send";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-
 import { Switch, FormControlLabel, CircularProgress, Checkbox } from "@mui/material";
 
 // import components
-import Adminlinkcard from "./Adminlinkcard";
+import Adminlinkcard from "./Components/Adminlinkcard/Adminlinkcard";
 import { UserContext } from "../../Context/userContext";
 import CustomTextField from "../../Components/Input/Textfield";
 
+// helpers
 import { handleTelegramSubmitHelper } from "../../Helpers/socialhandler";
-import { copyWhatsAppMessage, generateCaptionHelper, generateLinkedinCaption } from "./Helpers";
-import { showErrorToast, showSuccessToast } from "../../Helpers/toast";
-
-import { copyToClipBoard } from "../../Helpers/utility";
+import { copyWhatsAppMessage, generateCaptionHelper, generateLinkedinCaption, generateCombinedWhatsAppMessage, copyApplyLink } from "./Helpers";
+import { showErrorToast } from "../../Helpers/toast";
 import { generateImageFromLink } from "../../Helpers/imageHelpers";
 import { get } from "../../Helpers/request";
 import { apiEndpoint } from "../../Helpers/apiEndpoints";
-import { generateCombinedWhatsAppMessage } from "./Helpers";
 
-const UpdateData = () => {
+const JobListing = () => {
     const [jobData, setJobData] = useState([]);
     const [isApiCalled, setIsApiCalled] = useState(false);
     const [showBitlyClick, setShowBitlyClick] = useState(false);
@@ -34,13 +32,6 @@ const UpdateData = () => {
     const [selectedJob, setSelectedJob] = useState([]);
 
     const context = useContext(UserContext);
-
-    // copy job apply link
-    const copylink = (item) => {
-        const applyLink = item.companyName + " apply link : " + item.link;
-        copyToClipBoard(applyLink);
-        showSuccessToast("Copied");
-    };
 
     // fetch job details
     const getJobDetailsData = async () => {
@@ -52,11 +43,12 @@ const UpdateData = () => {
             setFilterdData(data);
         } catch (error) {
             setIsApiCalled(false);
-            showErrorToast("An error loading occured");
+            showErrorToast("An error occured in fetching job details");
         }
     };
 
     // download job details banner
+    // TODO: Need to generate multiple banners dynamically
     const downloadBanner = async (item) => {
         generateImageFromLink(item.jdbanner, item.companyName);
     };
@@ -69,6 +61,7 @@ const UpdateData = () => {
         setFilterdData(filteredJobData);
     };
 
+    // select multiple jobs to generate message, caption
     const handleSelectJob = (item) => {
         setSelectedJob((prevSelectedJob) => {
             if (prevSelectedJob.some((job) => job._id === item._id)) {
@@ -108,7 +101,12 @@ const UpdateData = () => {
                         className={styles.companyNameInput}
                     />
                     <div className={styles.captionButton_container}>
-                        <Custombutton onClick={() => generateCombinedWhatsAppMessage(selectedJob)} label="Message" endIcon={<WhatsAppIcon />} />
+                        <Custombutton
+                            disabled={selectedJob.length === 0}
+                            onClick={() => generateCombinedWhatsAppMessage(selectedJob)}
+                            label={`Message (${selectedJob.length})`}
+                            endIcon={<WhatsAppIcon />}
+                        />
                     </div>
 
                     <div>
@@ -122,7 +120,7 @@ const UpdateData = () => {
                                         <div className={styles.btn_con}>
                                             <Checkbox onChange={() => handleSelectJob(item)} />
                                             <Custombutton disabled={item.jdbanner === "N"} onClick={() => downloadBanner(item)} endIcon={<CloudDownloadIcon />} label="Banner" />
-                                            <Custombutton style={{ backgroundColor: "#0069ff" }} onClick={() => copylink(item)} label="Copy Link" />
+                                            <Custombutton style={{ backgroundColor: "#0069ff" }} onClick={() => copyApplyLink(item)} label="Copy Link" />
                                         </div>
                                         <div className={styles.btn_con2}>
                                             <Custombutton disabled={!context.isAdmin} onClick={() => handleTelegramSubmitHelper(item)} endIcon={<SendIcon />} label="Telegram" />
@@ -142,4 +140,4 @@ const UpdateData = () => {
     );
 };
 
-export default UpdateData;
+export default JobListing;

@@ -1,5 +1,9 @@
 .update_data_container {
   padding: 50px;
+  button {
+
+    text-transform: capitalize;
+  }
 
   @media screen and (max-width: 900px) {
     padding: 20px;
