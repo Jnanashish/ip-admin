@@ -6,7 +6,6 @@ import CustomDivider from "../../Components/Divider/Divider";
 
 // mui imports
 import SendIcon from "@mui/icons-material/Send";
-import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import { Switch, FormControlLabel, CircularProgress, Checkbox } from "@mui/material";
 
@@ -120,8 +119,8 @@ const JobListing = () => {
                                     <div className={styles.adminlink_con}>
                                         <div className={styles.btn_con}>
                                             <Checkbox onChange={() => handleSelectJob(item)} />
-                                            <Custombutton disabled={item.jdbanner === "N"} onClick={() => downloadBanner(item)} endIcon={<CloudDownloadIcon />} label="Banner" />
-                                            <Custombutton style={{ backgroundColor: "#0069ff" }} onClick={() => copyApplyLink(item)} label="Copy Link" />
+                                            <Custombutton style={{ backgroundColor: "green" }} disabled={item.jdbanner === "N"} onClick={() => downloadBanner(item)} label="Banner" />
+                                            <Custombutton onClick={() => copyApplyLink(item)} label="Copy Link" />
                                         </div>
                                         <div className={styles.btn_con2}>
                                             <Custombutton disabled={!context.isAdmin} onClick={() => handleTelegramSubmitHelper(item)} endIcon={<SendIcon />} label="Telegram" />

@@ -91,7 +91,7 @@ const CompanyDetails = () => {
         if(!!value){
             const data = await get(`${apiEndpoint.get_company_details}?companyname=${value}`);
             setCompanyId(data?._id)
-            if (!!data) {
+            if (!!data?.companyName && !!data?.smallLogo) {
                 setIsCompanydetailPresent(true);
                 setComapnyDetails({
                     name: data?.companyName || "",

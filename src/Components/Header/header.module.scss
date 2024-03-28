@@ -1,0 +1,40 @@
+.adminpanel {
+  background-color: #f4faff;
+  width: 100%;
+
+  &_buttoncontainer {
+    display: flex;
+    gap: 20px;
+    padding: 30px 40px;
+    border-bottom: 0.5px solid #121212;
+
+    button {
+      text-transform: capitalize;
+      padding: 8px 20px;
+    }
+  }
+
+  &_header {
+    background-color: #0069ff;
+    padding: 18px 24px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    color: #fff;
+
+    h4 {
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    @media (max-width: 900px) {
+      padding: 12px 10px;
+
+      h4 {
+        font-size: 14px;
+        font-weight: 500;
+      }
+    }
+  }
+}

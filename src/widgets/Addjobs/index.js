@@ -7,7 +7,6 @@ import Canvas from "../../Components/Canvas";
 import CustomTextField from "../../Components/Input/Textfield";
 import CustomCKEditor from "../../Components/CkEditor/CkEditor";
 import CustomDivider from "../../Components/Divider/Divider";
-import Backtodashboard from "./Components/Backtodashboard";
 
 // mui import
 import { Button, IconButton, FormGroup, Switch, FormControlLabel } from "@mui/material";
@@ -234,7 +233,6 @@ const AddjobsComponent = () => {
             )}
 
             {/* back to dashboard header  */}
-            <Backtodashboard />
 
             <div className={styles.maininput_con}>
                 <div className={styles.input_fields}>
