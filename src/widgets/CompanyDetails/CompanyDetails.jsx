@@ -45,7 +45,7 @@ const CompanyDetails = () => {
     // submit company details
     const submitCompanyDetails = async () => {
         const res = await submitCompanyDetailsHelper(comapnyDetails);
-        if (!!res?.status === 200) {
+        if (!!res) {
             setComapnyDetails({
                 name: "",
                 info: "",
@@ -60,7 +60,8 @@ const CompanyDetails = () => {
 
     const updateCompanyDetails = async () => {
         const res = await updateCompanyDetailsHelper(comapnyDetails, comapnyId);
-        if (!!res?.status === 200) {
+        if (!!res) {
+            window.location.href = "/companylist"
             setComapnyDetails({
                 name: "",
                 info: "",
@@ -86,12 +87,32 @@ const CompanyDetails = () => {
         setComapnyDetails({ ...comapnyDetails, [key]: value });
     };
 
+    const handleCompanynameChange = async (value) => {
+        if(!!value){
+            const data = await get(`${apiEndpoint.get_company_details}?companyname=${value}`);
+            setCompanyId(data?._id)
+            if (!!data) {
+                setIsCompanydetailPresent(true);
+                setComapnyDetails({
+                    name: data?.companyName || "",
+                    info: data?.companyInfo || "",
+                    linkedinLink: data?.linkedinPageLink || "",
+                    careersPageLink: data?.careerPageLink || "",
+                    companyType: data?.companyType || "",
+                    smallLogo: data?.smallLogo || "",
+                    largeLogo: data?.largeLogo || "",
+                });
+            }
+        }
+    }
+
     // get company details and job details
     const getQueryparam = async () => {
         const urlParams = new URLSearchParams(window.location.search);
         const companyid = urlParams.get("companyid");
         setCompanyId(companyid)
 
+        // if company id is present fetch company details based on id
         if (!!companyid) {
             const data = await get(`${apiEndpoint.get_company_details}?id=${companyid}`);
             if (!!data) {
@@ -117,7 +138,7 @@ const CompanyDetails = () => {
         <div className={styles.container}>
             <div className={styles.text_input}>
                 <h3 className={styles.admin_label}>Company name : </h3>
-                <CustomTextField label="Title" value={comapnyDetails.name} onChange={(val) => handleCompanyDetailChange("name", val)} sx={{ width: "80%" }} />
+                <CustomTextField label="Title" onBlur={(val)=>handleCompanynameChange(val)} value={comapnyDetails.name} onChange={(val) => handleCompanyDetailChange("name", val)} sx={{ width: "80%" }} />
             </div>
             <div className={styles.text_input}>
                 <h3 className={styles.admin_label}>Company info : </h3>

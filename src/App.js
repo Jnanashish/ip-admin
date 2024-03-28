@@ -11,6 +11,7 @@ import Adminpanel from "./pages/Adminpanel/Adminpanel";
 import Signin from "./pages/Signinpage/Signin";
 import Banners from "./pages/Banners/index";
 import CompanyDetails from "./widgets/CompanyDetails/CompanyDetails";
+import CompanyList from "./widgets/CompanyList";
 
 function App() {
     // context set
@@ -27,6 +28,7 @@ function App() {
                         <Route exact path="/addjob" element={<Addjobs />} />
                         <Route exact path="/canvas" element={<Banners />} />
                         <Route exact path="/addcompanydetails" element={<CompanyDetails />} />
+                        <Route exact path="/companylist" element={<CompanyList />} />
                         <Route exact path="/" element={<Signin />} />
                     </Routes>
                 </div>
