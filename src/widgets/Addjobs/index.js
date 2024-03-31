@@ -9,17 +9,16 @@ import CustomCKEditor from "../../Components/CkEditor/CkEditor";
 import CustomDivider from "../../Components/Divider/Divider";
 
 // mui import
-import { Button, IconButton, FormGroup, Switch, FormControlLabel } from "@mui/material";
+import { Button, IconButton, FormGroup, Switch, FormControlLabel, Checkbox, CircularProgress, Chip, Stack } from "@mui/material";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import CircularProgress from "@mui/material/CircularProgress";
 
 // import helpers
 import { shortenurl } from "../../Helpers/utility";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../Context/userContext";
 
-import { degreeOptions, batchOptions, expOptions, locOptions, jobTypeOptions, companyTypeOptions } from "./Helpers/staticdata";
+import { degreeOptions, batchOptions, expOptions, locOptions, jobTypeOptions, companyTypeOptions, categorytags } from "./Helpers/staticdata";
 import { downloadImagefromCanvasHelper, generateImageCDNlinkHelper, uploadBannertoCDNHelper } from "../../Helpers/imageHelpers";
 import { generateLastDatetoApplyHelper, getCompanyDetailsHelper, addJobDataHelper, mapExperiencetoBatch } from "./Helpers";
 import { copyToClipBoard } from "../../Helpers/utility";
@@ -65,6 +64,7 @@ const AddjobsComponent = () => {
         jdBanner: "N",
         link: "",
         imagePath: "",
+        categoryTags: [],
     });
 
     const [ctaDetails, setCtaDetails] = useState({
@@ -90,6 +90,20 @@ const AddjobsComponent = () => {
             ...prevState,
             [key]: value,
         }));
+    };
+
+    const handleCategoryTagClick = (tag) => {
+        if (jobdetails.categoryTags.includes(tag)) {
+            setJobdetails((prevState) => ({
+                ...prevState,
+                categoryTags: prevState.categoryTags.filter((item) => item !== tag),
+            }));
+        } else {
+            setJobdetails((prevState) => ({
+                ...prevState,
+                categoryTags: [...prevState.categoryTags, tag],
+            }));
+        }
     };
 
     // generate the last date to apply based on current date
@@ -139,7 +153,7 @@ const AddjobsComponent = () => {
             const data = await getCompanyDetailsHelper(jobdetails.companyName);
             if (!!data?.largeLogo) handleCompanyDetailChange("largeLogo", data?.largeLogo);
             if (!!data?.smallLogo) {
-                setIsCompaneydetailsPresent(true)
+                setIsCompaneydetailsPresent(true);
                 handleCompanyDetailChange("smallLogo", data?.smallLogo);
                 handleJobdetailsChange("imagePath", data?.smallLogo);
             }
@@ -175,15 +189,15 @@ const AddjobsComponent = () => {
         setShowLoader(true);
 
         // if company details not present add company details before adding job details
-        if(!isCompaneydetailsPresent){
-            submitCompanyDetailsHelper(comapnyDetails)
+        if (!isCompaneydetailsPresent) {
+            submitCompanyDetailsHelper(comapnyDetails);
         }
 
         // upload banner to cdn if banner link is not present
         const bannerlink = await uploadBannertoCDN();
 
         const res = await addJobDataHelper(jobdetails, bannerlink);
-        if (res.status === 200 || res.status === 201) navigate("/admin");
+        if (res.status === 200 || res.status === 201) navigate("/jobs");
     };
 
     // handle company job title change
@@ -201,7 +215,7 @@ const AddjobsComponent = () => {
 
     // handle company name change
     const handleCompanyNameChange = (value) => {
-        handleCompanyDetailChange("name", value)
+        handleCompanyDetailChange("name", value);
         handleJobdetailsChange("companyName", value);
         handleJobdetailsChange("title", value + " is hiring " + jobdetails.role);
     };
@@ -222,9 +236,9 @@ const AddjobsComponent = () => {
         handleJobdetailsChange("batch", mappedBatch);
     }, [jobdetails.experience]);
 
-
     return (
         <div className={styles.container}>
+            <h3>Add job details : </h3>
             {/* circular loader  */}
             {!!showLoader && (
                 <div className={styles.overlayContainer}>
@@ -238,8 +252,14 @@ const AddjobsComponent = () => {
                 <div className={styles.input_fields}>
                     <div className={styles.flex_con}>
                         <CustomTextField label="Company name *" value={jobdetails.companyName} onChange={(val) => handleCompanyNameChange(val)} onBlur={getCompanyDetails} sx={{ width: "22ch" }} />
-                        <CustomTextField label="Role of the Job" value={jobdetails.role} onChange={(val) => handleJobRoleChange(val)} fullWidth />
+                        <CustomTextField label="Role of the Job *" value={jobdetails.role} onChange={(val) => handleJobRoleChange(val)} fullWidth />
                     </div>
+                    <Stack direction="row" spacing={1}>
+                        {categorytags.map((item) => (
+                            <Chip label={item} variant={jobdetails.categoryTags.includes(item) ? "" : "outlined"} color="primary" onClick={() => handleCategoryTagClick(item)} />
+                        ))}
+                    </Stack>
+
                     <CustomTextField
                         fullWidth
                         label={igbannertitle?.length > 30 ? "Max length is 30" : "Banner title of the job"}
@@ -335,7 +355,7 @@ const AddjobsComponent = () => {
                     <CustomDivider />
 
                     {/* TODO: Move download banner section to canvas component */}
-                    <div  className={styles.flex}>
+                    <div className={styles.flex}>
                         <Button style={{ textTransform: "capitalize" }} onClick={() => handleDownloadBanner()} variant="contained" color="success" endIcon={<CloudDownloadIcon />}>
                             Download IG Banner
                         </Button>
@@ -394,7 +414,6 @@ const AddjobsComponent = () => {
             </div>
 
             <Canvas jobdetails={jobdetails} ctaDetails={ctaDetails} comapnyDetails={comapnyDetails} igbannertitle={igbannertitle} />
-
         </div>
     );
 };

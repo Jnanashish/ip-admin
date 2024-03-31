@@ -5,7 +5,7 @@ function Backtodashboard() {
     const navigate = useNavigate();
 
     const handleBack = () => {
-        navigate("/admin");
+        navigate("/jobs");
     };
 
     return (

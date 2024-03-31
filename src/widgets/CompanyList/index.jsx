@@ -35,6 +35,7 @@ function CompanyList() {
 
     return (
         <div className={styles.companylist}>
+            <h3>List of avilable companies :</h3>
             {!!comapnyData &&
                 comapnyData.map((company) => {
                     return (

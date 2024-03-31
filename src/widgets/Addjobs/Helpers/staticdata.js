@@ -27,6 +27,7 @@ export const batchOptions = [
     "2023 / 2022 / 2021",
     "2023 / 2022",
     "2023",
+    "2024 / 2023 / 2022 / 2021 / 2020",
     "2024 / 2023 / 2022 / 2021",
     "2024 / 2023 / 2022",
     "2024 / 2023",
@@ -89,3 +90,5 @@ export const locOptions = [
 export const jobTypeOptions = ["N", "Full time", "Internship", "Part time", "Contractual"];
 
 export const companyTypeOptions = ["N", "product", "service", "promo"];
+
+export const categorytags = ["frontend", "backend", "fullstack", "web", "web3", "devops", "qa", "app", "datascience","analytics"]
