@@ -21,10 +21,12 @@ function LinkedinBanner(props) {
     return (
         <div id="linkedinbanner" className={styles.linkedinbanner}>
             <div className={styles.linkedinbanner_imagecontainer}>
-            <img style={customStyle.imgstyle} src={largeLogo}/>
+                <img style={customStyle.imgstyle} src={largeLogo} />
             </div>
             <h3>is Hiring</h3>
-            <p>{role} - {location} <br/> Batch : {batch}</p>
+            <p style={customStyle.fontStyle}>
+                {role} - {location} <br /> Batch : {batch}
+            </p>
         </div>
     );
 }

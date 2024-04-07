@@ -14,7 +14,7 @@ const Header = () => {
     const currentUrl = window.location.pathname;
 
     const context = useContext(UserContext);
-    const isUserLogedIn = context.user?.email || true;
+    const isUserLogedIn = context.user?.email;
 
     const handleRedirection = (route) => {
         navigate(route);
@@ -28,17 +28,17 @@ const Header = () => {
                 {isUserLogedIn ? (
                     <h4>Welcome : Jnanashish Handique</h4>
                 ) : (
-                    <Button onClick={() => navigate("/signin")} size="medium" style={{ backgroundColor: "#FFF" }}>
+                    <Button onClick={() => navigate("/signin")} size="small" style={{ backgroundColor: "#FFF" }}>
                         Sign in
                     </Button>
                 )}
             </div>
-            <div className={styles.adminpanel_buttoncontainer}>
+            {isUserLogedIn && <div className={styles.adminpanel_buttoncontainer}>
                 <Custombutton variant={currentUrl === "/addjob" ? "" : "outlined"} onClick={() => handleRedirection("/addjob")} label="Add job" />
                 <Custombutton variant={currentUrl === "/jobs" ? "" : "outlined"} onClick={() => handleRedirection("/jobs")} label="Job dashboard" />
                 <Custombutton variant={currentUrl === "/addcompanydetails" ? "" : "outlined"} onClick={() => handleRedirection("/addcompanydetails")} label="Add company details" />
                 <Custombutton variant={currentUrl === "/companylist" ? "" : "outlined"} onClick={() => handleRedirection("/companylist")} label="Company list" />
-            </div>
+            </div>}
         </div>
     );
 };

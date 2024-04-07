@@ -47,8 +47,8 @@ const CareersattechBanner = (props) => {
                         {!!largeLogo && <img style={customStyle.imgstyle} src={largeLogo} alt={`${companyName} logo`}></img>}
                         {!largeLogo && <h1>{companyName}</h1>}
                     </div>
-                    <div style={customStyle.fontStyle} className={styles.canvas_title}>
-                        <h1 style={role?.length > 27 ? { fontSize : "88px"} : {}}>{bannerTitle}</h1>
+                    <div className={styles.canvas_title}>
+                        <h1 style={customStyle.fontStyle}>{bannerTitle}</h1>
                     </div>
                 </div>
 

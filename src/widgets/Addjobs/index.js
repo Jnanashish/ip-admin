@@ -67,11 +67,6 @@ const AddjobsComponent = () => {
         categoryTags: [],
     });
 
-    const [ctaDetails, setCtaDetails] = useState({
-        ctaTitle: "Apply Link : ",
-        ctaLine: "Link in Bio (visit : careersat.tech)",
-    });
-
     const context = useContext(UserContext);
     const canvasId = "careersattech";
     const navigate = useNavigate();
@@ -345,16 +340,7 @@ const AddjobsComponent = () => {
                     )}
 
                     <CustomDivider />
-                    <div style={{ display: "flex", marginBottom: "10px", gap: "10px" }}>
-                        <CustomTextField label="CTA Title" sx={{ width: "30%" }} value={ctaDetails.ctaTitle} onChange={(val) => setCtaDetails({ ...ctaDetails, ctaTitle: val })} fullWidth />
-                        <CustomTextField label="CTA Line" sx={{ width: "70%" }} value={ctaDetails.ctaLine} onChange={(val) => setCtaDetails({ ...ctaDetails, ctaLine: val })} fullWidth />
-                    </div>
-                    <p>Join instagram channel for apply link 👇</p>
-                    <br />
-                    <p>Comment YES for the apply link</p>
-                    <CustomDivider />
 
-                    {/* TODO: Move download banner section to canvas component */}
                     <div className={styles.flex}>
                         <Button style={{ textTransform: "capitalize" }} onClick={() => handleDownloadBanner()} variant="contained" color="success" endIcon={<CloudDownloadIcon />}>
                             Download IG Banner
@@ -413,7 +399,7 @@ const AddjobsComponent = () => {
                 </Button>
             </div>
 
-            <Canvas jobdetails={jobdetails} ctaDetails={ctaDetails} comapnyDetails={comapnyDetails} igbannertitle={igbannertitle} />
+            <Canvas jobdetails={jobdetails} comapnyDetails={comapnyDetails} igbannertitle={igbannertitle} />
         </div>
     );
 };

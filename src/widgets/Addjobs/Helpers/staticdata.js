@@ -91,4 +91,4 @@ export const jobTypeOptions = ["N", "Full time", "Internship", "Part time", "Con
 
 export const companyTypeOptions = ["N", "product", "service", "promo"];
 
-export const categorytags = ["frontend", "backend", "fullstack", "web", "web3", "devops", "qa", "app", "datascience","analytics"]
+export const categorytags = ["frontend", "backend", "fullstack", "web", "web3", "devops", "qa", "app", "datascience","analytics", "uiux"]

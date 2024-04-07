@@ -172,9 +172,8 @@ $gridBoxSize: 30px;
     margin-bottom: 30px;
 }
 
-
-.linkedinbanner{
-    background-color: #FFF;
+.linkedinbanner {
+    background-color: #fff;
     height: 420px;
     width: 700px;
     text-align: center;
@@ -185,18 +184,139 @@ $gridBoxSize: 30px;
     justify-content: space-evenly;
     align-items: center;
 
-    &_imagecontainer{
+    &_imagecontainer {
         height: 100px;
         margin-bottom: 20px;
     }
 
-    h3{
+    h3 {
         font-size: 3.6rem;
     }
 
-    p{
+    p {
         font-size: 1.8rem;
         line-height: 2.8rem;
         margin-top: 20px;
+    }
+}
+
+.jobsattechcanvas {
+    background-color: #fff !important;
+    // padding: 72px;
+
+    &_upper {
+        padding: 55px 72px 0px;
+        // height: 20 * $gridBoxSize;
+        height: 720px;
+    }
+
+    &_header {
+        // color: #002C9B !important;
+        span: {
+            background-color: #002c9b;
+        }
+    }
+
+    &_companylogo {
+        // justify-content: center;
+    }
+
+    &_jobtitle {
+        color: #002c9b !important;
+        padding-bottom: 0px;
+        justify-content: center;
+    }
+    &_details {
+        background-color: #fff !important;
+        padding-left: 72px;
+        margin: 0px auto 40px;
+        height: 530px;
+        border-radius: 0px;
+    }
+
+    &_footer {
+        justify-content: center;
+        // background-color: #002c9b;
+    }
+}
+
+.carousel {
+    padding: 60px 80px !important;
+
+    &_header {
+        height: 60px;
+    }
+
+    &_companylogo {
+        height: 8 * 60px;
+    }
+
+    &_details {
+        height: 10 * 60px;
+        padding-bottom: 30px;
+
+        p {
+            font-size: 2.2rem;
+            margin-top: 60px;
+            font-weight: 600;
+        }
+    }
+
+    &_footer {
+        margin-top: 30px;
+        padding: 0px;
+        background-color: #fff;
+        position: relative;
+        bottom: 0px;
+        height: 60px;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        span {
+            color: #0050ff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        &_swiper {
+            padding: 6px 22px;
+            background-color: #000000;
+            border-radius: 18px;
+            p {
+                font-size: 1rem;
+                margin-left: 0px;
+            }
+        }
+    }
+
+    &_jobdetails {
+        height: 16 * 60px;
+        display: flex;
+        align-items: left;
+        flex-direction: column;
+        justify-content: left;
+        background-color: #f4faff;
+        border-radius: 12px;
+        margin: 60px 0px;
+        padding: 120px 80px;
+        text-align: left;
+
+        h2 {
+            font-size: 4rem;
+            color: #0050ff;
+        }
+
+        div {
+            font-size: 2.2rem;
+            font-weight: 600;
+            margin-top: 40px;
+            p {
+                margin-top: 40px;
+                color: #121212;
+            }
+        }
     }
 }

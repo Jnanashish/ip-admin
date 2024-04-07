@@ -43,6 +43,7 @@ function Banners() {
                 <Custombutton variant={bannerType === "careersattech" ? "" : "outlined"} onClick={() => setBannerType("careersattech")} label="Careersattech banner" />
                 <Custombutton variant={bannerType === "jobsattech" ? "" : "outlined"} onClick={() => setBannerType("jobsattech")} label="Jobsattech" />
                 <Custombutton variant={bannerType === "linkedinbanner" ? "" : "outlined"} onClick={() => setBannerType("linkedinbanner")} label="Linkedin" />
+                <Custombutton variant={bannerType === "carousel" ? "" : "outlined"} onClick={() => setBannerType("carousel")} label="Carousel" />
             </div>
             {!!jobdetails && !!comapnyDetails ? (
                 <Canvas bannerType={bannerType} jobdetails={jobdetails} comapnyDetails={comapnyDetails} ctaDetails={ctaDetails} />

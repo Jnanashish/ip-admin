@@ -23,13 +23,13 @@ const LinkCard = ({ item, showBitlyClick }) => {
     // when delete button is clicked delete a particular job
     const deleteJobData = (id) => {
         if (id === item._id) {
-            deleteData(`${apiEndpoint.deleteJob}/${id}`, "Job")
-            setDeletedId(id)
+            deleteData(`${apiEndpoint.deleteJob}/${id}`, "Job");
+            setDeletedId(id);
         }
     };
 
     const context = useContext(UserContext);
-    const isUserLogedIn = context.user?.email || true;
+    const isUserLogedIn = !!context.user?.email;
 
     // get bit.ly link count
     const getBitlyShortClick = async () => {
@@ -84,23 +84,21 @@ const LinkCard = ({ item, showBitlyClick }) => {
                         </a>
 
                         {/* button section  */}
-                        {isUserLogedIn && (
-                            <>
-                            <div className={styles.buttonContainer}>
-                                <Custombutton
-                                    startIcon={<DeleteIcon />}
-                                    disableElevation
-                                    size="small"
-                                    onClick={() => deleteJobData(item._id)}
-                                    style={{ backgroundColor: "red" }}
-                                    label="Delete"
-                                    className={styles.btn}
-                                />
 
-                                <Custombutton disableElevation size="small" onClick={() => handleUpdateClick(item._id)} label="Update" className={styles.btn} />
-                            </div>
-                            </>
-                        )}
+                        <div className={styles.buttonContainer}>
+                            <Custombutton
+                                startIcon={<DeleteIcon />}
+                                disableElevation
+                                size="small"
+                                onClick={() => deleteJobData(item._id)}
+                                style={{ backgroundColor: "red" }}
+                                label="Delete"
+                                className={styles.btn}
+                                disabled={!isUserLogedIn}
+                            />
+
+                            <Custombutton disabled={!isUserLogedIn} disableElevation size="small" onClick={() => handleUpdateClick(item._id)} label="Update" className={styles.btn} />
+                        </div>
                     </div>
                 </div>
             )}
