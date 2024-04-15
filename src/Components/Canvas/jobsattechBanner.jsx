@@ -43,7 +43,7 @@ const JobsattechBanner = (props) => {
                 </div>
 
                 <div  className={`${styles.canvas_title} ${styles.jobsattechcanvas_jobtitle}`} style={customStyle.jobtite}>
-                    <h1 style={customStyle.fontStyle}>{`${bannerTitle?.length > 30 ? "" : "is hiring "}` + bannerTitle}</h1>
+                    <h1 style={customStyle.fontStyle}>{bannerTitle}</h1>
                 </div>
             </div>
 
@@ -64,7 +64,7 @@ const JobsattechBanner = (props) => {
                             <span className={styles.tag}>Experience</span> : <span>{experience}</span>
                         </p>
                     )}
-                    {salary !== "N" && (
+                    {salary !== "N" && salary !== "₹0LPA" && (
                         <p>
                             <span className={styles.tag}>Salary</span> : <span>{salary}</span>
                         </p>

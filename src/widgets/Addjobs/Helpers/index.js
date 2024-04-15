@@ -53,6 +53,7 @@ export const addJobDataHelper = async (jobdetails, bannerlink) => {
     formData.append("jdpage", jobdetails.jdpage);
     formData.append("companytype", jobdetails.companytype);
     formData.append("companyName", jobdetails.companyName);
+    formData.append("tags", jobdetails?.categoryTags);
     if (jobdetails.jdBanner !== "N") formData.append("jdbanner", jobdetails.jdBanner);
     if (!!bannerlink) formData.append("jdbanner", bannerlink);
     if (!!jobdetails.imagePath) formData.append("imagePath", jobdetails.imagePath);

@@ -65,6 +65,7 @@ const AddjobsComponent = () => {
         link: "",
         imagePath: "",
         categoryTags: [],
+        skilltags : [],
     });
 
     const context = useContext(UserContext);

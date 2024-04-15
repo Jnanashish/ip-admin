@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { TextField } from "@mui/material";
 import styles from "./canvas.module.scss";
 import { downloadImagefromCanvasHelper } from "../../Helpers/imageHelpers";
@@ -9,21 +9,23 @@ import JobsattechBanner from "../../Components/Canvas/jobsattechBanner";
 import CustomTextField from "../../Components/Input/Textfield";
 import CustomDivider from "../Divider/Divider";
 import Carousel from "./Carousel";
+import { UserContext } from "../../Context/userContext";
 
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import { Button } from "@mui/material";
 
 function Canvas(props) {
     const { bannerType, jobdetails } = props;
-    const canvasId = "carousel";
-    // const canvasId = bannerType || "jobsattech" || "careersattech";
+    const context = useContext(UserContext);
+    const canvasId = bannerType ||  context?.isAdmin ? "careersattech" : "jobsattech";
+    const canvas = bannerType || context?.isAdmin ? "careersattech" : "jobsattech";
 
     const [canvasCss, setCanvasCss] = useState({
-        imgsize: "60%",
+        imgsize: bannerType === "linkedinbanner" ? "100%" : "60%",
         marginLeft: "0px",
         marginTop: "0px",
         marginBottom: "0px",
-        fontSize: "96px",
+        fontSize: bannerType === "linkedinbanner" ? "30px" : "96px",
     });
 
     const [ctaDetails, setCtaDetails] = useState({
@@ -69,10 +71,10 @@ function Canvas(props) {
                 <CustomDivider />
             </div>
 
-            {(bannerType === "careersattech" || !bannerType) && <CareersattechBanner {...props} ctaDetails={ctaDetails} canvasCss={canvasCss} />}
-            {bannerType === "jobsattech" && <JobsattechBanner {...props} ctaDetails={ctaDetails} canvasCss={canvasCss} />}
-            {bannerType === "linkedinbanner" && <LinkedinBanner {...props} canvasCss={canvasCss} />}
-            {bannerType === "carousel" && <Carousel {...props} canvasCss={canvasCss} />}
+            {canvas === "careersattech" && <CareersattechBanner {...props} ctaDetails={ctaDetails} canvasCss={canvasCss} />}
+            {canvas === "jobsattech" && <JobsattechBanner {...props} ctaDetails={ctaDetails} canvasCss={canvasCss} />}
+            {canvas === "linkedinbanner" && <LinkedinBanner {...props} canvasCss={canvasCss} />}
+            {canvas === "carousel" && <Carousel {...props} canvasCss={canvasCss} />}
 
             <div className={styles.flex}>
                 <Button style={{ textTransform: "capitalize", marginTop: "30px" }} onClick={() => handleDownloadBanner()} variant="contained" color="success" endIcon={<CloudDownloadIcon />}>
