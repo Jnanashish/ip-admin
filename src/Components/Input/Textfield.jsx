@@ -22,6 +22,7 @@ const CustomTextField = (props) => {
                     style={{ backgroundColor: "#FFF", borderRadius: "8px" }}
                     multiline={!!multiline ? multiline : false}
                     rows={!!rows ? rows : 1}
+                    type={!!type ? type : ""}
                 />
             )}
             {type === "select" && (

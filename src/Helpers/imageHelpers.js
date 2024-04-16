@@ -28,7 +28,6 @@ export const resizeImageHelper = (file) => {
 const resizeImage = async (file) => {
     const compressedImage = await resizeImageHelper(file);
     const compressedImageSize = compressedImage.size;
-    console.log("compressedImage", compressedImage, compressedImageSize);
 
     // if compressed image size is more then 10kb return null
     if (compressedImageSize > 10240) {
@@ -36,7 +35,6 @@ const resizeImage = async (file) => {
         return null;
     } else {
         compressedImageSize > 5120 && showWarnToast("Image size should be less than 5kb (After compression)");
-        console.log("HERE");
         return compressedImage;
     }
 };
@@ -78,8 +76,8 @@ export const generateLinkfromImage = async (event, compressImage = true) => {
     if (compressImage) {
         // get the compressed image
         const imageFile = await handleImageInputHelper(event);
-        console.log("imageFile", imageFile);
         if (!!imageFile) {
+            return imageFile;
             return await generateImageCDNlinkHelper(null, imageFile);
         }
         return null;

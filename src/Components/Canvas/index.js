@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { TextField } from "@mui/material";
 import styles from "./canvas.module.scss";
 import { downloadImagefromCanvasHelper } from "../../Helpers/imageHelpers";
@@ -19,6 +19,7 @@ function Canvas(props) {
     const context = useContext(UserContext);
     const canvasId = bannerType ||  context?.isAdmin ? "careersattech" : "jobsattech";
     const canvas = bannerType || context?.isAdmin ? "careersattech" : "jobsattech";
+    const [isAdmin, setIsAdmin] = useState(false);
 
     const [canvasCss, setCanvasCss] = useState({
         imgsize: bannerType === "linkedinbanner" ? "100%" : "60%",
@@ -51,6 +52,12 @@ function Canvas(props) {
         }
     };
 
+    useEffect(() => {
+        if (context.isAdmin) {
+            setIsAdmin(true);
+        }
+    }, [context.isAdmin]);
+
     return (
         <div>
             <div className={`${styles.flex} ${styles.canvasdesign_container}`} style={{ width: "50%", marginTop: "30px" }}>
@@ -60,7 +67,7 @@ function Canvas(props) {
                 <TextField size="small" sx={{ width: "12ch" }} label="Margin Top" value={canvasCss.marginTop} onChange={(e) => handleCanvasCssChange("marginTop", e.target.value)} />
                 <TextField size="small" sx={{ width: "12ch" }} label="Margin Bottom" value={canvasCss.marginBottom} onChange={(e) => handleCanvasCssChange("marginBottom", e.target.value)} />
             </div>
-            <div>
+            {!!isAdmin && <div>
                 <div style={{ display: "flex", marginBottom: "10px", gap: "10px", width: "60%" }}>
                     <CustomTextField label="CTA Title" sx={{ width: "30%" }} value={ctaDetails.ctaTitle} onChange={(val) => setCtaDetails({ ...ctaDetails, ctaTitle: val })} fullWidth />
                     <CustomTextField label="CTA Line" sx={{ width: "70%" }} value={ctaDetails.ctaLine} onChange={(val) => setCtaDetails({ ...ctaDetails, ctaLine: val })} fullWidth />
@@ -69,7 +76,7 @@ function Canvas(props) {
                 <br />
                 <p>Comment YES for the apply link</p>
                 <CustomDivider />
-            </div>
+            </div>}
 
             {canvas === "careersattech" && <CareersattechBanner {...props} ctaDetails={ctaDetails} canvasCss={canvasCss} />}
             {canvas === "jobsattech" && <JobsattechBanner {...props} ctaDetails={ctaDetails} canvasCss={canvasCss} />}

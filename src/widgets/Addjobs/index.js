@@ -9,7 +9,7 @@ import CustomCKEditor from "../../Components/CkEditor/CkEditor";
 import CustomDivider from "../../Components/Divider/Divider";
 
 // mui import
-import { Button, IconButton, FormGroup, Switch, FormControlLabel, Checkbox, CircularProgress, Chip, Stack } from "@mui/material";
+import { Button, IconButton, FormGroup, Switch, FormControlLabel, CircularProgress, Chip, Stack } from "@mui/material";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
@@ -27,7 +27,7 @@ import { submitCompanyDetailsHelper } from "../CompanyDetails/helper";
 import { showErrorToast } from "../../Helpers/toast";
 
 const AddjobsComponent = () => {
-    const [isAdmin, setIsAdmin] = useState(true);
+    const [isAdmin, setIsAdmin] = useState(false);
     const [igbannertitle, setIgbannertitle] = useState("");
     const [showLoader, setShowLoader] = useState(false);
     const [companyLogoSize, setCompanyLogoSize] = useState(0);
@@ -65,11 +65,11 @@ const AddjobsComponent = () => {
         link: "",
         imagePath: "",
         categoryTags: [],
-        skilltags : [],
+        skilltags: [],
     });
 
     const context = useContext(UserContext);
-    const canvasId = "careersattech";
+    const canvasId = context?.isAdmin ? "careersattech" : "jobsattech";
     const navigate = useNavigate();
 
     // handle job details input change
@@ -163,7 +163,9 @@ const AddjobsComponent = () => {
 
         if (compressImage) {
             setCompanyLogoSize(fileSize / 1024);
-            const link = await generateLinkfromImage(e);
+            const imageFile = await generateLinkfromImage(e);
+            const link = await generateImageCDNlinkHelper(null, imageFile);
+            setCompanyLogoSize(Math.round(imageFile?.size / 1080));
             if (!!link) {
                 handleCompanyDetailChange("smallLogo", link);
                 handleJobdetailsChange("imagePath", link);
@@ -324,6 +326,13 @@ const AddjobsComponent = () => {
                         <input type="file" onChange={(e) => handleCompanyLogoInput(e)} />
                         <p>File Size : {companyLogoSize}</p>
                     </div>
+
+                    {comapnyDetails.smallLogo && (
+                        <div style={{ display: "flex", marginTop: "20px", alignItems: "center" }}>
+                            <p style={{ paddingRight: "10px" }}>Logo uploaded :</p>
+                            <img src={comapnyDetails.smallLogo} width="50" height="50" alt="logo" />
+                        </div>
+                    )}
                     <div style={{ justifyContent: "flex-start", marginTop: "40px" }} className={styles.flex}>
                         <div className={styles.flex}>
                             <h4>* Company Logo for Banner : </h4>
@@ -332,13 +341,6 @@ const AddjobsComponent = () => {
                             </label>
                         </div>
                     </div>
-
-                    {comapnyDetails.smallLogo && (
-                        <div style={{ display: "flex", marginTop: "40px" }}>
-                            <p style={{ paddingRight: "10px" }}>Logo uploaded :</p>
-                            <img src={comapnyDetails.smallLogo} width="50" height="50" alt="logo" />
-                        </div>
-                    )}
 
                     <CustomDivider />
 

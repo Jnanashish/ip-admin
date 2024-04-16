@@ -3,7 +3,10 @@ import { Navigate } from "react-router-dom";
 
 import styles from "./signin.module.scss";
 import { UserContext } from "../../Context/userContext";
-import { Button } from "@mui/material";
+import { Button, InputAdornment } from "@mui/material";
+import CustomTextField from "../../Components/Input/Textfield";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import Loader from "../../Components/Loader";
 
 // firebase stuff
 import { initializeApp } from "firebase/app";
@@ -15,18 +18,24 @@ const Signin = () => {
     const context = useContext(UserContext);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isPassword, setIsPassword] = useState(true);
+    const [showLoader, setShowLoader] = useState(false);
 
     // when sign in button is clicked
     const handleSignin = () => {
+        setShowLoader(true);
+
         const auth = getAuth();
         signInWithEmailAndPassword(auth, email, password)
             .then((res) => {
+                setShowLoader(false);
                 context.setUser({ email: res.user?.email });
                 if (res?.user?.email === process.env.REACT_APP_ADMIN_EMAIL) {
                     context.setIsAdmin(true);
                 }
             })
             .catch((err) => {
+                setShowLoader(false);
                 alert(err.message);
             });
     };
@@ -37,13 +46,32 @@ const Signin = () => {
     }
 
     return (
-        <div className={styles.container}>
-            <h1>Sign in for Admin</h1>
-            <input className={styles.input_field} type="email" value={email} placeholder="Enter you email" onChange={(e) => setEmail(e.target.value)} />
-            <input className={styles.input_field} type="password" value={password} placeholder="Enter password" onChange={(e) => setPassword(e.target.value)} />
-            <Button className={styles.button} onClick={handleSignin} variant="contained">
-                Sign in
-            </Button>
+        <div style={{ position: "relative" }}>
+            <div className={styles.container}>
+                <h1>Sign in for Admin</h1>
+                <p>Enter your email</p>
+                <CustomTextField value={email} fullWidth className={styles.input_field} onChange={(val) => setEmail(val)} type="email" />
+                <p>Enter password</p>
+                <CustomTextField
+                    value={password}
+                    fullWidth
+                    className={styles.input_field}
+                    onChange={(val) => setPassword(val)}
+                    type={isPassword ? "password" : "text"}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment style={{ cursor: "pointer" }} onClick={() => setIsPassword(!isPassword)} position="start">
+                                <RemoveRedEyeIcon />
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+
+                <Button className={styles.button} onClick={handleSignin} variant="contained">
+                    Sign in
+                </Button>
+            </div>
+            {!!showLoader && <Loader />}
         </div>
     );
 };

@@ -10,13 +10,13 @@ import "./App.css";
 import Addjobs from "./pages/AddJobpage";
 import Signin from "./pages/Signinpage/Signin";
 import Banners from "./pages/Banners/index";
-import CompanyList from "./widgets/CompanyList";
 import JobListing from "./widgets/Joblisting";
 import Header from "./Components/Header";
 import AddCompanydetails from "./pages/companydetails";
+import CompanyList from "./pages/Comapnylist";
 
 function App() {
-    // context set
+    // set user details in context
     const [user, setUser] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
     return (
