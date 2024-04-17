@@ -18,9 +18,9 @@ function Canvas(props) {
     const { bannerType, jobdetails } = props;
     const context = useContext(UserContext);
     const canvasId = bannerType ||  context?.isAdmin ? "careersattech" : "jobsattech";
-    const canvas = bannerType || context?.isAdmin ? "careersattech" : "jobsattech";
-    const [isAdmin, setIsAdmin] = useState(false);
 
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [canvas, setCanvas] = useState(context?.isAdmin ? "careersattech" : "jobsattech")
     const [canvasCss, setCanvasCss] = useState({
         imgsize: bannerType === "linkedinbanner" ? "100%" : "60%",
         marginLeft: "0px",
@@ -57,6 +57,12 @@ function Canvas(props) {
             setIsAdmin(true);
         }
     }, [context.isAdmin]);
+
+    useEffect(() => {
+        if(!!bannerType){
+            setCanvas(bannerType)
+        }
+    }, [bannerType]);
 
     return (
         <div>
