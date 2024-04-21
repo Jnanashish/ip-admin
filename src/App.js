@@ -7,7 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import "./App.css";
 
-import Addjobs from "./pages/AddJobpage";
+import Addjobs from "./pages/AddJobs";
 import Signin from "./pages/Signinpage/Signin";
 import Banners from "./pages/Banners/index";
 import JobListing from "./widgets/Joblisting";

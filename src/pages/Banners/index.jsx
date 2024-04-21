@@ -7,17 +7,17 @@ import { CircularProgress } from "@mui/material";
 import { apiEndpoint } from "../../Helpers/apiEndpoints";
 import { get } from "../../Helpers/request";
 import { getCompanyDetailsHelper } from "../../widgets/Addjobs/Helpers";
+import Backtodashboard from "../../widgets/Addjobs/Components/Backtodashboard";
 
 function Banners() {
     const [jobdetails, setJobdetails] = useState();
     const [comapnyDetails, setComapnyDetails] = useState();
     const [bannerType, setBannerType] = useState("careersattech");
-    
+
     const [ctaDetails, setCtaDetails] = useState({
         ctaTitle: "Apply Link : ",
         ctaLine: "Link in Bio (visit : careersat.tech)",
     });
-
 
     // get company details and job details
     const getQueryparam = async () => {
@@ -39,6 +39,9 @@ function Banners() {
 
     return (
         <div className={styles.canvas}>
+            <Backtodashboard />
+            <br/><br/>
+            
             <div className={styles.canvas_buttoncontainer}>
                 <Custombutton variant={bannerType === "careersattech" ? "" : "outlined"} onClick={() => setBannerType("careersattech")} label="Careersattech banner" />
                 <Custombutton variant={bannerType === "jobsattech" ? "" : "outlined"} onClick={() => setBannerType("jobsattech")} label="Jobsattech" />

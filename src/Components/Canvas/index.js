@@ -17,8 +17,9 @@ import { Button } from "@mui/material";
 function Canvas(props) {
     const { bannerType, jobdetails } = props;
     const context = useContext(UserContext);
-    const canvasId = bannerType ||  context?.isAdmin ? "careersattech" : "jobsattech";
+    // const canvasId = bannerType ||  context?.isAdmin ? "careersattech" : "jobsattech";
 
+    const [canvasId, setCanvasId] = useState()
     const [isAdmin, setIsAdmin] = useState(false);
     const [canvas, setCanvas] = useState(context?.isAdmin ? "careersattech" : "jobsattech")
     const [canvasCss, setCanvasCss] = useState({
@@ -40,6 +41,7 @@ function Canvas(props) {
     };
 
     const handleDownloadBanner = async () => {
+        console.log("canvasId", canvasId, bannerType);
         if (bannerType !== "carousel") {
             const bannername = jobdetails.companyName + "_" + bannerType;
             downloadImagefromCanvasHelper(bannername, canvasId, false);
@@ -61,6 +63,9 @@ function Canvas(props) {
     useEffect(() => {
         if(!!bannerType){
             setCanvas(bannerType)
+            setCanvasId(bannerType)
+        } else {
+            setCanvasId(context?.isAdmin ? "careersattech" : "jobsattech")
         }
     }, [bannerType]);
 

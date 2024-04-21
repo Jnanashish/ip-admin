@@ -68,16 +68,17 @@ export const addJobDataHelper = async (jobdetails, bannerlink) => {
     }
 };
 
-// function to map experience with the batch
+// ---------------------------------------------------------
+// Function to map experience with the batch
 export const mapExperiencetoBatch = (experience) => {
     let batch = "";
-    if (experience === "0 - 1 years") batch = "2024 / 2023";
-    if (experience === "0 - 2 years") batch = "2024 / 2023 / 2022";
-    if (experience === "0 - 3 years") batch = "2024 / 2023 / 2022 / 2021";
-    if (experience === "0 - 4 years") batch = "2024 / 2023 / 2022 / 2021 / 2020";
+    if (experience === "0 - 1 years") batch = "2024 / 2023 / 2022";
+    if (experience === "0 - 2 years") batch = "2024 / 2023 / 2022 / 2021";
+    if (experience === "0 - 3 years") batch = "2024 / 2023 / 2022 / 2021 / 2020";
+    if (experience === "0 - 4 years") batch = "2024 / 2023 / 2022 / 2021 / 2020 / 2019";
     if (experience === "1 - 2 years") batch = "2023 / 2022 / 2021";
     if (experience === "1 - 3 years") batch = "2023 / 2022 / 2021 / 2020";
-    if (experience === "1 - 3 years") batch = "2023 / 2022 / 2021 / 2020 / 2019";
+    if (experience === "1 - 4 years") batch = "2023 / 2022 / 2021 / 2020 / 2019";
     if (experience === "0+ years") batch = "2023 / 2022 / 2021 / 2020 / 2019";
     if (experience === "1 years") batch = "2023 / 2022";
     if (experience === "1+ years") batch = "2023 / 2022 / 2021 / 2020 / 2019";

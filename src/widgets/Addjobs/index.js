@@ -19,8 +19,9 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../Context/userContext";
 
 import { degreeOptions, batchOptions, expOptions, locOptions, jobTypeOptions, companyTypeOptions, categorytags } from "./Helpers/staticdata";
-import { downloadImagefromCanvasHelper, generateImageCDNlinkHelper, uploadBannertoCDNHelper } from "../../Helpers/imageHelpers";
+import { downloadImagefromCanvasHelper, generateLinkfromImageHelper, handleImageInputHelper, uploadBannertoCDNHelper } from "../../Helpers/imageHelpers";
 import { generateLastDatetoApplyHelper, getCompanyDetailsHelper, addJobDataHelper, mapExperiencetoBatch } from "./Helpers";
+
 import { copyToClipBoard } from "../../Helpers/utility";
 import { generateLinkfromImage } from "../../Helpers/imageHelpers";
 import { submitCompanyDetailsHelper } from "../CompanyDetails/helper";
@@ -44,7 +45,7 @@ const AddjobsComponent = () => {
     });
 
     const [jobdetails, setJobdetails] = useState({
-        degree: "B.E / B.Tech / M.Tech",
+        degree: "B.E / B.Tech / M.Tech / MCA",
         batch: "2022 / 2021 / 2020",
         experience: "0 - 2 years",
         location: "Bengaluru",
@@ -110,7 +111,7 @@ const AddjobsComponent = () => {
 
     // upload image to cloudinary and return cdn url
     const generateImageCDNlink = async (e, blob) => {
-        const imageUrl = await generateImageCDNlinkHelper(e, blob);
+        const imageUrl = await generateLinkfromImageHelper(e, blob);
         if (!!imageUrl) handleJobdetailsChange("jdBanner", imageUrl);
     };
 
@@ -156,16 +157,21 @@ const AddjobsComponent = () => {
         }
     };
 
-    // handle company logo submit set cdn url
+    // Handle company logo change, submit set cdn url
     const handleCompanyLogoInput = async (e, compressImage = true) => {
         const file = e.target.files;
         const fileSize = file[0].size;
+        let link;
 
         if (compressImage) {
             setCompanyLogoSize(fileSize / 1024);
-            const imageFile = await generateLinkfromImage(e);
-            const link = await generateImageCDNlinkHelper(null, imageFile);
-            setCompanyLogoSize(Math.round(imageFile?.size / 1080));
+            const imageFile = await handleImageInputHelper(e);
+            if(!!imageFile){
+                link = await generateLinkfromImageHelper(null, imageFile);
+                setCompanyLogoSize(Math.round(imageFile?.size / 1080));
+
+            }
+
             if (!!link) {
                 handleCompanyDetailChange("smallLogo", link);
                 handleJobdetailsChange("imagePath", link);
@@ -173,7 +179,7 @@ const AddjobsComponent = () => {
         } else {
             // TODO: Need to compress big images also
             if (fileSize < 500000) {
-                const link = await generateLinkfromImage(e, false);
+                link = await generateLinkfromImage(e, false);
                 handleCompanyDetailChange("largeLogo", link);
             } else {
                 showErrorToast("Image size should be less than 500kb");
@@ -237,20 +243,20 @@ const AddjobsComponent = () => {
     return (
         <div className={styles.container}>
             <h3>Add job details : </h3>
-            {/* circular loader  */}
+
+            {/* circular overlay loader  */}
             {!!showLoader && (
                 <div className={styles.overlayContainer}>
                     <CircularProgress size={90} color="primary" />
                 </div>
             )}
 
-            {/* back to dashboard header  */}
-
+            {/* main job details input section  */}
             <div className={styles.maininput_con}>
                 <div className={styles.input_fields}>
                     <div className={styles.flex_con}>
                         <CustomTextField label="Company name *" value={jobdetails.companyName} onChange={(val) => handleCompanyNameChange(val)} onBlur={getCompanyDetails} sx={{ width: "22ch" }} />
-                        <CustomTextField label="Role of the Job *" value={jobdetails.role} onChange={(val) => handleJobRoleChange(val)} fullWidth />
+                        <CustomTextField label="Role of the job *" value={jobdetails.role} onChange={(val) => handleJobRoleChange(val)} fullWidth />
                     </div>
                     <Stack direction="row" spacing={1}>
                         {categorytags.map((item) => (
@@ -260,14 +266,14 @@ const AddjobsComponent = () => {
 
                     <CustomTextField
                         fullWidth
-                        label={igbannertitle?.length > 30 ? "Max length is 30" : "Banner title of the job"}
+                        label={igbannertitle?.length > 30 ? "Max length is 30" : "Banner title of the job (for instagram or linkedin)"}
                         value={igbannertitle}
                         onChange={(val) => setIgbannertitle(val)}
                         error={igbannertitle?.length > 26}
                     />
 
                     <CustomTextField label="Link for the job application *" value={jobdetails.link} onBlur={shortenLink} onChange={(val) => handleJobdetailsChange("link", val)} fullWidth />
-                    <CustomTextField label="Degree *" value={jobdetails.degree} onChange={(val) => handleJobdetailsChange("degree", val)} fullWidth type="select" optionData={degreeOptions} />
+                    <CustomTextField label="Degree required*" value={jobdetails.degree} onChange={(val) => handleJobdetailsChange("degree", val)} fullWidth type="select" optionData={degreeOptions} />
 
                     <div className={styles.flex_con}>
                         <CustomTextField
@@ -280,10 +286,9 @@ const AddjobsComponent = () => {
                         />
                         <CustomTextField label="Location *" value={jobdetails.location} onChange={(val) => handleJobdetailsChange("location", val)} fullWidth type="select" optionData={locOptions} />
                     </div>
-                    <br />
                     <div className={styles.flex_con}>
-                        <CustomTextField label="Batch *" value={jobdetails.batch} onChange={(val) => handleJobdetailsChange("batch", val)} fullWidth type="select" optionData={batchOptions} />
-                        <CustomTextField label="Salary" value={jobdetails.salary} onChange={(val) => handleJobdetailsChange("salary", val)} fullWidth optionData={batchOptions} />
+                        <CustomTextField label="Batch eligible*" value={jobdetails.batch} onChange={(val) => handleJobdetailsChange("batch", val)} fullWidth type="select" optionData={batchOptions} />
+                        <CustomTextField label="Expected salary" value={jobdetails.salary} onChange={(val) => handleJobdetailsChange("salary", val)} fullWidth optionData={batchOptions} />
                     </div>
                     <div className={styles.flex_con}>
                         <CustomTextField
@@ -316,62 +321,73 @@ const AddjobsComponent = () => {
                             onChange={(e) => handleJobdetailsChange("lastdate", e.target.value)}
                         />
                     </div>
-
-                    {/* company logo upload section  */}
-                    <div style={{ display: "flex", marginTop: "40px" }}>
-                        <p style={{ paddingRight: "10px", fontWeight: "600" }}>
-                            <span style={{ color: "red" }}>**</span> Upload Company logo (50kb) :
-                        </p>
-
-                        <input type="file" onChange={(e) => handleCompanyLogoInput(e)} />
-                        <p>File Size : {companyLogoSize}</p>
-                    </div>
-
-                    {comapnyDetails.smallLogo && (
-                        <div style={{ display: "flex", marginTop: "20px", alignItems: "center" }}>
-                            <p style={{ paddingRight: "10px" }}>Logo uploaded :</p>
-                            <img src={comapnyDetails.smallLogo} width="50" height="50" alt="logo" />
-                        </div>
-                    )}
-                    <div style={{ justifyContent: "flex-start", marginTop: "40px" }} className={styles.flex}>
-                        <div className={styles.flex}>
-                            <h4>* Company Logo for Banner : </h4>
-                            <label htmlFor="contained-button-file">
-                                <input accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleCompanyLogoInput(e, false)} />
-                            </label>
-                        </div>
-                    </div>
-
-                    <CustomDivider />
-
-                    <div className={styles.flex}>
-                        <Button style={{ textTransform: "capitalize" }} onClick={() => handleDownloadBanner()} variant="contained" color="success" endIcon={<CloudDownloadIcon />}>
-                            Download IG Banner
-                        </Button>
-                    </div>
-
-                    {!!isAdmin && (
-                        <div style={{ marginTop: "30px" }}>
-                            <div style={{ display: "flex" }}>
-                                <p style={{ paddingRight: "10px" }}>Upload JD banner : </p>
-                                <input type="file" onChange={(e) => generateImageCDNlink(e)} />
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center" }}>
-                                <p style={{ fontSize: "10px" }}>Banner Link : {jobdetails.jdBanner}</p>
-                                <IconButton color="secondary" aria-label="delete" size="small" onClick={() => copyToClipBoard(jobdetails.jdBanner)}>
-                                    <ContentCopyIcon fontSize="inherit" />
-                                </IconButton>
-                            </div>
-                        </div>
-                    )}
                 </div>
             </div>
 
             <CustomDivider />
+            <div>
+                {/* company logo upload section  */}
+                <div style={{ display: "flex" }}>
+                    <p style={{ paddingRight: "10px", fontWeight: "600" }}>
+                        <span>**</span> Upload Company logo (Max Size 20kb) :
+                    </p>
 
+                    <input type="file" onChange={(e) => handleCompanyLogoInput(e)} />
+                    <p>File Size : {companyLogoSize}</p>
+                </div>
+                {companyLogoSize > 5 && <p className={styles.errorMessage}>Image size should be less then 10 kb after compression</p>}
+
+                {comapnyDetails.smallLogo && (
+                    <div style={{ display: "flex", marginTop: "10px", alignItems: "center" }}>
+                        <p style={{ paddingRight: "10px" }}>Logo uploaded :</p>
+                        <img src={comapnyDetails.smallLogo} width="50" height="50" alt="logo" />
+                    </div>
+                )}
+                <div style={{ justifyContent: "flex-start", marginTop: "40px" }} className={styles.flex}>
+                    <div className={styles.flex}>
+                        <h4>* Company Logo for Banner : </h4>
+                        <label htmlFor="contained-button-file">
+                            <input accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleCompanyLogoInput(e, false)} />
+                        </label>
+                    </div>
+                </div>
+
+                {comapnyDetails.largeLogo && (
+                    <div style={{ display: "flex", marginTop: "10px", alignItems: "center" }}>
+                        <p style={{ paddingRight: "10px" }}>Logo uploaded :</p>
+                        <img src={comapnyDetails.largeLogo} width="200" height="60" alt="logo" />
+                    </div>
+                )}
+
+                <CustomDivider />
+
+                <div className={styles.flex}>
+                    <Button style={{ textTransform: "capitalize" }} onClick={() => handleDownloadBanner()} variant="contained" color="success" endIcon={<CloudDownloadIcon />}>
+                        Download IG Banner
+                    </Button>
+                </div>
+                <br/>
+
+                {!!isAdmin && (
+                    <div style={{ marginTop: "30px" }}>
+                        <div style={{ display: "flex" }}>
+                            <p style={{ paddingRight: "10px" }}>Upload JD banner : </p>
+                            <input type="file" onChange={(e) => generateImageCDNlink(e)} />
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            <p style={{ fontSize: "10px" }}>Banner Link : {jobdetails.jdBanner}</p>
+                            <IconButton color="secondary" aria-label="delete" size="small" onClick={() => copyToClipBoard(jobdetails.jdBanner)}>
+                                <ContentCopyIcon fontSize="inherit" />
+                            </IconButton>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* job description section  */}
             <div>
                 <FormGroup>
-                    <FormControlLabel onChange={() => handleJobdetailsChange("jdpage", !jobdetails.jdpage)} control={<Switch />} label="Add Job description fields (Optional)" />
+                    <FormControlLabel onChange={() => handleJobdetailsChange("jdpage", !jobdetails.jdpage)} control={<Switch />} label="Add Job description fields*" />
                 </FormGroup>
 
                 {jobdetails.jdpage && (
@@ -402,6 +418,7 @@ const AddjobsComponent = () => {
                 </Button>
             </div>
 
+            {/* instagram banner */}
             <Canvas jobdetails={jobdetails} comapnyDetails={comapnyDetails} igbannertitle={igbannertitle} />
         </div>
     );
