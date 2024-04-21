@@ -1,12 +1,13 @@
 import { copyToClipBoard } from "../../../Helpers/utility";
 import { showSuccessToast } from "../../../Helpers/toast";
 
-import { hashtags, captionline } from "./staticdata";
+import { hashtags, captionline, linkedinHashtags } from "./staticdata";
 
 const date = new Date();
 const weeknum = date.getDay();
 const line = captionline[weeknum % 2];
 const hash = hashtags[weeknum % 3];
+const linkedinHashtag = linkedinHashtags[weeknum % 3];
 
 const translate = (char) => {
     let diff;
@@ -37,17 +38,19 @@ export const copyWhatsAppMessage = (item) => {
     showSuccessToast("Copied");
 };
 
+// Instagram
 // generate instagram post caption
 export const generateCaptionHelper = (res) => {
-    const temp = res.title + ". Visit Link in Bio to apply. 🔝" + "\n\nBatch : " + res.batch + "\nDegree : " + res.degree + "\n\nApply Link in Bio " + "\n\n" + line + "\n.\n.\n.\n" + hash;
+    const temp = res.title + ". Visit Link in Bio to apply. 🔝" + "\n\nBatch : " + res.batch + "\nDegree : " + res.degree + "\n\nApply Link in Bio " + "\n\n" + "\n.\n.\n.\n" + hash;
 
     navigator.clipboard.writeText(temp);
     showSuccessToast("Copied");
 };
 
-// generate linkedin post caption
+// Linkedin
+// Generate linkedin post caption
 export const generateLinkedinCaption = (res) => {
-    const temp = res.title + "\n\nApply Link in comment\n\n" + res.link + "\n\n" + line + "\n.\n.\n.\n" + hash;
+    const temp = res.title + "\n\nBatch :- " + res.batch + "\nDegree :- " + res.degree + "\n\nApply Link in comment\n\n" + res.link + "\n\n"  + "\n.\n.\n.\n" + linkedinHashtag;
 
     navigator.clipboard.writeText(temp);
     showSuccessToast("Copied");

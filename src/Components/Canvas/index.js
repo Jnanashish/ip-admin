@@ -60,13 +60,29 @@ function Canvas(props) {
         }
     }, [context.isAdmin]);
 
+
     useEffect(() => {
+        if(bannerType === "linkedinbanner"){
+            setCanvasCss({ 
+                ...canvasCss, 
+                imgsize: "100%",
+                fontSize:"28px",
+            });
+        } else {
+            setCanvasCss({ 
+                ...canvasCss, 
+                imgsize: "60%",
+                fontSize:"96px",
+            });           
+        }
+        
         if(!!bannerType){
             setCanvas(bannerType)
             setCanvasId(bannerType)
         } else {
             setCanvasId(context?.isAdmin ? "careersattech" : "jobsattech")
         }
+
     }, [bannerType]);
 
     return (
