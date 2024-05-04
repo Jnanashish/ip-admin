@@ -2,8 +2,8 @@ import React from "react";
 import styles from "./canvas.module.scss";
 
 function LinkedinBanner(props) {
-    const { jobdetails, ctaDetails, canvasCss, comapnyDetails, igbannertitle } = props;
-    const { companyName, degree, batch, experience, salary, location, role } = jobdetails;
+    const { jobdetails, canvasCss, comapnyDetails } = props;
+    const { batch, location, role } = jobdetails;
     const { largeLogo } = comapnyDetails;
 
     const customStyle = {
@@ -23,8 +23,8 @@ function LinkedinBanner(props) {
             <div className={styles.linkedinbanner_imagecontainer}>
                 <img style={customStyle.imgstyle} src={largeLogo} />
             </div>
-            <h3>is Hiring</h3>
-            <p style={customStyle.fontStyle}>
+            <h3 contentEditable="true">is Hiring</h3>
+            <p style={customStyle.fontStyle} contentEditable="true">
                 {role} - {location} <br /> Batch : {batch}
             </p>
         </div>

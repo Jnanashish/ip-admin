@@ -46,11 +46,10 @@ const JobListing = () => {
         }
     };
 
-    // download job details banner
-    // TODO: Need to generate multiple banners dynamically
+    // open new tab with banners (can select banner of multiple format)
     const downloadBanner = async (item) => {
-        // generateImageFromLink(item.jdbanner, item.companyName);
-        window.location.href = `/canvas?jobid=${item._id}&companyname=${item.companyName}`;
+        // window.location.href = `/canvas?jobid=${item._id}&companyname=${item.companyName}`;
+        window.open(`/canvas?jobid=${item._id}&companyname=${item.companyName}`, "_blank");
     };
 
     // when focus out in input field filter the job data list

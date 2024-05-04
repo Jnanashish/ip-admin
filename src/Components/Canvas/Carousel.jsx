@@ -46,8 +46,8 @@ function Carousel(props) {
                     {!largeLogo && <h1>{companyName}</h1>}
                 </div>
                 <div className={styles.carousel_details}>
-                    <h1 style={customStyle.fontStyle}>{bannerTitle}</h1>
-                    <p>Experience : Batch for 2022 graduates</p>
+                    <h1 contentEditable="true" style={customStyle.fontStyle}>{bannerTitle}</h1>
+                    <p contentEditable="true">Experience : Batch for 2022 graduates</p>
                 </div>
                 <div className={`${styles.footer} ${styles.carousel_footer}`}>
                     <span>
@@ -73,8 +73,8 @@ function Carousel(props) {
                     </p>
                 </div>
                 <div className={styles.carousel_jobdetails}>
-                    <h2>Job details</h2>
-                    <div>
+                    <h2 contentEditable="true">Job details</h2>
+                    <div contentEditable="true">
                         <p>Degree : {degree}</p>
                         <p>Batch : {batch}</p>
                         <p>Experience : {experience}</p>

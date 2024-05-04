@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import styles from "./canvas.module.scss";
 
 const JobsattechBanner = (props) => {
-    const { jobdetails, ctaDetails, canvasCss, comapnyDetails, igbannertitle } = props;
+    const { canvasCss, comapnyDetails, igbannertitle, jobinfo } = props;
     const { companyName, degree, batch, experience, salary, location, role } = jobdetails;
-    const { largeLogo, smallLogo } = comapnyDetails;
+    const { largeLogo } = comapnyDetails;
+
     const [bannerTitle, setBannerTitle] = useState(null);
 
     useEffect(() => {
@@ -42,8 +43,10 @@ const JobsattechBanner = (props) => {
                     {!largeLogo && <h1>{companyName}</h1>}
                 </div>
 
-                <div  className={`${styles.canvas_title} ${styles.jobsattechcanvas_jobtitle}`} style={customStyle.jobtite}>
-                    <h1 style={customStyle.fontStyle}>{bannerTitle}</h1>
+                <div className={`${styles.canvas_title} ${styles.jobsattechcanvas_jobtitle}`} style={customStyle.jobtite}>
+                    <h1 contentEditable="true" style={customStyle.fontStyle}>
+                        {bannerTitle}
+                    </h1>
                 </div>
             </div>
 
@@ -51,30 +54,30 @@ const JobsattechBanner = (props) => {
                 <div className={`${styles.canvas_details} ${styles.jobsattechcanvas_details}`}>
                     {degree !== "N" && (
                         <p>
-                            <span className={styles.tag}>Degree</span> : <span>{degree}</span>
+                            <span className={styles.tag}>Degree</span> : <span contentEditable="true">{degree}</span>
                         </p>
                     )}
                     {batch !== "N" && (
                         <p>
-                            <span className={styles.tag}>Batch</span> : <span>{batch}</span>
+                            <span className={styles.tag}>Batch</span> : <span contentEditable="true">{batch}</span>
                         </p>
                     )}
                     {experience !== "N" && (
                         <p>
-                            <span className={styles.tag}>Experience</span> : <span>{experience}</span>
+                            <span className={styles.tag}>Experience</span> : <span contentEditable="true">{experience}</span>
                         </p>
                     )}
                     {salary !== "N" && salary !== "₹0LPA" && (
                         <p>
-                            <span className={styles.tag}>Salary</span> : <span>{salary}</span>
+                            <span className={styles.tag}>Salary</span> : <span contentEditable="true">{salary}</span>
                         </p>
                     )}
                     {location !== "N" && (
                         <p>
-                            <span className={styles.tag}>Location</span> : <span>{location}</span>
+                            <span className={styles.tag}>Location</span> : <span contentEditable="true">{location}</span>
                         </p>
                     )}
-                    <p>
+                    <p contentEditable="true">
                         <span className={styles.tag}>Apply Link : </span>
                         <span style={{ color: "#002C9B" }}>
                             <b>Link in Bio</b>
@@ -83,7 +86,7 @@ const JobsattechBanner = (props) => {
                 </div>
 
                 <div className={`${styles.footer} ${styles.jobsattechcanvas_footer}`}>
-                    <p>👉 Visit Link in Bio for IT / Software Jobs Links</p>
+                    <p contentEditable="true">👉 Follow for more freshers IT / Software Jobs</p>
                 </div>
             </div>
         </div>
