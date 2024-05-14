@@ -148,11 +148,11 @@ const AddjobsComponent = () => {
 
         if (!!jobdetails.companyName) {
             const data = await getCompanyDetailsHelper(jobdetails.companyName);
-            if (!!data?.largeLogo) handleCompanyDetailChange("largeLogo", data?.largeLogo);
-            if (!!data?.smallLogo) {
+            if (!!data[0]?.largeLogo) handleCompanyDetailChange("largeLogo", data[0]?.largeLogo);
+            if (!!data[0]?.smallLogo) {
                 setIsCompaneydetailsPresent(true);
-                handleCompanyDetailChange("smallLogo", data?.smallLogo);
-                handleJobdetailsChange("imagePath", data?.smallLogo);
+                handleCompanyDetailChange("smallLogo", data[0]?.smallLogo);
+                handleJobdetailsChange("imagePath", data[0]?.smallLogo);
             }
         }
     };

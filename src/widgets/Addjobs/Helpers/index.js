@@ -21,7 +21,7 @@ export const generateLastDatetoApplyHelper = () => {
 // get company details if there is any based on company name
 export const getCompanyDetailsHelper = async (companyName) => {
     const data = await get(`${apiEndpoint.get_company_details}?companyname=${companyName}`);
-    if (!!data?.largeLogo || !!data?.smallLogo) {
+    if (!!data[0]?.largeLogo || !!data[0]?.smallLogo) {
         showInfoToast(`${companyName} Logo found in database`);
     } else {
         showWarnToast(`${companyName} Logo not found, upload manually`);
