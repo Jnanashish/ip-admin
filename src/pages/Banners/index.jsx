@@ -30,7 +30,7 @@ function Banners() {
         }
         if (!!companyname) {
             const companyData = await getCompanyDetailsHelper(companyname);
-            setComapnyDetails(companyData);
+            setComapnyDetails(companyData[0]);
         }
     };
     useEffect(() => {
