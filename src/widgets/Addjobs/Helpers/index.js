@@ -19,53 +19,30 @@ export const generateLastDatetoApplyHelper = () => {
 
 // ---------------------------------------------------------
 // get company details if there is any based on company name
-export const getCompanyDetailsHelper = async (companyName) => {
-    const data = await get(`${apiEndpoint.get_company_details}?companyname=${companyName}`);
+export const getCompanyDetailsHelper = async (companyName, companyId) => {
+    const url = companyName ? `${apiEndpoint.get_company_details}?companyname=${companyName}` : `${apiEndpoint.get_company_details}?id=${companyId}`;
+    const data = await get(url);
     if (!!data[0]?.largeLogo || !!data[0]?.smallLogo) {
-        showInfoToast(`${companyName} Logo found in database`);
+        showInfoToast(`Logo found in database`);
     } else {
-        showWarnToast(`${companyName} Logo not found, upload manually`);
+        showWarnToast(`Logo not found, upload manually`);
     }
     return data;
 };
 
-// ---------------------------------------------------------
-// add job details data and redirect to admin page if success
-export const addJobDataHelper = async (jobdetails, bannerlink) => {
-    console.log("jobdetails", jobdetails);
-    const formData = new FormData();
+export const getJobDetailsHelper = async (params) => {
+    if (!!params && !!params?.key && !!params?.value) {
+        const apiUrl = `${apiEndpoint.getAllJobDetails}?${params?.key}=${params?.value}`;
+        const data = await get(apiUrl);
 
-    formData.append("title", jobdetails.title);
-    formData.append("link", jobdetails.link);
-    formData.append("batch", jobdetails.batch);
-    formData.append("role", jobdetails.role);
-    formData.append("jobtype", jobdetails.jobtype);
-    formData.append("degree", jobdetails.degree);
-    formData.append("salary", jobdetails.salary);
-    formData.append("jobdesc", jobdetails.jobdesc);
-    formData.append("eligibility", jobdetails.eligibility);
-    formData.append("experience", jobdetails.experience);
-    formData.append("lastdate", jobdetails.lastdate);
-    formData.append("skills", jobdetails.skills);
-    formData.append("responsibility", jobdetails.responsibility);
-    formData.append("aboutCompany", jobdetails.aboutCompany);
-    formData.append("location", jobdetails.location);
-    formData.append("jdpage", jobdetails.jdpage);
-    formData.append("companytype", jobdetails.companytype);
-    formData.append("companyName", jobdetails.companyName);
-    formData.append("tags", jobdetails?.categoryTags);
-    if (jobdetails.jdBanner !== "N") formData.append("jdbanner", jobdetails.jdBanner);
-    if (!!bannerlink) formData.append("jdbanner", bannerlink);
-    if (!!jobdetails.imagePath) formData.append("imagePath", jobdetails.imagePath);
-
-    const res = await post(apiEndpoint.addJobData, formData, "Add new job");
-    if (!!res) {
-        showSuccessToast("Job data added successfully");
-        return { status: 200 };
-    } else {
-        showErrorToast("An error occured while adding Job");
-        return { status: 404 };
+        if (!!data) {
+            showInfoToast(`Company details found in database`);
+        } else {
+            showWarnToast(`Compant details not found`);
+        }
+        return data;
     }
+    return null;
 };
 
 // ---------------------------------------------------------
@@ -89,30 +66,79 @@ export const mapExperiencetoBatch = (experience) => {
     return batch;
 };
 
+const generateFormData = (jobdetails) => {
+    const formData = new FormData();
+    const fields = [
+        "title",
+        "link",
+        "batch",
+        "role",
+        "jobtype",
+        "degree",
+        "salary",
+        "jobdesc",
+        "eligibility",
+        "experience",
+        "lastdate",
+        "skills",
+        "responsibility",
+        "aboutCompany",
+        "location",
+        "jdpage",
+        "companytype",
+        "companyName",
+        "tags",
+        "workMode",
+        "benifits",
+        "platform",
+        "jobId",
+        "imagePath",
+        "companyId",
+        "isActive"
+    ];
+    fields.forEach((field) => {
+        if (!!jobdetails[field] && jobdetails[field] !== undefined) {
+            formData.append(field, jobdetails[field]);
+        }
+    });
+    return formData;
+};
+
+// ---------------------------------------------------------
+// [ADD JOB DETAILS] add job details data and redirect to admin page if success
+export const addJobDataHelper = async (jobdetails) => {
+    const formData = generateFormData(jobdetails);
+    console.log("jobdetails in add", jobdetails);
+    console.log("formData", formData);
+
+    const res = await post(apiEndpoint.addJobData, formData, "Add new job");
+    if (!!res) {
+        showSuccessToast("Job data added successfully");
+        return { status: 200 };
+    } else {
+        showErrorToast("An error occured while adding Job");
+        return { status: 404 };
+    }
+};
+
 // ---------------------------------------------------------
 // update job details of a particular job based on id
 export const updateJobDetails = async (jobdetails, id) => {
-    const formData = new FormData();
+    console.log("jobdetails in update", jobdetails);
 
-    formData.append("title", jobdetails?.title);
-    formData.append("link", jobdetails?.link);
-    formData.append("batch", jobdetails?.batch);
-    formData.append("role", jobdetails?.role);
-    formData.append("jobtype", jobdetails?.jobtype);
-    formData.append("degree", jobdetails?.degree);
-    formData.append("salary", jobdetails?.salary);
-    formData.append("jobdesc", jobdetails?.jobdesc);
-    formData.append("eligibility", jobdetails?.eligibility);
-    formData.append("experience", jobdetails?.experience);
-    formData.append("lastdate", jobdetails?.lastdate);
-    formData.append("skills", jobdetails?.skills);
-    formData.append("responsibility", jobdetails?.responsibility);
-    formData.append("aboutCompany", jobdetails?.aboutCompany);
-    formData.append("location", jobdetails?.location);
-    formData.append("imagePath", jobdetails?.imagePath);
-    // formData.append("companyName", jobdetails?.companyName);
+    const formData = generateFormData(jobdetails);
+    console.log("formData", formData);
+    
 
-
-    const res = await updateData(`${apiEndpoint.updateJobDetails}${id}`, formData)
-    return res;
+    if (!!id && !!formData) {
+        const res = await updateData(`${apiEndpoint.updateJobDetails}${id}`, formData);
+        if (!!res) {
+            showSuccessToast("Job data updated successfully");
+            return { status: 200 };
+        } else {
+            showErrorToast("An error occured while adding Job");
+            return { status: 404 };
+        }
+    }
+    return null;
 };

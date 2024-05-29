@@ -4,12 +4,15 @@
     cursor: pointer;
 
     max-width: 100%;
-    min-height: 80px;
+    min-height: 90px;
     margin-bottom: 20px;
 
     font-family: "IBM Plex Sans", sans-serif;
     cursor: default;
     padding: 10px 20px;
+    border: 0.8px solid #3b3b3b;
+    border-radius: 6px;
+
 
     h2 {
         font-size: 1.1rem;
@@ -55,8 +58,7 @@
     margin-bottom: 4px;
 }
 
-
-.companyLogo{
+.companyLogo {
     height: 50px;
     width: 50px;
     margin-right: 20px;
@@ -66,8 +68,12 @@
     }
 }
 
-.adminlinkWrapper{
+.adminlinkWrapper {
     display: flex;
     justify-content: space-between;
     width: 100%;
+}
+.updateButtonContainer {
+    display: flex;
+    gap: 10px;
 }

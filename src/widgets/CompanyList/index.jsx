@@ -35,14 +35,14 @@ function CompanyList() {
 
     return (
         <div className={styles.companylist}>
-            <h3>List of avilable companies :</h3>
+            <h2>List of available companies : {comapnyData?.length}</h2>
             {!!comapnyData &&
                 comapnyData.map((company) => {
                     return (
-                        <div>
+                        <div className={styles.cardcontainer}>
                             <div className={styles.companycard}>
                                 <span>
-                                    <h2>{company.companyName} : </h2>
+                                    <h3>{company.companyName} : </h3>
                                     <img src={company.smallLogo} />
                                     <img src={company.largeLogo} />
                                 </span>
@@ -50,6 +50,10 @@ function CompanyList() {
                                     <Custombutton disableElevation label="Update" onClick={() => handleCompanyUpdate(company)} className={styles.btn} />
                                     <Custombutton style={{ backgroundColor: "red" }} onClick={() => handleCompanyDelete(company)} disableElevation label="Delete" className={styles.btn} />
                                 </span>
+                            </div>
+                            <div className={styles.jobdetails}>
+                                <p>Job description : {company?.companyInfo}</p>
+                                <p>Listed Job : {company?.listedJobs?.length}</p>
                             </div>
                         </div>
                     );

@@ -91,4 +91,10 @@ export const jobTypeOptions = ["N", "Full time", "Internship", "Part time", "Con
 
 export const companyTypeOptions = ["N", "product", "service", "promo"];
 
-export const categorytags = ["frontend", "backend", "fullstack", "web", "web3", "devops", "qa", "app", "datascience","analytics", "uiux"]
+export const categorytags = ["frontend", "backend", "fullstack", "web", "web3", "devops", "qa", "app", "datascience","analytics", "uiux", "ai", "ml"]
+
+export const workmodeOptions = ["onsite", "hybrid", "remote"]
+
+export const platformOptions = ["careerspage", "linkedin", "instahyre", "cuvette", "naukri", "upraised", "foundit", "wellfound", "unstop", "others"];
+
+export const comapnyTypeOption = ["Product based", "Service based", "Agency", "Promotion", "Others"]

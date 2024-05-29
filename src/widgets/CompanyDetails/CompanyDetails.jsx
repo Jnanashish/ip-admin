@@ -89,8 +89,10 @@ const CompanyDetails = () => {
 
     const handleCompanynameChange = async (value) => {
         if(!!value){
-            const data = await get(`${apiEndpoint.get_company_details}?companyname=${value}`);
+            const res = await get(`${apiEndpoint.get_company_details}?companyname=${value}`);
+            const data = res[0];
             setCompanyId(data?._id)
+            console.log("data", data);
             if (!!data?.companyName && !!data?.smallLogo) {
                 setIsCompanydetailPresent(true);
                 setComapnyDetails({
@@ -114,7 +116,8 @@ const CompanyDetails = () => {
 
         // if company id is present fetch company details based on id
         if (!!companyid) {
-            const data = await get(`${apiEndpoint.get_company_details}?id=${companyid}`);
+            const res = await get(`${apiEndpoint.get_company_details}?id=${companyid}`);
+            const data = res[0];
             if (!!data) {
                 setIsCompanydetailPresent(true);
                 setComapnyDetails({

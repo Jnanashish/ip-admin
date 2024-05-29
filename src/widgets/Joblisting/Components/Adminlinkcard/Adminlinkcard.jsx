@@ -20,6 +20,10 @@ const LinkCard = ({ item, showBitlyClick }) => {
         seletedJobId !== "" ? setSeletedJobId("") : setSeletedJobId(id);
     };
 
+    const handleUpdateRedirectionClick = (id) => {
+        window.location.href = `/addjob?jobid=${id}`;
+    }
+
     // when delete button is clicked delete a particular job
     const deleteJobData = (id) => {
         if (id === item._id) {
@@ -47,7 +51,7 @@ const LinkCard = ({ item, showBitlyClick }) => {
     return (
         <div>
             {deletedId !== item._id && (
-                <div className={styles.adminlinkcard_con}>
+                <div className={styles.adminlinkcard_con} style={ !item?.isActive ? {opacity : "40%"} : {}}>
                     <img className={styles.companyLogo} src={item.imagePath} />
                     <div className={styles.adminlinkWrapper}>
                         <a href={item.link} target="_blank" rel="noopener noreferrer">
@@ -81,6 +85,10 @@ const LinkCard = ({ item, showBitlyClick }) => {
                                     </>
                                 )}
                             </div>
+                            {!!item?.jobId && <div className={styles.adminlink_item}>
+                                <h5>Job Id : </h5>
+                                <h5>{item?.jobId}</h5>
+                            </div>}
                         </a>
 
                         {/* button section  */}
@@ -97,7 +105,10 @@ const LinkCard = ({ item, showBitlyClick }) => {
                                 disabled={!isUserLogedIn}
                             />
 
-                            <Custombutton disabled={!isUserLogedIn} disableElevation size="small" onClick={() => handleUpdateClick(item._id)} label="Update" className={styles.btn} />
+                            <div className={styles.updateButtonContainer}>
+                                <Custombutton disabled={!isUserLogedIn} disableElevation size="small" onClick={() => handleUpdateClick(item._id)} label="Update" className={styles.btn} />
+                                <Custombutton disabled={!isUserLogedIn} disableElevation size="small" onClick={() => handleUpdateRedirectionClick(item._id)} label="Update New" className={styles.btn} />
+                            </div>
                         </div>
                     </div>
                 </div>

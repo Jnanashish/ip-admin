@@ -8,13 +8,14 @@ import { config } from "../../Config/editorConfig";
 const CustomCKEditor = (props) => {
     ClassicEditor.defaultConfig = config;
     const { label, value } = props;
+    console.log("value", value);
     return (
         <>
             {!!label && <p className={styles.editor_label}>{label}</p>}
             <CKEditor
                 className={styles.ck_input}
                 editor={ClassicEditor}
-                value={value}
+                data={value}
                 onChange={(e, editor) => {
                     const data = editor.getData();
                     props.onChange(data);

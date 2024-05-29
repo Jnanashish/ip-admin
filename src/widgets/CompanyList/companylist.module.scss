@@ -8,14 +8,26 @@
         height: 60vh;
         width: 100%;
     }
+
+    h2{
+        margin: 20px auto 30px;
+    }
+}
+.cardcontainer{
+    border: 0.8px solid #121212;
+    margin-top: 20px;
+    padding: 20px 40px;
+    border-radius: 6px;
+}
+.jobdetails{
+    border-top: 0.4px solid #3b3b3b;
+    p{
+        margin-top: 12px;
+    }
 }
 .companycard{
     background-color: #F4FAFF;
-    padding: 20px 40px;
-    border: 0.8px solid #121212;
-    margin-top: 20px;
-    border-radius: 6px;
-
+    margin-bottom: 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;

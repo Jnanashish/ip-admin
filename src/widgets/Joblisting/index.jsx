@@ -21,6 +21,7 @@ import { showErrorToast } from "../../Helpers/toast";
 import { generateImageFromLink } from "../../Helpers/imageHelpers";
 import { get } from "../../Helpers/request";
 import { apiEndpoint } from "../../Helpers/apiEndpoints";
+import { updateJobDetails } from "../Addjobs/Helpers";
 
 const JobListing = () => {
     const [jobData, setJobData] = useState([]);
@@ -69,6 +70,19 @@ const JobListing = () => {
                 return [...prevSelectedJob, item];
             }
         });
+    };
+
+    const handleExpireJob = (jobdata) => {
+        const updatedJobData = { ...jobdata, isActive: !jobdata?.isActive };
+        setFilterdData(
+            filterdData.map((item) => {
+                if (item._id === jobdata._id) {
+                    return { ...item, isActive: !jobdata?.isActive };
+                }
+                return item;
+            })
+        );
+        updateJobDetails(updatedJobData, updatedJobData?._id)
     };
 
     // fetch job details on mount
@@ -120,6 +134,7 @@ const JobListing = () => {
                                             <Checkbox onChange={() => handleSelectJob(item)} />
                                             <Custombutton style={{ backgroundColor: "green" }} disabled={item.jdbanner === "N"} onClick={() => downloadBanner(item)} label="Banner" />
                                             <Custombutton onClick={() => copyApplyLink(item)} label="Copy Link" />
+                                            <FormControlLabel checked={!item?.isActive} onChange={() => handleExpireJob(item)} control={<Switch />} label="Job expired" />
                                         </div>
                                         <div className={styles.btn_con2}>
                                             <Custombutton disabled={!context.isAdmin} onClick={() => handleTelegramSubmitHelper(item)} endIcon={<SendIcon />} label="Telegram" />

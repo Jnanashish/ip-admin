@@ -4,7 +4,7 @@
     align-items: center;
     column-gap: 5px;
 }
-.flex_con {
+.inputcontainer_flex {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -26,6 +26,8 @@
     z-index: 2;
     position: fixed;
     display: flex;
+    top: 0;
+    left: 0;
     align-items: center;
     justify-content: center;
 }
@@ -67,7 +69,7 @@
 }
 .submitbtn_zone {
     width: 70%;
-    margin-bottom: 50px;
+    margin-bottom: 60px;
 
     @media screen and (max-width: 900px) {
         width: 350px;
@@ -86,6 +88,8 @@
 
 .submitbtn {
     width: 100%;
+    padding: 12px !important;
+    font-size: 1rem !important;
 }
 
 .editor_label {
@@ -173,7 +177,7 @@ input:focus {
 }
 
 .lastDateContainer {
-    margin-top: 10px;
+    margin: 10px 0px;
     align-items: start;
     flex-direction: column;
 }
@@ -189,4 +193,25 @@ input:focus {
     color: red;
     font-size: 14px;
     margin-top: 10px;
+}
+
+.tagscontainer{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+
+    p{
+        white-space: nowrap;
+    }
+}
+
+.uploadbanner_section{
+    margin-top: 30px;
+
+    div{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 }

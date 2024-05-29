@@ -118,13 +118,13 @@ function Canvas(props) {
                 </div>
             )}
 
-            <div className={styles.jobinfo}>
+            {/* <div className={styles.jobinfo}>
                 <p>Degree : {jobdetails?.degree}</p>
                 <p>Batch : {jobdetails?.batch}</p>
                 <p>Experience : {jobdetails?.experience}</p>
                 <p>Salary : {jobdetails?.salary}</p>
                 <p>Location : {jobdetails?.location}</p>
-            </div>
+            </div> */}
             <br/>
 
 

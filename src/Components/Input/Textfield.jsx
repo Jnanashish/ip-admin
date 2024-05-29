@@ -16,6 +16,8 @@ const CustomTextField = (props) => {
                     sx={!!props.sx ? props.sx : {}}
                     InputProps={!!props.InputProps ? props.InputProps : {}}
                     onBlur={!!props.onBlur ? (e) => props.onBlur(e.target.value) : () => {}}
+                    onFocus={!!props.onFocus ? (e) => props.onFocus(e.target.value) : () => {}}
+                    onKeyUp={!!props.onKeyUp ? (e) => props.onKeyUp(e.target.value) : () => {}}
                     disabled={disabled ? disabled : false}
                     error={error ? error : false}
                     className={!!props.className ? props.className : ""}

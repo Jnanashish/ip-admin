@@ -77,3 +77,4 @@ export const generateDateFromISOString = (isoDate) => {
     const date = new Date(isoDate);
     return date.toISOString().substring(0, 10);
 };
+

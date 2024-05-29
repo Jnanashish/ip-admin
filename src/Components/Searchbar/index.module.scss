@@ -1,0 +1,37 @@
+.searchbar {
+    width: 100%;
+    margin: 0px auto;
+    position: relative;
+
+    &_suggesstion {
+        width: 100%;
+        max-height: 300px;
+        background-color: #fff;
+        border-radius: 0 0 3px 3px;
+        overflow: auto;
+        left: 0;
+        border: 1px solid #b3b3b3;
+        text-align: left;
+        color: #373737;
+        border-top: none !important;
+        position: absolute;
+        z-index: 2;
+        border-radius: 0px 0px 6px 6px;
+
+        ul {
+            padding: 10px;
+            list-style-type: none;
+
+            li {
+                cursor: pointer;
+                &:not(:last-child) {
+                    margin-bottom: 20px;
+                }
+            }
+        }
+
+        &_noresult {
+            padding: 40px 10px;
+        }
+    }
+}

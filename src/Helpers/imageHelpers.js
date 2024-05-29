@@ -100,8 +100,8 @@ export const downloadImagefromCanvasHelper = async (fileName, canvasId, generate
         link.click();
         document.body.removeChild(link);
 
-        const blob = await fetch(dataUrl).then((res) => res.blob());
         if(generatelink){
+            const blob = await fetch(dataUrl).then((res) => res.blob());
             const bannerUrl = await generateLinkfromImageHelper(null, blob);
             return bannerUrl;
         }

@@ -3,10 +3,10 @@ import styles from "./addjobs.module.scss";
 
 // custom components
 import Canvas from "../../Components/Canvas";
-
 import CustomTextField from "../../Components/Input/Textfield";
 import CustomCKEditor from "../../Components/CkEditor/CkEditor";
 import CustomDivider from "../../Components/Divider/Divider";
+import SearchBar from "../../Components/Searchbar";
 
 // mui import
 import { Button, IconButton, FormGroup, Switch, FormControlLabel, CircularProgress, Chip, Stack } from "@mui/material";
@@ -17,29 +17,35 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { shortenurl } from "../../Helpers/utility";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../Context/userContext";
+import { apiEndpoint } from "../../Helpers/apiEndpoints";
+import { get } from "../../Helpers/request";
 
-import { degreeOptions, batchOptions, expOptions, locOptions, jobTypeOptions, companyTypeOptions, categorytags } from "./Helpers/staticdata";
+import { degreeOptions, batchOptions, expOptions, locOptions, jobTypeOptions, companyTypeOptions, categorytags, workmodeOptions, platformOptions, comapnyTypeOption } from "./Helpers/staticdata";
 import { downloadImagefromCanvasHelper, generateLinkfromImageHelper, handleImageInputHelper, uploadBannertoCDNHelper } from "../../Helpers/imageHelpers";
-import { generateLastDatetoApplyHelper, getCompanyDetailsHelper, addJobDataHelper, mapExperiencetoBatch } from "./Helpers";
+import { generateLastDatetoApplyHelper, getCompanyDetailsHelper, addJobDataHelper, updateJobDetails, mapExperiencetoBatch } from "./Helpers";
 
 import { copyToClipBoard } from "../../Helpers/utility";
 import { generateLinkfromImage } from "../../Helpers/imageHelpers";
-import { submitCompanyDetailsHelper } from "../CompanyDetails/helper";
+import { submitCompanyDetailsHelper, updateCompanyDetailsHelper } from "../CompanyDetails/helper";
 import { showErrorToast } from "../../Helpers/toast";
+import { getJobDetailsHelper } from "./Helpers";
 
 const AddjobsComponent = () => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [igbannertitle, setIgbannertitle] = useState("");
     const [showLoader, setShowLoader] = useState(false);
     const [companyLogoSize, setCompanyLogoSize] = useState(0);
-    const [isCompaneydetailsPresent, setIsCompaneydetailsPresent] = useState(false);
+    const [comapnyListData, setCompanyListData] = useState(null);
+    const [selectedCompany, setSelectedCompany] = useState(null);
+    const [jobAlreadyExist, setJobAlreadyExist] = useState(false);
+    const [savedJobId, setSavedJobId] = useState(null);
 
     const [comapnyDetails, setComapnyDetails] = useState({
-        name: "",
-        info: "",
-        linkedinLink: "",
-        careersPageLink: "",
-        companyType: "",
+        companyName: "",
+        companyInfo: "N",
+        linkedinPageLink: "",
+        careerPageLink: "",
+        companyType: "Product based",
         smallLogo: "",
         largeLogo: "",
     });
@@ -64,32 +70,49 @@ const AddjobsComponent = () => {
         aboutCompany: "N",
         jdBanner: "N",
         link: "",
-        imagePath: "",
+        imagePath: "", // company small logo
         categoryTags: [],
         skilltags: [],
+        jobId: "",
+        workMode: "onsite",
+        platform: "careerspage",
+        benifits: "N",
+        companyId: "",
+        isActive: true,
+        priority: 1,
+
+        // company info
+        companyInfo: "",
+        linkedinPageLink: "",
+        careerPageLink: "",
+        companyType: "",
+        smallLogo: "",
+        largeLogo: "",
     });
 
     const context = useContext(UserContext);
     const canvasId = context?.isAdmin ? "careersattech" : "jobsattech";
     const navigate = useNavigate();
+    let companyName = "";
 
-    // handle job details input change
-    const handleJobdetailsChange = (key, value) => {
-        setJobdetails((prevState) => ({
-            ...prevState,
-            [key]: value,
-        }));
+    // when any input filed value change
+    const handleInputChange = (func, key, value) => {
+        if (typeof key === "object") {
+            func((prevState) => ({
+                ...prevState,
+                ...key,
+            }));
+        } else {
+            func((prevState) => ({
+                ...prevState,
+                [key]: value,
+            }));
+        }
     };
 
-    // handle company details input change
-    const handleCompanyDetailChange = (key, value) => {
-        setComapnyDetails((prevState) => ({
-            ...prevState,
-            [key]: value,
-        }));
-    };
-
+    // when category tags clicked
     const handleCategoryTagClick = (tag) => {
+        // if tag already selected remove the tag
         if (jobdetails.categoryTags.includes(tag)) {
             setJobdetails((prevState) => ({
                 ...prevState,
@@ -106,54 +129,26 @@ const AddjobsComponent = () => {
     // generate the last date to apply based on current date
     const generateLastDatetoApply = () => {
         const formattedDate = generateLastDatetoApplyHelper();
-        if (!!formattedDate) handleJobdetailsChange("lastdate", formattedDate);
+        if (!!formattedDate) handleInputChange(setJobdetails, "lastdate", formattedDate);
     };
 
     // upload image to cloudinary and return cdn url
     const generateImageCDNlink = async (e, blob) => {
         const imageUrl = await generateLinkfromImageHelper(e, blob);
-        if (!!imageUrl) handleJobdetailsChange("jdBanner", imageUrl);
+        if (!!imageUrl) handleInputChange(setJobdetails, "jdBanner", imageUrl);
     };
 
-    // download the banner for social media
-    const handleDownloadBanner = async () => {
-        const bannerUrl = await downloadImagefromCanvasHelper(jobdetails.companyName, canvasId);
-        if (!!bannerUrl) handleJobdetailsChange("jdBanner", bannerUrl);
-    };
-
-    // upload banner to cdn and get link (accept html canvas id)
-    const uploadBannertoCDN = async () => {
-        if (!jobdetails.jdBanner || jobdetails.jdBanner === "" || jobdetails.jdBanner === "N") {
-            const bannerUrl = await uploadBannertoCDNHelper(canvasId);
-            if (bannerUrl) handleJobdetailsChange("jdBanner", bannerUrl);
-            return bannerUrl;
-        }
-        return null;
-    };
-
-    // shorten link using bit.ly if link length is greater then 10
-    const shortenLink = async () => {
-        if (jobdetails.link.length > 10) {
-            const tempLink = await shortenurl(jobdetails.link);
-            if (!!tempLink) handleJobdetailsChange("link", tempLink);
-        }
-    };
-
-    // get details of entered company on blur company input
-    const getCompanyDetails = async () => {
+    // [COMPANY DATA] get details of entered company on company input change
+    const getCompanyDetails = async (jobdetails) => {
         // clear all the logo field
-        handleCompanyDetailChange("largeLogo", "");
-        handleCompanyDetailChange("smallLogo", "");
-        handleJobdetailsChange("imagePath", "");
+        handleInputChange(setComapnyDetails, { smallLogo: "", largeLogo: "" });
+        handleInputChange(setJobdetails, "imagePath", "");
 
-        if (!!jobdetails.companyName) {
-            const data = await getCompanyDetailsHelper(jobdetails.companyName);
-            if (!!data[0]?.largeLogo) handleCompanyDetailChange("largeLogo", data[0]?.largeLogo);
-            if (!!data[0]?.smallLogo) {
-                setIsCompaneydetailsPresent(true);
-                handleCompanyDetailChange("smallLogo", data[0]?.smallLogo);
-                handleJobdetailsChange("imagePath", data[0]?.smallLogo);
-            }
+        const data = await getCompanyDetailsHelper(null, jobdetails._id);
+        if (!!data && !!data[0]) {
+            handleInputChange(setJobdetails, data[0]);
+            handleInputChange(setComapnyDetails, data[0]);
+            handleInputChange(setJobdetails, "imagePath", data[0]?.smallLogo);
         }
     };
 
@@ -166,67 +161,142 @@ const AddjobsComponent = () => {
         if (compressImage) {
             setCompanyLogoSize(fileSize / 1024);
             const imageFile = await handleImageInputHelper(e);
-            if(!!imageFile){
+            if (!!imageFile) {
                 link = await generateLinkfromImageHelper(null, imageFile);
                 setCompanyLogoSize(Math.round(imageFile?.size / 1080));
-
             }
 
             if (!!link) {
-                handleCompanyDetailChange("smallLogo", link);
-                handleJobdetailsChange("imagePath", link);
+                handleInputChange(setComapnyDetails, "smallLogo", link);
+                handleInputChange(setJobdetails, "imagePath", link);
             }
         } else {
             // TODO: Need to compress big images also
             if (fileSize < 500000) {
                 link = await generateLinkfromImage(e, false);
-                handleCompanyDetailChange("largeLogo", link);
+                handleInputChange(setComapnyDetails, "largeLogo", link);
             } else {
                 showErrorToast("Image size should be less than 500kb");
             }
         }
     };
 
-    // add form data
+    // [ADD JOB POST] add form data
     const addJobDetails = async (e) => {
         e.preventDefault();
         setShowLoader(true);
+        let jobDetailsforAPI = {};
 
-        // if company details not present add company details before adding job details
-        if (!isCompaneydetailsPresent) {
-            submitCompanyDetailsHelper(comapnyDetails);
+        // update already existing company details
+        if (!!selectedCompany && !!selectedCompany?._id) {
+            updateCompanyDetailsHelper(comapnyDetails, selectedCompany?._id);
+            jobDetailsforAPI = { ...jobdetails, companyId: selectedCompany?._id };
+        } else {
+            // if company details not present add company details before adding job details
+            let companyId = await submitCompanyDetailsHelper(comapnyDetails);
+            jobDetailsforAPI = { ...jobdetails, companyId: companyId?.id };
         }
 
-        // upload banner to cdn if banner link is not present
-        const bannerlink = await uploadBannertoCDN();
+        let res = {};
+        if (!!jobAlreadyExist) {
+            res = await updateJobDetails(jobDetailsforAPI, savedJobId);
+        } else {
+            res = await addJobDataHelper(jobDetailsforAPI);
+        }
 
-        const res = await addJobDataHelper(jobdetails, bannerlink);
-        if (res.status === 200 || res.status === 201) navigate("/jobs");
+        if (res?.status === 200 || res?.status === 201) navigate("/jobs");
+    };
+
+    // generate job title from company name and role
+    const generateJobTitle = (companyName, role) => {
+        let jobTitle = "";
+        if (!!role || !!jobdetails?.role) {
+            jobTitle = companyName + " is hiring " + (role ? role : jobdetails?.role);
+        } else {
+            jobTitle = companyName + " is hiring ";
+        }
+
+        setIgbannertitle(jobTitle);
+        return jobTitle;
+    };
+
+    // handle company name input change
+    const handleCompanyNameChange = (companyName) => {
+        const jobTitle = generateJobTitle(companyName);
+        handleInputChange(setComapnyDetails, "companyName", companyName);
+        handleInputChange(setJobdetails, { companyName, title: jobTitle });
     };
 
     // handle company job title change
-    const handleJobRoleChange = (val) => {
-        setIgbannertitle(val);
-        handleJobdetailsChange("title", jobdetails.companyName + " is hiring " + val);
-        handleJobdetailsChange("role", val);
+    const handleJobRoleChange = (role) => {
+        const jobTitle = generateJobTitle(jobdetails?.companyName, role);
+        handleInputChange(setJobdetails, { role, title: jobTitle });
 
-        if (val.toLowerCase().includes("intern")) {
-            handleJobdetailsChange("batch", "2025 / 2024 / 2023");
-            handleJobdetailsChange("experience", "College students");
-            handleJobdetailsChange("jobtype", "Internship");
+        if (role?.toLowerCase()?.includes("intern")) {
+            handleInputChange(setJobdetails, { jobtype: "Internship", experience: "College students", batch: "2025 / 2024 / 2023" });
         }
     };
 
-    // handle company name change
-    const handleCompanyNameChange = (value) => {
-        handleCompanyDetailChange("name", value);
-        handleJobdetailsChange("companyName", value);
-        handleJobdetailsChange("title", value + " is hiring " + jobdetails.role);
+    // shorten link using bit.ly if link length is greater then 10
+    const shortenLink = async () => {
+        if (jobdetails?.link?.length > 10) {
+            const tempLink = await shortenurl(jobdetails.link);
+            if (!!tempLink) handleInputChange(setJobdetails, "link", tempLink);
+        }
     };
 
-    useEffect(() => {
-        generateLastDatetoApply();
-    }, []);
+    // get job details with id or official jobId
+    const fetchJobDetails = async (id) => {
+        const paramsData = {
+            key: !!jobdetails?.jobId ? "jobId" : "id",
+            value: !!jobdetails?.jobId ? jobdetails?.jobId : id,
+        };
+
+        const res = await getJobDetailsHelper(paramsData);
+        const jobData = Array.isArray(res) && res[0] ? res[0] : res;
+        console.log("jobData", jobData);
+        if (!!jobData && !!jobData?.companyName) {
+            companyName = jobData?.companyName;
+            filterJobBasedonName(comapnyListData, companyName);
+            setSavedJobId(jobData?._id);
+            setJobAlreadyExist(true);
+            handleInputChange(setJobdetails, jobData);
+            handleInputChange(setComapnyDetails, jobData);
+        }
+    };
+
+    // update both company and job details when companyinfo change
+    const handleCompanyInfoChange = (val) => {
+        handleInputChange(setJobdetails, "aboutCompany", val);
+        handleInputChange(setComapnyDetails, "companyInfo", val);
+    };
+
+    const filterJobBasedonName = (companyList, company) => {
+        if (!!companyList && (!!companyName || !!company || !!comapnyDetails?.companyName)) {
+            const name = !!comapnyDetails?.companyName ? comapnyDetails?.companyName : companyName || company;
+
+            const companyData = companyList?.find((item) => item?.companyName?.toLowerCase() == name?.toLowerCase() || item?.companyName?.toLowerCase().includes(name?.toLowerCase()));
+            setSelectedCompany(companyData);
+        }
+    };
+
+    // fetch list of available companies
+    const getCompanyList = async () => {
+        const data = await get(`${apiEndpoint.get_company_details}`);
+        filterJobBasedonName(data);
+        setCompanyListData(data);
+    };
+
+    // check query param for job id
+    const checkQueryParam = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const jobId = urlParams.get("jobid");
+
+        if (!!jobId) {
+            setSavedJobId(jobId);
+            fetchJobDetails(jobId);
+        }
+    };
 
     useEffect(() => {
         if (context.isAdmin) {
@@ -237,12 +307,27 @@ const AddjobsComponent = () => {
     // map the experience to relevant batch
     useEffect(() => {
         const mappedBatch = mapExperiencetoBatch(jobdetails.experience);
-        handleJobdetailsChange("batch", mappedBatch);
+        handleInputChange(setJobdetails, "batch", mappedBatch);
     }, [jobdetails.experience]);
+
+    // when any company is selected
+    useEffect(() => {
+        if (!!selectedCompany && selectedCompany?._id) {
+            getCompanyDetails(selectedCompany);
+            handleInputChange(setJobdetails, "companyId", selectedCompany?._id);
+            handleCompanyNameChange(selectedCompany?.companyName);
+        }
+    }, [selectedCompany]);
+
+    useEffect(() => {
+        generateLastDatetoApply();
+        getCompanyList();
+        checkQueryParam();
+    }, []);
 
     return (
         <div className={styles.container}>
-            <h3>Add job details : </h3>
+            <h2>{!!jobAlreadyExist ? "Update" : "Add"} job details : </h2>
 
             {/* circular overlay loader  */}
             {!!showLoader && (
@@ -254,15 +339,25 @@ const AddjobsComponent = () => {
             {/* main job details input section  */}
             <div className={styles.maininput_con}>
                 <div className={styles.input_fields}>
-                    <div className={styles.flex_con}>
-                        <CustomTextField label="Company name *" value={jobdetails.companyName} onChange={(val) => handleCompanyNameChange(val)} onBlur={getCompanyDetails} sx={{ width: "22ch" }} />
+                    <div className={styles.inputcontainer_flex}>
+                        <p></p>
+                        <SearchBar
+                            handleCompanyNameChange={handleCompanyNameChange}
+                            width="400px"
+                            searchSuggestionList={comapnyListData}
+                            selectedCompany={selectedCompany}
+                            setSelectedCompany={setSelectedCompany}
+                        />
                         <CustomTextField label="Role of the job *" value={jobdetails.role} onChange={(val) => handleJobRoleChange(val)} fullWidth />
                     </div>
-                    <Stack direction="row" spacing={1}>
-                        {categorytags.map((item) => (
-                            <Chip label={item} variant={jobdetails.categoryTags.includes(item) ? "" : "outlined"} color="primary" onClick={() => handleCategoryTagClick(item)} />
-                        ))}
-                    </Stack>
+                    <div className={styles.tagscontainer}>
+                        <p>Select tags : </p>
+                        <Stack direction="row" spacing={1}>
+                            {categorytags.map((item) => (
+                                <Chip label={item} variant={jobdetails.categoryTags.includes(item) ? "" : "outlined"} color="primary" onClick={() => handleCategoryTagClick(item)} />
+                            ))}
+                        </Stack>
+                    </div>
 
                     <CustomTextField
                         fullWidth
@@ -272,41 +367,96 @@ const AddjobsComponent = () => {
                         error={igbannertitle?.length > 26}
                     />
 
-                    <CustomTextField label="Link for the job application *" value={jobdetails.link} onBlur={shortenLink} onChange={(val) => handleJobdetailsChange("link", val)} fullWidth />
-                    <CustomTextField label="Degree required*" value={jobdetails.degree} onChange={(val) => handleJobdetailsChange("degree", val)} fullWidth type="select" optionData={degreeOptions} />
+                    <CustomTextField label="Link for the job application *" value={jobdetails.link} onBlur={shortenLink} onChange={(val) => handleInputChange(setJobdetails, "link", val)} fullWidth />
 
-                    <div className={styles.flex_con}>
+                    <div className={styles.inputcontainer_flex}>
+                        <CustomTextField
+                            label="Job Id (Mentioned in official page)"
+                            value={jobdetails.jobId}
+                            onBlur={fetchJobDetails}
+                            onChange={(val) => handleInputChange(setJobdetails, "jobId", val)}
+                            fullWidth
+                        />
+                        <CustomTextField
+                            label="Degree required*"
+                            value={jobdetails.degree}
+                            onChange={(val) => handleInputChange(setJobdetails, "degree", val)}
+                            fullWidth
+                            type="select"
+                            optionData={degreeOptions}
+                        />
+                    </div>
+
+                    <div className={styles.inputcontainer_flex}>
                         <CustomTextField
                             label="Experience needed *"
                             value={jobdetails.experience}
-                            onChange={(val) => handleJobdetailsChange("experience", val)}
+                            onChange={(val) => handleInputChange(setJobdetails, "experience", val)}
                             fullWidth
                             type="select"
                             optionData={expOptions}
                         />
-                        <CustomTextField label="Location *" value={jobdetails.location} onChange={(val) => handleJobdetailsChange("location", val)} fullWidth type="select" optionData={locOptions} />
-                    </div>
-                    <div className={styles.flex_con}>
-                        <CustomTextField label="Batch eligible*" value={jobdetails.batch} onChange={(val) => handleJobdetailsChange("batch", val)} fullWidth type="select" optionData={batchOptions} />
-                        <CustomTextField label="Expected salary" value={jobdetails.salary} onChange={(val) => handleJobdetailsChange("salary", val)} fullWidth optionData={batchOptions} />
-                    </div>
-                    <div className={styles.flex_con}>
+
                         <CustomTextField
-                            disabled={!isAdmin}
-                            label="Type of the company"
-                            value={jobdetails.companytype}
-                            onChange={(val) => handleJobdetailsChange("companytype", val)}
-                            sx={{ width: "50%" }}
+                            label="Batch eligible*"
+                            value={jobdetails.batch}
+                            onChange={(val) => handleInputChange(setJobdetails, "batch", val)}
+                            fullWidth
                             type="select"
-                            optionData={companyTypeOptions}
+                            optionData={batchOptions}
+                        />
+                    </div>
+                    <div className={styles.inputcontainer_flex}>
+                        <CustomTextField
+                            label="Location *"
+                            value={jobdetails.location}
+                            onChange={(val) => handleInputChange(setJobdetails, "location", val)}
+                            fullWidth
+                            type="select"
+                            optionData={locOptions}
+                        />
+                        <CustomTextField
+                            label="Work Mode *"
+                            value={jobdetails.workMode}
+                            onChange={(val) => handleInputChange(setJobdetails, "workMode", val)}
+                            fullWidth
+                            type="select"
+                            optionData={workmodeOptions}
+                        />
+                    </div>
+                    <div className={styles.inputcontainer_flex}>
+                        <CustomTextField
+                            label="Expected salary"
+                            sx={{ width: "50%" }}
+                            value={jobdetails.salary}
+                            onChange={(val) => handleInputChange(setJobdetails, "salary", val)}
+                            optionData={batchOptions}
                         />
                         <CustomTextField
                             label="Type of Job"
                             sx={{ width: "50%" }}
                             value={jobdetails.jobtype}
-                            onChange={(val) => handleJobdetailsChange("jobtype", val)}
+                            onChange={(val) => handleInputChange(setJobdetails, "jobtype", val)}
                             type="select"
                             optionData={jobTypeOptions}
+                        />
+                    </div>
+                    <div className={styles.inputcontainer_flex}>
+                        <CustomTextField
+                            label="Type of the company"
+                            value={jobdetails.companytype}
+                            onChange={(val) => handleInputChange(setJobdetails, "companytype", val)}
+                            sx={{ width: "50%" }}
+                            type="select"
+                            optionData={companyTypeOptions}
+                        />
+                        <CustomTextField
+                            label="Redirection platform"
+                            value={jobdetails.platform}
+                            onChange={(val) => handleInputChange(setJobdetails, "platform", val)}
+                            sx={{ width: "50%" }}
+                            type="select"
+                            optionData={platformOptions}
                         />
                     </div>
 
@@ -318,64 +468,104 @@ const AddjobsComponent = () => {
                             value={jobdetails.lastdate}
                             min="2018-01-01"
                             max="2026-12-31"
-                            onChange={(e) => handleJobdetailsChange("lastdate", e.target.value)}
+                            onChange={(e) => handleInputChange(setJobdetails, "lastdate", e.target.value)}
                         />
                     </div>
+                    <CustomTextField label="Priority" value={jobdetails.priority} onChange={(val) => handleInputChange(setJobdetails, "priority", val)} sx={{ width: "50%" }} />
                 </div>
             </div>
+            {!!jobAlreadyExist && (
+                <>
+                    <CustomDivider />
+                    <h3>
+                        Is job expired :
+                        <FormControlLabel
+                            checked={jobdetails.isActive}
+                            onChange={() => handleInputChange(setJobdetails, "isActive", !jobdetails.isActive)}
+                            control={<Switch />}
+                            label="Turn off if the job is expired"
+                        />
+                    </h3>
+                </>
+            )}
 
             <CustomDivider />
             <div>
-                {/* company logo upload section  */}
-                <div style={{ display: "flex" }}>
-                    <p style={{ paddingRight: "10px", fontWeight: "600" }}>
-                        <span>**</span> Upload Company logo (Max Size 20kb) :
-                    </p>
+                <>
+                    {/* company logo upload section  */}
+                    <div style={{ display: "flex" }}>
+                        <p style={{ paddingRight: "10px", fontWeight: "600" }}>
+                            <span>**</span> Upload Company logo (Max Size 20kb) :
+                        </p>
 
-                    <input type="file" onChange={(e) => handleCompanyLogoInput(e)} />
-                    <p>File Size : {companyLogoSize}</p>
-                </div>
-                {companyLogoSize > 5 && <p className={styles.errorMessage}>Image size should be less then 10 kb after compression</p>}
+                        <input type="file" onChange={(e) => handleCompanyLogoInput(e)} />
+                        <p>File Size : {companyLogoSize}</p>
+                    </div>
+                    {companyLogoSize > 10 && <p className={styles.errorMessage}>Image size should be less then 10 kb after compression</p>}
 
-                {comapnyDetails.smallLogo && (
-                    <div style={{ display: "flex", marginTop: "10px", alignItems: "center" }}>
-                        <p style={{ paddingRight: "10px" }}>Logo uploaded :</p>
-                        <img src={comapnyDetails.smallLogo} width="50" height="50" alt="logo" />
-                    </div>
-                )}
-                <div style={{ justifyContent: "flex-start", marginTop: "40px" }} className={styles.flex}>
-                    <div className={styles.flex}>
-                        <h4>* Company Logo for Banner : </h4>
-                        <label htmlFor="contained-button-file">
-                            <input accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleCompanyLogoInput(e, false)} />
-                        </label>
-                    </div>
-                </div>
+                    {!!comapnyDetails.smallLogo && (
+                        <div style={{ display: "flex", marginTop: "10px", alignItems: "center" }}>
+                            <p style={{ paddingRight: "10px" }}>Logo uploaded :</p>
+                            <img src={comapnyDetails.smallLogo} width="50" height="50" alt="logo" />
+                        </div>
+                    )}
 
-                {comapnyDetails.largeLogo && (
-                    <div style={{ display: "flex", marginTop: "10px", alignItems: "center" }}>
-                        <p style={{ paddingRight: "10px" }}>Logo uploaded :</p>
-                        <img src={comapnyDetails.largeLogo} width="200" height="60" alt="logo" />
+                    <div style={{ justifyContent: "flex-start", marginTop: "40px" }} className={styles.flex}>
+                        <div className={styles.flex}>
+                            <h4>* Company Logo for Banner : </h4>
+                            <label htmlFor="contained-button-file">
+                                <input accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleCompanyLogoInput(e, false)} />
+                            </label>
+                        </div>
                     </div>
-                )}
+
+                    {!!comapnyDetails.largeLogo && (
+                        <div style={{ display: "flex", marginTop: "10px", alignItems: "center" }}>
+                            <p style={{ paddingRight: "10px" }}>Logo uploaded :</p>
+                            <img src={comapnyDetails.largeLogo} width="200" height="60" alt="logo" />
+                        </div>
+                    )}
+                </>
 
                 <CustomDivider />
+                <div>
+                    <h3>Enter company Informations : </h3>
+                    <CustomTextField fullWidth label="Company careers page" value={comapnyDetails.careerPageLink} onChange={(val) => handleInputChange(setComapnyDetails, "careerPageLink", val)} />
+
+                    <CustomTextField fullWidth label="Linkeding page link" value={comapnyDetails.linkedinPageLink} onChange={(val) => handleInputChange(setComapnyDetails, "linkedinPageLink", val)} />
+                    <CustomTextField
+                        fullWidth
+                        label="Type of the company"
+                        value={comapnyDetails.companyType}
+                        onChange={(val) => handleInputChange(setComapnyDetails, "companyType", val)}
+                        type="select"
+                        optionData={comapnyTypeOption}
+                    />
+                    <CustomCKEditor label="About the company : " value={comapnyDetails.companyInfo} onChange={(val) => handleCompanyInfoChange(val)} />
+                    <CustomDivider />
+                </div>
 
                 <div className={styles.flex}>
-                    <Button style={{ textTransform: "capitalize" }} onClick={() => handleDownloadBanner()} variant="contained" color="success" endIcon={<CloudDownloadIcon />}>
+                    <Button
+                        style={{ textTransform: "capitalize" }}
+                        onClick={() => downloadImagefromCanvasHelper(jobdetails?.companyName, canvasId, false)}
+                        variant="contained"
+                        color="success"
+                        endIcon={<CloudDownloadIcon />}
+                    >
                         Download IG Banner
                     </Button>
                 </div>
-                <br/>
+                <br />
 
                 {!!isAdmin && (
-                    <div style={{ marginTop: "30px" }}>
-                        <div style={{ display: "flex" }}>
-                            <p style={{ paddingRight: "10px" }}>Upload JD banner : </p>
+                    <div className={styles.uploadbanner_section} style={{ marginTop: "30px" }}>
+                        <div>
+                            <p>Upload JD banner : </p>
                             <input type="file" onChange={(e) => generateImageCDNlink(e)} />
                         </div>
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                            <p style={{ fontSize: "10px" }}>Banner Link : {jobdetails.jdBanner}</p>
+                        <div>
+                            <p>Banner Link : {jobdetails.jdBanner}</p>
                             <IconButton color="secondary" aria-label="delete" size="small" onClick={() => copyToClipBoard(jobdetails.jdBanner)}>
                                 <ContentCopyIcon fontSize="inherit" />
                             </IconButton>
@@ -387,17 +577,17 @@ const AddjobsComponent = () => {
             {/* job description section  */}
             <div>
                 <FormGroup>
-                    <FormControlLabel onChange={() => handleJobdetailsChange("jdpage", !jobdetails.jdpage)} control={<Switch />} label="Add Job description fields*" />
+                    <FormControlLabel onChange={() => handleInputChange(setJobdetails, "jdpage", !jobdetails.jdpage)} control={<Switch />} label="Add Job description fields*" />
                 </FormGroup>
 
-                {jobdetails.jdpage && (
+                {!!jobdetails.jdpage && (
                     <div className={styles.editor_fields}>
                         <div className={styles.ck_grid}>
-                            <CustomCKEditor label="Job Description : " value={jobdetails.jobdesc} onChange={(val) => handleJobdetailsChange("jobdesc", val)} />
-                            <CustomCKEditor label="Eligibility Criteria : " value={jobdetails.eligibility} onChange={(val) => handleJobdetailsChange("eligibility", val)} />
-                            <CustomCKEditor label="Responsibility of the job : " value={jobdetails.responsibility} onChange={(val) => handleJobdetailsChange("responsibility", val)} />
-                            <CustomCKEditor label="Skills needed : " value={jobdetails.skills} onChange={(val) => handleJobdetailsChange("skills", val)} />
-                            <CustomCKEditor label="About the company : " value={jobdetails.aboutCompany} onChange={(val) => handleJobdetailsChange("aboutCompany", val)} />
+                            <CustomCKEditor label="Job Description : " value={jobdetails.jobdesc} onChange={(val) => handleInputChange(setJobdetails, "jobdesc", val)} />
+                            <CustomCKEditor label="Eligibility Criteria : " value={jobdetails.eligibility} onChange={(val) => handleInputChange(setJobdetails, "eligibility", val)} />
+                            <CustomCKEditor label="Responsibility of the job : " value={jobdetails.responsibility} onChange={(val) => handleInputChange(setJobdetails, "responsibility", val)} />
+                            <CustomCKEditor label="Benifits : " value={jobdetails.benifits} onChange={(val) => handleInputChange(setJobdetails, "benifits", val)} />
+                            <CustomCKEditor label="Skills needed : " value={jobdetails.skills} onChange={(val) => handleInputChange(setJobdetails, "skills", val)} />
                         </div>
                     </div>
                 )}
@@ -414,9 +604,10 @@ const AddjobsComponent = () => {
                     color="primary"
                     size="large"
                 >
-                    Submit Job details
+                    {`${jobAlreadyExist ? "Update" : "Submit"}`} Job details
                 </Button>
             </div>
+            <CustomDivider />
 
             {/* instagram banner */}
             <Canvas jobdetails={jobdetails} comapnyDetails={comapnyDetails} igbannertitle={igbannertitle} />
