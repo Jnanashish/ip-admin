@@ -12,7 +12,7 @@ import Signin from "./pages/Signinpage/Signin";
 import Banners from "./pages/Banners/index";
 import JobListing from "./widgets/Joblisting";
 import Header from "./Components/Header";
-import AddCompanydetails from "./pages/companydetails";
+import AddCompanydetails from "./pages/Companydetails";
 import CompanyList from "./pages/Comapnylist";
 
 function App() {

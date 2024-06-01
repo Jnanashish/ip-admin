@@ -21,7 +21,7 @@ import { apiEndpoint } from "../../Helpers/apiEndpoints";
 import { get } from "../../Helpers/request";
 
 import { degreeOptions, batchOptions, expOptions, locOptions, jobTypeOptions, companyTypeOptions, categorytags, workmodeOptions, platformOptions, comapnyTypeOption } from "./Helpers/staticdata";
-import { downloadImagefromCanvasHelper, generateLinkfromImageHelper, handleImageInputHelper, uploadBannertoCDNHelper } from "../../Helpers/imageHelpers";
+import { downloadImagefromCanvasHelper, generateLinkfromImageHelper, handleImageInputHelper } from "../../Helpers/imageHelpers";
 import { generateLastDatetoApplyHelper, getCompanyDetailsHelper, addJobDataHelper, updateJobDetails, mapExperiencetoBatch } from "./Helpers";
 
 import { copyToClipBoard } from "../../Helpers/utility";
@@ -254,7 +254,7 @@ const AddjobsComponent = () => {
 
         const res = await getJobDetailsHelper(paramsData);
         const jobData = Array.isArray(res) && res[0] ? res[0] : res;
-        console.log("jobData", jobData);
+
         if (!!jobData && !!jobData?.companyName) {
             companyName = jobData?.companyName;
             filterJobBasedonName(comapnyListData, companyName);

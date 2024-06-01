@@ -40,8 +40,8 @@ function Banners() {
     return (
         <div className={styles.canvas}>
             <Backtodashboard />
-            <br/><br/>
-            
+            <br /><br />
+
             <div className={styles.canvas_buttoncontainer}>
                 <Custombutton variant={bannerType === "careersattech" ? "" : "outlined"} onClick={() => setBannerType("careersattech")} label="Careersattech banner" />
                 <Custombutton variant={bannerType === "jobsattech" ? "" : "outlined"} onClick={() => setBannerType("jobsattech")} label="Jobsattech" />
