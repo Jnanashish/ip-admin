@@ -61,7 +61,7 @@ const CompanyDetails = () => {
     const updateCompanyDetails = async () => {
         const res = await updateCompanyDetailsHelper(comapnyDetails, comapnyId);
         if (!!res) {
-            window.location.href = "/companylist"
+            window.location.href = "/companys"
             setComapnyDetails({
                 name: "",
                 info: "",

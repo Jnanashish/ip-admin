@@ -7,7 +7,7 @@ import Custombutton from "../../Components/Button/Custombutton";
 import { CircularProgress } from "@mui/material";
 import Adminlinkcard from "../Joblisting/Components/Adminlinkcard/Adminlinkcard";
 
-function CompanyList() {
+function CompanyListing() {
     const [comapnyData, setCompanyData] = useState(null);
 
     // fetch company details
@@ -27,7 +27,7 @@ function CompanyList() {
 
     // move to company detail edit section with the company id as query param
     const handleCompanyUpdate = (item) => {
-        window.location.href = `/addcompanydetails?companyid=${item._id}`;
+        window.location.href = `/addcompany?companyid=${item._id}`;
     };
 
     useEffect(() => {
@@ -76,4 +76,4 @@ function CompanyList() {
     );
 }
 
-export default CompanyList;
+export default CompanyListing;

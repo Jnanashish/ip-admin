@@ -2,9 +2,9 @@ import React, { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { UserContext } from "../Context/userContext";
 
-import CompanyDetails from "../widgets/CompanyDetails/CompanyDetails";
+import JobListing from "../widgets/Joblisting";
 
-function AddCompanydetails() {
+function JobList() {
     const context = useContext(UserContext);
 
     // if user is not logedin redirect to homepage
@@ -14,9 +14,9 @@ function AddCompanydetails() {
 
     return (
         <>
-            <CompanyDetails />
+            <JobListing />
         </>
     );
 }
 
-export default AddCompanydetails;
+export default JobList;

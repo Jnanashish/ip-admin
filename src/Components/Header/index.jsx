@@ -36,8 +36,8 @@ const Header = () => {
             {isUserLogedIn && <div className={styles.adminpanel_buttoncontainer}>
                 <Custombutton variant={currentUrl === "/addjob" ? "" : "outlined"} onClick={() => handleRedirection("/addjob")} label="Add job" />
                 <Custombutton variant={currentUrl === "/jobs" ? "" : "outlined"} onClick={() => handleRedirection("/jobs")} label="Job dashboard" />
-                <Custombutton variant={currentUrl === "/addcompanydetails" ? "" : "outlined"} onClick={() => handleRedirection("/addcompanydetails")} label="Add company details" />
-                <Custombutton variant={currentUrl === "/companylist" ? "" : "outlined"} onClick={() => handleRedirection("/companylist")} label="Company list" />
+                <Custombutton variant={currentUrl === "/addcompany" ? "" : "outlined"} onClick={() => handleRedirection("/addcompany")} label="Add company details" />
+                <Custombutton variant={currentUrl === "/companys" ? "" : "outlined"} onClick={() => handleRedirection("/companys")} label="Company list" />
             </div>}
         </div>
     );
