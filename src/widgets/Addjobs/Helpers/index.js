@@ -97,7 +97,7 @@ const generateFormData = (jobdetails) => {
         "isActive"
     ];
     fields.forEach((field) => {
-        if (!!jobdetails[field] && jobdetails[field] !== undefined) {
+        if (jobdetails[field] !== undefined || jobdetails[field] !== null) {
             formData.append(field, jobdetails[field]);
         }
     });

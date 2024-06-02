@@ -239,7 +239,7 @@ const AddjobsComponent = () => {
 
     // shorten link using bit.ly if link length is greater then 10
     const shortenLink = async () => {
-        if (jobdetails?.link?.length > 10) {
+        if (jobdetails?.link?.length > 10 && !jobdetails?.link?.includes("bit.ly")) {
             const tempLink = await shortenurl(jobdetails.link);
             if (!!tempLink) handleInputChange(setJobdetails, "link", tempLink);
         }
@@ -306,8 +306,10 @@ const AddjobsComponent = () => {
 
     // map the experience to relevant batch
     useEffect(() => {
-        const mappedBatch = mapExperiencetoBatch(jobdetails.experience);
-        handleInputChange(setJobdetails, "batch", mappedBatch);
+        if (!jobAlreadyExist) {
+            const mappedBatch = mapExperiencetoBatch(jobdetails.experience);
+            handleInputChange(setJobdetails, "batch", mappedBatch);
+        }
     }, [jobdetails.experience]);
 
     // when any company is selected

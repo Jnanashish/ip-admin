@@ -5,6 +5,7 @@ import styles from "./companylist.module.scss";
 
 import Custombutton from "../../Components/Button/Custombutton";
 import { CircularProgress } from "@mui/material";
+import Adminlinkcard from "../Joblisting/Components/Adminlinkcard/Adminlinkcard";
 
 function CompanyList() {
     const [comapnyData, setCompanyData] = useState(null);
@@ -52,8 +53,16 @@ function CompanyList() {
                                 </span>
                             </div>
                             <div className={styles.jobdetails}>
-                                <p>Job description : {company?.companyInfo}</p>
+                                {company?.companyInfo && <p>Abount company : {company?.companyInfo}</p>}
                                 <p>Listed Job : {company?.listedJobs?.length}</p>
+                                <br/>
+                                {
+                                    !!company?.listedJobs && company?.listedJobs?.map((item, index) => {
+                                        return (
+                                            <Adminlinkcard item={item} isPreview={true}/>
+                                        )
+                                    })
+                                }
                             </div>
                         </div>
                     );

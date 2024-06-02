@@ -11,7 +11,7 @@ import { deleteData } from "../../../../Helpers/request";
 import { apiEndpoint } from "../../../../Helpers/apiEndpoints";
 import { generateDateFromISOString } from "../../../../Helpers/utility";
 
-const LinkCard = ({ item, showBitlyClick }) => {
+const LinkCard = ({ item, showBitlyClick, isPreview=false }) => {
     const [seletedJobId, setSeletedJobId] = useState("");
     const [deletedId, setDeletedId] = useState("");
     const [linkClickCount, setLinkClickCount] = useState(null);
@@ -51,8 +51,8 @@ const LinkCard = ({ item, showBitlyClick }) => {
     return (
         <div>
             {deletedId !== item._id && (
-                <div className={styles.adminlinkcard_con} style={ !item?.isActive ? {opacity : "40%"} : {}}>
-                    <img className={styles.companyLogo} src={item.imagePath} />
+                <div className={styles.adminlinkcard_con} style={{opacity : `${!item?.isActive ? "40%" : "100%"}`}}>
+                    {!isPreview && <img className={styles.companyLogo} src={item.imagePath} />}
                     <div className={styles.adminlinkWrapper}>
                         <a href={item.link} target="_blank" rel="noopener noreferrer">
                             <h2>{item.title}</h2>
@@ -61,7 +61,7 @@ const LinkCard = ({ item, showBitlyClick }) => {
                                 <h5>{generateDateFromISOString(item.createdAt)}</h5>
                             </div>
 
-                            {item.lastdate !== "2022-11-00-" && (
+                            {item.lastdate !== "2022-11-00-" && !isPreview && (
                                 <div className={styles.adminlink_item}>
                                     <h5>Last date : </h5>
                                     <h5 style={{ color: "red" }}>
@@ -94,7 +94,7 @@ const LinkCard = ({ item, showBitlyClick }) => {
                         {/* button section  */}
 
                         <div className={styles.buttonContainer}>
-                            <Custombutton
+                            {!isPreview && <Custombutton
                                 startIcon={<DeleteIcon />}
                                 disableElevation
                                 size="small"
@@ -103,7 +103,7 @@ const LinkCard = ({ item, showBitlyClick }) => {
                                 label="Delete"
                                 className={styles.btn}
                                 disabled={!isUserLogedIn}
-                            />
+                            />}
 
                             <div className={styles.updateButtonContainer}>
                                 <Custombutton disabled={!isUserLogedIn} disableElevation size="small" onClick={() => handleUpdateClick(item._id)} label="Update" className={styles.btn} />
