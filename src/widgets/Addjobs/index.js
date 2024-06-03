@@ -253,7 +253,7 @@ const AddjobsComponent = () => {
         };
 
         const res = await getJobDetailsHelper(paramsData);
-        const jobData = Array.isArray(res) && res[0] ? res[0] : res;
+        const jobData = (Array.isArray(res?.data) && res?.data[0]) ? res?.data[0] : res?.data;
 
         if (!!jobData && !!jobData?.companyName) {
             companyName = jobData?.companyName;
