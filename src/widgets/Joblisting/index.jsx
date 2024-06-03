@@ -39,8 +39,8 @@ const JobListing = () => {
         try {
             const data = await get(apiEndpoint.getAllJobDetails);
             setIsApiCalled(false);
-            setJobData(data);
-            setFilterdData(data);
+            setJobData(data?.data);
+            setFilterdData(data?.data);
         } catch (error) {
             setIsApiCalled(false);
             showErrorToast("An error occured in fetching job details");
