@@ -26,7 +26,7 @@ function Banners() {
         const companyname = urlParams.get("companyname");
         if (!!jobId) {
             const jobdata = await get(`${apiEndpoint.getAllJobDetails}?id=${jobId}`);
-            setJobdetails(jobdata);
+            setJobdetails(jobdata?.data);
         }
         if (!!companyname) {
             const companyData = await getCompanyDetailsHelper(companyname);
