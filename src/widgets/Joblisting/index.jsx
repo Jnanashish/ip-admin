@@ -22,6 +22,7 @@ import { generateImageFromLink } from "../../Helpers/imageHelpers";
 import { get } from "../../Helpers/request";
 import { apiEndpoint } from "../../Helpers/apiEndpoints";
 import { updateJobDetails } from "../Addjobs/Helpers";
+import { getJobDetailsHelper } from "../../Apis/Jobs";
 
 const JobListing = () => {
     const [jobData, setJobData] = useState([]);
@@ -30,6 +31,12 @@ const JobListing = () => {
     const [companyName, setCompanyName] = useState("");
     const [filterdData, setFilterdData] = useState([]);
     const [selectedJob, setSelectedJob] = useState([]);
+    const [params, setParams] = useState([
+        {
+            key: "filterData",
+            value: "false",
+        },
+    ]);
 
     const context = useContext(UserContext);
 
@@ -37,7 +44,11 @@ const JobListing = () => {
     const getJobDetailsData = async () => {
         setIsApiCalled(true);
         try {
-            const data = await get(apiEndpoint.getAllJobDetails);
+            const params = {
+                key: "filterData",
+                value: "false",
+            };
+            const data = await getJobDetailsHelper(params);
             setIsApiCalled(false);
             setJobData(data?.data);
             setFilterdData(data?.data);
@@ -82,13 +93,35 @@ const JobListing = () => {
                 return item;
             })
         );
-        updateJobDetails(updatedJobData, updatedJobData?._id)
+        updateJobDetails(updatedJobData, updatedJobData?._id);
     };
 
     // fetch job details on mount
     useEffect(() => {
         !isApiCalled && getJobDetailsData();
     }, []);
+
+    function debounce(func, delay) {
+        let timer;
+        return (...args) => {
+          clearTimeout(timer)
+          timer = setTimeout(() => func(...args), delay)
+        }
+      }
+
+    const handleCompanyNameChange = debounce(async (companyName) => {
+        if (companyName.trim() !== "") {
+            const params = { key: "companyname", value: companyName };
+            const jobDetails = await getJobDetailsHelper(params);
+            if (jobDetails) {
+                setFilterdData(jobDetails.data);
+            }
+        }
+    }, 500);
+
+    useEffect(() => {
+        handleCompanyNameChange(companyName);
+    }, [companyName]);
 
     return (
         <div className={styles.update_data_container}>

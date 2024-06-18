@@ -35,10 +35,10 @@ const CareersattechBanner = (props) => {
             <div id="careersattech" className={styles.canvas}>
                 <div className={styles.upper}>
                     <div className={styles.canvas_header}>
-                        <p className={styles.weblink}>
+                        <p contentEditable="true" className={styles.weblink}>
                             Visit <span>careersat.tech</span>
                         </p>
-                        <p className={styles.logoText}>
+                        <p contentEditable="true" className={styles.logoText}>
                             careers@<span>tech</span>
                         </p>
                     </div>
@@ -48,40 +48,42 @@ const CareersattechBanner = (props) => {
                         {!largeLogo && <h1>{companyName}</h1>}
                     </div>
                     <div className={styles.canvas_title}>
-                        <h1 contentEditable="true" style={customStyle.fontStyle}>{bannerTitle}</h1>
+                        <h1 contentEditable="true" style={customStyle.fontStyle}>
+                            {bannerTitle}
+                        </h1>
                     </div>
                 </div>
 
                 <div className={styles.lower}>
                     <div className={styles.canvas_details}>
                         {degree !== "N" && (
-                            <p >
-                                <span className={styles.tag} >Degree</span> : <span contentEditable="true">{degree}</span>
+                            <p contentEditable="true">
+                                <span className={styles.tag}>Degree</span> : <span>{degree}</span>
                             </p>
                         )}
                         {batch !== "N" && (
-                            <p>
-                                <span className={styles.tag}>Batch</span> : <span contentEditable="true">{batch}</span>
+                            <p contentEditable="true">
+                                <span className={styles.tag}>Batch</span> : <span>{batch}</span>
                             </p>
                         )}
                         {experience !== "N" && (
-                            <p>
-                                <span className={styles.tag}>Experience</span> : <span contentEditable="true">{experience}</span>
+                            <p contentEditable="true">
+                                <span className={styles.tag}>Experience</span> : <span>{experience}</span>
                             </p>
                         )}
-                        {salary !== "₹0LPA" && (
-                            <p>
-                                <span className={styles.tag}>Salary</span> : <span contentEditable="true">{salary}</span>
+                        {!!salary && salary !== "N" && (
+                            <p contentEditable="true">
+                                <span className={styles.tag}>Salary</span> : <span>{salary}</span>
                             </p>
                         )}
                         {location !== "N" && (
-                            <p>
+                            <p contentEditable="true">
                                 <span className={styles.tag}>Location</span> : <span contentEditable="true">{location}</span>
                             </p>
                         )}
                         <p contentEditable="true">
                             <span className={styles.tag}>{ctaDetails?.ctaTitle}</span>
-                            <span className={styles.tag} style={{ color: "#0069ff" }}>
+                            <span className={styles.tag} style={{ color: "#0050ff" }}>
                                 {ctaDetails?.ctaLine}
                             </span>
                         </p>
@@ -91,7 +93,7 @@ const CareersattechBanner = (props) => {
                         <img src={instagram} alt="instagram-logo" />
                         <img src={telegram} alt="telegram-logo" />
                         <img src={linkedin} alt="linkedin-logo" />
-                        <p>
+                        <p contentEditable="true">
                             Follow <span>@carrersattech</span> to get regular Job updates.
                         </p>
                     </div>

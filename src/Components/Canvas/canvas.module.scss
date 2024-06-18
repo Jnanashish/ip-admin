@@ -42,7 +42,7 @@ $gridBoxSize: 30px;
 
         span {
             font-weight: 700;
-            color: #0069ff;
+            color: #0050ff;
         }
 
         font-size: 28px;
@@ -58,7 +58,7 @@ $gridBoxSize: 30px;
         font-weight: 600;
 
         span {
-            background-color: #0069ff;
+            background-color: #0050ff;
             color: #ffffff;
             padding: 4px 6px;
             margin-left: 4px;
@@ -172,17 +172,19 @@ $gridBoxSize: 30px;
     margin-bottom: 30px;
 }
 
+// linkedin banner
 .linkedinbanner {
-    background-color: #fff;
-    height: 420px;
+    background-image: linear-gradient(0deg, #EBF5FF, #FFFFFF);
+    height: 440px;
     width: 700px;
     text-align: center;
-    padding: 26px;
+    padding: 26px 0px 40px;
     border: 1px solid #000;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
+    position: relative;
 
     &_imagecontainer {
         height: 100px;
@@ -190,13 +192,54 @@ $gridBoxSize: 30px;
     }
 
     h3 {
-        font-size: 3.6rem;
+        font-size: 2rem;
+    }
+    
+    &_title{
+        color: #0050ff;
+        font-weight: 600;
+        font-size: 2.6rem !important;
     }
 
-    p {
+    &_details {
         font-size: 1.8rem;
         line-height: 2.8rem;
         margin-top: 20px;
+
+        span{
+            color: #0050ff;
+            font-weight: 600;
+
+        }
+    }
+
+    &_footer {
+        background-color: #121212;
+        height: 36px;
+        position: absolute;
+        bottom: 0px !important;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        width: 100%;
+
+        p {
+            font-size: 16px;
+            font-weight: 500;
+            color: #ffffff;
+            margin-left: 10px;
+        }
+
+        span {
+            font-weight: 600;
+        }
+
+        img {
+            width: 16px;
+            margin-right: 5px;
+        }
     }
 }
 
@@ -215,10 +258,6 @@ $gridBoxSize: 30px;
         span: {
             background-color: #002c9b;
         }
-    }
-
-    &_companylogo {
-        // justify-content: center;
     }
 
     &_jobtitle {
@@ -320,7 +359,6 @@ $gridBoxSize: 30px;
         }
     }
 }
-
 
 .flex_con {
     display: flex;

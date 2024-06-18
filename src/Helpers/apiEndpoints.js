@@ -4,6 +4,7 @@ export const apiEndpoint = {
 
     // job description
     getAllJobDetails: "/jd/get",
+    all_job_details: "/jd/get",
     deleteJob: "/jd/delete",
     updateJobDetails : "/jd/update/",
     addJobData: "/jd/add",

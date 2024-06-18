@@ -17,10 +17,8 @@ import { Button } from "@mui/material";
 function Canvas(props) {
     const { bannerType, jobdetails } = props;
     const context = useContext(UserContext);
-    // const canvasId = bannerType ||  context?.isAdmin ? "careersattech" : "jobsattech";
 
     const [canvasId, setCanvasId] = useState();
-    const [isAdmin, setIsAdmin] = useState(false);
     const [canvas, setCanvas] = useState(context?.isAdmin ? "careersattech" : "jobsattech");
     const [canvasCss, setCanvasCss] = useState({
         imgsize: bannerType === "linkedinbanner" ? "100%" : "60%",
@@ -50,8 +48,8 @@ function Canvas(props) {
         setCanvasCss({ ...canvasCss, [key]: value });
     };
 
+    // when download banner clicked
     const handleDownloadBanner = async () => {
-        console.log("canvasId", canvasId, bannerType);
         if (bannerType !== "carousel") {
             const bannername = jobdetails.companyName + "_" + bannerType;
             downloadImagefromCanvasHelper(bannername, canvasId, false);
@@ -64,12 +62,7 @@ function Canvas(props) {
         }
     };
 
-    useEffect(() => {
-        if (context.isAdmin) {
-            setIsAdmin(true);
-        }
-    }, [context.isAdmin]);
-
+    // set design based on banner type
     useEffect(() => {
         if (bannerType === "linkedinbanner") {
             setCanvasCss({
@@ -105,8 +98,9 @@ function Canvas(props) {
             </div>
 
             {/* cta details selection for admin */}
-            {!!isAdmin && (
+            {canvas === "careersattech" && (
                 <div>
+                    <CustomDivider />
                     <div style={{ display: "flex", marginBottom: "10px", gap: "10px", width: "60%" }}>
                         <CustomTextField label="CTA Title" sx={{ width: "30%" }} value={ctaDetails.ctaTitle} onChange={(val) => setCtaDetails({ ...ctaDetails, ctaTitle: val })} fullWidth />
                         <CustomTextField label="CTA Line" sx={{ width: "70%" }} value={ctaDetails.ctaLine} onChange={(val) => setCtaDetails({ ...ctaDetails, ctaLine: val })} fullWidth />
@@ -118,15 +112,7 @@ function Canvas(props) {
                 </div>
             )}
 
-            {/* <div className={styles.jobinfo}>
-                <p>Degree : {jobdetails?.degree}</p>
-                <p>Batch : {jobdetails?.batch}</p>
-                <p>Experience : {jobdetails?.experience}</p>
-                <p>Salary : {jobdetails?.salary}</p>
-                <p>Location : {jobdetails?.location}</p>
-            </div> */}
-            <br/>
-
+            <br />
 
             {/* different banner based on canvas type  */}
             {canvas === "careersattech" && <CareersattechBanner {...props} jobinfo={jobinfo} ctaDetails={ctaDetails} canvasCss={canvasCss} />}

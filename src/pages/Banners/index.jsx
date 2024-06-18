@@ -3,36 +3,41 @@ import styles from "./banners.module.scss";
 
 import Canvas from "../../Components/Canvas";
 import Custombutton from "../../Components/Button/Custombutton";
-import { CircularProgress } from "@mui/material";
-import { apiEndpoint } from "../../Helpers/apiEndpoints";
-import { get } from "../../Helpers/request";
-import { getCompanyDetailsHelper } from "../../widgets/Addjobs/Helpers";
+import Loader from "../../Components/Loader";
+
 import Backtodashboard from "../../widgets/Addjobs/Components/Backtodashboard";
+import { getCompanyDetailsHelper } from "../../Apis/Company";
+import { getJobDetailsHelper } from "../../Apis/Jobs";
 
 function Banners() {
     const [jobdetails, setJobdetails] = useState();
     const [comapnyDetails, setComapnyDetails] = useState();
     const [bannerType, setBannerType] = useState("careersattech");
 
-    const [ctaDetails, setCtaDetails] = useState({
-        ctaTitle: "Apply Link : ",
-        ctaLine: "Link in Bio (visit : careersat.tech)",
-    });
-
-    // get company details and job details
+    // get company details and job details based on jobId and company name
     const getQueryparam = async () => {
         const urlParams = new URLSearchParams(window.location.search);
         const jobId = urlParams.get("jobid");
         const companyname = urlParams.get("companyname");
+        const companyid = urlParams.get("companyid");
+
         if (!!jobId) {
-            const jobdata = await get(`${apiEndpoint.getAllJobDetails}?id=${jobId}`);
-            setJobdetails(jobdata?.data);
+            const params = {
+                key: "id",
+                value: jobId,
+            };
+
+            const jobdata = await getJobDetailsHelper(params);
+            !!jobdata && jobdata?.data && setJobdetails(jobdata?.data);
         }
-        if (!!companyname) {
-            const companyData = await getCompanyDetailsHelper(companyname);
-            setComapnyDetails(companyData[0]);
+        
+        if (!!companyname || !!companyid) {
+            const companyData = await getCompanyDetailsHelper(companyname, companyid);
+            !!companyData && Array.isArray(companyData) && setComapnyDetails(companyData[0]);
         }
     };
+
+    // check for query params in url
     useEffect(() => {
         getQueryparam();
     }, []);
@@ -48,11 +53,13 @@ function Banners() {
                 <Custombutton variant={bannerType === "linkedinbanner" ? "" : "outlined"} onClick={() => setBannerType("linkedinbanner")} label="Linkedin" />
                 <Custombutton variant={bannerType === "carousel" ? "" : "outlined"} onClick={() => setBannerType("carousel")} label="Carousel" />
             </div>
+
+            {/* show loader when job details are fetcing */}
             {!!jobdetails && !!comapnyDetails ? (
-                <Canvas bannerType={bannerType} jobdetails={jobdetails} comapnyDetails={comapnyDetails} ctaDetails={ctaDetails} />
+                <Canvas bannerType={bannerType} jobdetails={jobdetails} comapnyDetails={comapnyDetails} />
             ) : (
                 <div className={styles.canvas_loader}>
-                    <CircularProgress size={80} />
+                   <Loader/>
                 </div>
             )}
         </div>
