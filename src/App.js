@@ -19,7 +19,7 @@ import CompanyList from "./pages/CompanyList";
 
 function App() {
     // set user details in context
-    const [user, setUser] = useState({ email: "jhandique1999@gmail.com" });
+    const [user, setUser] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
 
     const isUserLogedin = !!user?.email;

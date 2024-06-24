@@ -19,7 +19,7 @@ function Canvas(props) {
     const context = useContext(UserContext);
 
     const [canvasId, setCanvasId] = useState();
-    const [canvas, setCanvas] = useState(context?.isAdmin ? "careersattech" : "jobsattech");
+    const [canvas, setCanvas] = useState("careersattech");
     const [canvasCss, setCanvasCss] = useState({
         imgsize: bannerType === "linkedinbanner" ? "100%" : "60%",
         marginLeft: "0px",

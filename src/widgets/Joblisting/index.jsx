@@ -7,7 +7,7 @@ import CustomDivider from "../../Components/Divider/Divider";
 // mui imports
 import SendIcon from "@mui/icons-material/Send";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import { Switch, FormControlLabel, CircularProgress, Checkbox } from "@mui/material";
+import { Switch, FormControlLabel, CircularProgress, Checkbox, Button } from "@mui/material";
 
 // import components
 import Adminlinkcard from "./Components/Adminlinkcard/Adminlinkcard";
@@ -31,12 +31,8 @@ const JobListing = () => {
     const [companyName, setCompanyName] = useState("");
     const [filterdData, setFilterdData] = useState([]);
     const [selectedJob, setSelectedJob] = useState([]);
-    const [params, setParams] = useState([
-        {
-            key: "filterData",
-            value: "false",
-        },
-    ]);
+    const [pageno, setPageno] = useState(1);
+    const [jobCount, setJobCount] = useState(0);
 
     const context = useContext(UserContext);
 
@@ -48,10 +44,11 @@ const JobListing = () => {
                 key: "filterData",
                 value: "false",
             };
-            const data = await getJobDetailsHelper(params);
+            const data = await getJobDetailsHelper(params, pageno);
             setIsApiCalled(false);
-            setJobData(data?.data);
-            setFilterdData(data?.data);
+            setJobData((jobData) => [...jobData, ...data?.data]);
+            setFilterdData((jobData) => [...jobData, ...data?.data]);
+            setJobCount(data?.totalCount)
         } catch (error) {
             setIsApiCalled(false);
             showErrorToast("An error occured in fetching job details");
@@ -99,33 +96,37 @@ const JobListing = () => {
     // fetch job details on mount
     useEffect(() => {
         !isApiCalled && getJobDetailsData();
-    }, []);
+    }, [pageno]);
+
 
     function debounce(func, delay) {
         let timer;
         return (...args) => {
-          clearTimeout(timer)
-          timer = setTimeout(() => func(...args), delay)
-        }
-      }
+            clearTimeout(timer);
+            timer = setTimeout(() => func(...args), delay);
+        };
+    }
 
-    const handleCompanyNameChange = debounce(async (companyName) => {
+    const handleLoadMore = () => {
+
+    }
+
+    // when input field is blured call api with company name field
+    const handleCompanyNameBlur = debounce(async (companyName) => {
         if (companyName.trim() !== "") {
+            setIsApiCalled(true)
             const params = { key: "companyname", value: companyName };
             const jobDetails = await getJobDetailsHelper(params);
             if (jobDetails) {
+                setIsApiCalled(false)
                 setFilterdData(jobDetails.data);
             }
         }
     }, 500);
 
-    useEffect(() => {
-        handleCompanyNameChange(companyName);
-    }, [companyName]);
-
     return (
         <div className={styles.update_data_container}>
-            {isApiCalled ? (
+            {(jobData?.length ===0 && isApiCalled) ? (
                 <div className={styles.loaderCon}>
                     <CircularProgress size={80} />
                 </div>
@@ -133,13 +134,13 @@ const JobListing = () => {
                 <>
                     {/* header part  */}
                     <div className={styles.headerContainer}>
-                        <h2 className={styles.adminpanel_title}>List of available Jobs - {jobData.length}</h2>
+                        <h2 className={styles.adminpanel_title}>List of available Jobs - {jobCount}</h2>
 
                         <FormControlLabel onChange={() => setShowBitlyClick(!showBitlyClick)} control={<Switch />} label="Show Bit.ly click count" />
                     </div>
 
                     <CustomTextField
-                        onBlur={(val) => handleInputBlur(val)}
+                        onBlur={(val) => handleCompanyNameBlur(val)}
                         label="Company name"
                         value={companyName}
                         onChange={(val) => setCompanyName(val)}
@@ -181,6 +182,7 @@ const JobListing = () => {
                             );
                         })}
                     </div>
+                    <Custombutton style={{ backgroundColor: "green" }} size="large" fullWidth onClick={() => setPageno(pageno + 1)} label="Load more" />
                 </>
             )}
         </div>

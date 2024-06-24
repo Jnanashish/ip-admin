@@ -56,10 +56,10 @@ const AddjobsComponent = () => {
         experience: "0 - 2 years",
         location: "Bengaluru",
         salary: "₹0LPA",
-        jdpage: false,
+        jdpage: true,
         companyName: "",
         title: "",
-        companytype: isAdmin ? "product" : "service",
+        companytype: "product",
         lastdate: null,
         role: "",
         jobtype: "Full time",
@@ -253,7 +253,7 @@ const AddjobsComponent = () => {
         };
 
         const res = await getJobDetailsHelper(paramsData);
-        const jobData = (Array.isArray(res?.data) && res?.data[0]) ? res?.data[0] : res?.data;
+        const jobData = Array.isArray(res?.data) && res?.data[0] ? res?.data[0] : res?.data;
 
         if (!!jobData && !!jobData?.companyName) {
             companyName = jobData?.companyName;
@@ -559,21 +559,6 @@ const AddjobsComponent = () => {
                     </Button>
                 </div>
                 <br />
-
-                {!!isAdmin && (
-                    <div className={styles.uploadbanner_section} style={{ marginTop: "30px" }}>
-                        <div>
-                            <p>Upload JD banner : </p>
-                            <input type="file" onChange={(e) => generateImageCDNlink(e)} />
-                        </div>
-                        <div>
-                            <p>Banner Link : {jobdetails.jdBanner}</p>
-                            <IconButton color="secondary" aria-label="delete" size="small" onClick={() => copyToClipBoard(jobdetails.jdBanner)}>
-                                <ContentCopyIcon fontSize="inherit" />
-                            </IconButton>
-                        </div>
-                    </div>
-                )}
             </div>
 
             {/* job description section  */}
@@ -593,6 +578,20 @@ const AddjobsComponent = () => {
                         </div>
                     </div>
                 )}
+                <CustomDivider />
+            </div>
+
+            <div className={styles.uploadbanner_section}>
+                <div>
+                    <p>Upload JD banner : </p>
+                    <input type="file" onChange={(e) => generateImageCDNlink(e)} />
+                </div>
+                <div>
+                    <p>Banner Link : {jobdetails.jdBanner}</p>
+                    <IconButton color="secondary" aria-label="delete" size="small" onClick={() => copyToClipBoard(jobdetails.jdBanner)}>
+                        <ContentCopyIcon fontSize="inherit" />
+                    </IconButton>
+                </div>
                 <CustomDivider />
             </div>
 
