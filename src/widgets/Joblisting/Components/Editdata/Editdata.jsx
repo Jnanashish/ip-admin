@@ -15,6 +15,8 @@ import { showErrorToast, showInfoToast, showSuccessToast } from "../../../../Hel
 import CustomDivider from "../../../../Components/Divider/Divider";
 import { updateJobDetails } from "../../../Addjobs/Helpers";
 import { shortenurl } from "../../../../Helpers/utility";
+import { Stack, Chip } from "@mui/material";
+import { categorytags } from "../../../Addjobs/Helpers/staticdata";
 
 const EditData = (props) => {
     ClassicEditor.defaultConfig = config;
@@ -41,6 +43,7 @@ const EditData = (props) => {
         companytype: props?.data?.companytype,
         companyName: props?.data?.companyName,
         jdbanner: props?.data?.jdbanner,
+        tags: props?.data?.tags,
     });
 
     const id = props.data._id;
@@ -81,6 +84,22 @@ const EditData = (props) => {
         }
     };
 
+    // when category tags clicked
+    const handleCategoryTagClick = (tag, jobdetails) => {
+        // if tag already selected remove the tag
+        if (jobdetails.tags.includes(tag)) {
+            setJobDetails((prevState) => ({
+                ...prevState,
+                tags: prevState.tags.filter((item) => item !== tag),
+            }));
+        } else {
+            setJobDetails((prevState) => ({
+                ...prevState,
+                tags: [...prevState.tags, tag],
+            }));
+        }
+    };
+
     return (
         <div className="admin">
             <form method="POST">
@@ -90,11 +109,24 @@ const EditData = (props) => {
                 </div>
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Company name : </h3>
-                    <input className={styles.admin_input} value={jobDetails.companyName} onChange={(e) => handleJobdetailsChange("companyName", e.target.value)} type="text" placeholder="Title of the job" />
+                    <input
+                        className={styles.admin_input}
+                        value={jobDetails.companyName}
+                        onChange={(e) => handleJobdetailsChange("companyName", e.target.value)}
+                        type="text"
+                        placeholder="Title of the job"
+                    />
                 </div>
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Link to register : </h3>
-                    <input className={styles.admin_input} value={jobDetails.link} onPaste={shortenLink} onChange={(e) => handleJobdetailsChange("link", e.target.value)} type="text" placeholder="Link" />
+                    <input
+                        className={styles.admin_input}
+                        value={jobDetails.link}
+                        onPaste={shortenLink}
+                        onChange={(e) => handleJobdetailsChange("link", e.target.value)}
+                        type="text"
+                        placeholder="Link"
+                    />
                 </div>
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Batch : </h3>
@@ -104,6 +136,14 @@ const EditData = (props) => {
                     <h3 className={styles.admin_label}>Role for the job : </h3>
                     <input className={styles.admin_input} value={jobDetails.role} onChange={(e) => handleJobdetailsChange("role", e.target.value)} type="text" />
                 </div>
+                <div className={styles.admin_grid}>
+                    <Stack direction="row" spacing={1}>
+                        {categorytags.map((tag) => (
+                            <Chip label={tag} variant={jobDetails.tags.includes(tag) ? "" : "outlined"} color="primary" onClick={() => handleCategoryTagClick(tag, jobDetails)} />
+                        ))}
+                    </Stack>
+                </div>
+                <br/>
                 <div className={styles.admin_grid}>
                     <h3 className={styles.admin_label}>Job Type : </h3>
                     <input className={styles.admin_input} value={jobDetails.jobtype} onChange={(e) => handleJobdetailsChange("jobtype", e.target.value)} type="text" />

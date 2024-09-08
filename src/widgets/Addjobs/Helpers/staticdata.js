@@ -91,7 +91,7 @@ export const jobTypeOptions = ["N", "Full time", "Internship", "Part time", "Con
 
 export const companyTypeOptions = ["N", "product", "service", "promo"];
 
-export const categorytags = ["frontend", "backend", "fullstack", "web", "web3", "devops", "qa", "app", "datascience","analytics", "uiux", "ai", "ml"]
+export const categorytags = ["software", "frontend", "backend", "fullstack", "web3", "devops", "testing", "app", "datascience","analytics", "uiux", "ai", "ml","android","ios","blockchain", "hacking", "security"]
 
 export const workmodeOptions = ["onsite", "hybrid", "remote"]
 

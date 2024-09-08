@@ -48,7 +48,7 @@ const JobListing = () => {
             setIsApiCalled(false);
             setJobData((jobData) => [...jobData, ...data?.data]);
             setFilterdData((jobData) => [...jobData, ...data?.data]);
-            setJobCount(data?.totalCount)
+            setJobCount(data?.totalCount);
         } catch (error) {
             setIsApiCalled(false);
             showErrorToast("An error occured in fetching job details");
@@ -98,7 +98,6 @@ const JobListing = () => {
         !isApiCalled && getJobDetailsData();
     }, [pageno]);
 
-
     function debounce(func, delay) {
         let timer;
         return (...args) => {
@@ -107,26 +106,26 @@ const JobListing = () => {
         };
     }
 
-    const handleLoadMore = () => {
-
-    }
+    const handleLoadMore = () => {};
 
     // when input field is blured call api with company name field
     const handleCompanyNameBlur = debounce(async (companyName) => {
         if (companyName.trim() !== "") {
-            setIsApiCalled(true)
+            setIsApiCalled(true);
             const params = { key: "companyname", value: companyName };
             const jobDetails = await getJobDetailsHelper(params);
             if (jobDetails) {
-                setIsApiCalled(false)
+                setIsApiCalled(false);
                 setFilterdData(jobDetails.data);
             }
         }
     }, 500);
 
+
+
     return (
         <div className={styles.update_data_container}>
-            {(jobData?.length ===0 && isApiCalled) ? (
+            {jobData?.length === 0 && isApiCalled ? (
                 <div className={styles.loaderCon}>
                     <CircularProgress size={80} />
                 </div>
@@ -169,6 +168,8 @@ const JobListing = () => {
                                             <Custombutton style={{ backgroundColor: "green" }} disabled={item.jdbanner === "N"} onClick={() => downloadBanner(item)} label="Banner" />
                                             <Custombutton onClick={() => copyApplyLink(item)} label="Copy Link" />
                                             <FormControlLabel checked={!item?.isActive} onChange={() => handleExpireJob(item)} control={<Switch />} label="Job expired" />
+
+
                                         </div>
                                         <div className={styles.btn_con2}>
                                             <Custombutton disabled={!context.isAdmin} onClick={() => handleTelegramSubmitHelper(item)} endIcon={<SendIcon />} label="Telegram" />

@@ -31,7 +31,6 @@ import { showErrorToast } from "../../Helpers/toast";
 import { getJobDetailsHelper } from "./Helpers";
 
 const AddjobsComponent = () => {
-    const [isAdmin, setIsAdmin] = useState(false);
     const [igbannertitle, setIgbannertitle] = useState("");
     const [showLoader, setShowLoader] = useState(false);
     const [companyLogoSize, setCompanyLogoSize] = useState(0);
@@ -71,7 +70,7 @@ const AddjobsComponent = () => {
         jdBanner: "N",
         link: "",
         imagePath: "", // company small logo
-        categoryTags: [],
+        tags: [],
         skilltags: [],
         jobId: "",
         workMode: "onsite",
@@ -113,15 +112,15 @@ const AddjobsComponent = () => {
     // when category tags clicked
     const handleCategoryTagClick = (tag) => {
         // if tag already selected remove the tag
-        if (jobdetails.categoryTags.includes(tag)) {
+        if (jobdetails.tags.includes(tag)) {
             setJobdetails((prevState) => ({
                 ...prevState,
-                categoryTags: prevState.categoryTags.filter((item) => item !== tag),
+                tags: prevState.tags.filter((item) => item !== tag),
             }));
         } else {
             setJobdetails((prevState) => ({
                 ...prevState,
-                categoryTags: [...prevState.categoryTags, tag],
+                tags: [...prevState.tags, tag],
             }));
         }
     };
@@ -298,12 +297,6 @@ const AddjobsComponent = () => {
         }
     };
 
-    useEffect(() => {
-        if (context.isAdmin) {
-            setIsAdmin(true);
-        }
-    }, [context.isAdmin]);
-
     // map the experience to relevant batch
     useEffect(() => {
         if (!jobAlreadyExist) {
@@ -356,7 +349,7 @@ const AddjobsComponent = () => {
                         <p>Select tags : </p>
                         <Stack direction="row" spacing={1}>
                             {categorytags.map((item) => (
-                                <Chip label={item} variant={jobdetails.categoryTags.includes(item) ? "" : "outlined"} color="primary" onClick={() => handleCategoryTagClick(item)} />
+                                <Chip label={item} variant={jobdetails.tags.includes(item) ? "" : "outlined"} color="primary" onClick={() => handleCategoryTagClick(item)} />
                             ))}
                         </Stack>
                     </div>
