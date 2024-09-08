@@ -2,7 +2,7 @@ import { post, get } from "../../../Helpers/request";
 import { apiEndpoint } from "../../../Helpers/apiEndpoints";
 import { showErrorToast, showSuccessToast, showInfoToast, showWarnToast } from "../../../Helpers/toast";
 import { updateData } from "../../../Helpers/request";
-
+import { categorytags } from "./staticdata";
 //---------------------------------------------------------
 // add 30days to current date to generate last data of a job
 export const generateLastDatetoApplyHelper = () => {
@@ -124,11 +124,7 @@ export const addJobDataHelper = async (jobdetails) => {
 // ---------------------------------------------------------
 // update job details of a particular job based on id
 export const updateJobDetails = async (jobdetails, id) => {
-    console.log("jobdetails in update", jobdetails);
-
     const formData = generateFormData(jobdetails);
-    console.log("formData", formData);
-    
 
     if (!!id && !!formData) {
         const res = await updateData(`${apiEndpoint.updateJobDetails}${id}`, formData);
@@ -141,4 +137,38 @@ export const updateJobDetails = async (jobdetails, id) => {
         }
     }
     return null;
+};
+
+// ["software", "frontend", "backend", "fullstack", "web3", "devops", "testing", "app", "datascience","analytics", "uiux", "ai", "ml","android","ios","blockchain", "hacking", "security"]
+export const generateTagsfromRole = (jobrole) => {
+    const selectedTags = [];
+    const role = jobrole.toLowerCase()
+
+    categorytags.forEach(tag => {
+        if (role.includes(tag)) {
+            selectedTags.push(tag);
+        }
+    });
+
+    if(role.includes("software") && (role.includes("developer") || role.includes("engineer") || role.includes("development")) && selectedTags?.length === 0){
+        selectedTags.push("software")
+    }
+
+    if(role.includes("frontend") || role.includes("javascript") || role.includes("react") || role.includes("next") || role.includes("web") || role.includes("fullstack")){
+        selectedTags.push("frontend")
+    }
+
+    if(role.includes("python") || role.includes("backend") || role.includes("fullstack") || role.includes("django") || role.includes("java")){
+        selectedTags.push("backend")
+    }
+
+    if(role.includes("qa") || role.includes("test") || role.includes("manual") || role.includes("automation") || role.includes("quality")){
+        selectedTags.push("testing")
+    }
+
+    if(role.includes("android") || role.includes("ios") || role.includes("flutter") || role.includes("react native")){
+        selectedTags.push("app")
+    }
+
+    return selectedTags;
 };

@@ -22,7 +22,7 @@ import { get } from "../../Helpers/request";
 
 import { degreeOptions, batchOptions, expOptions, locOptions, jobTypeOptions, companyTypeOptions, categorytags, workmodeOptions, platformOptions, comapnyTypeOption } from "./Helpers/staticdata";
 import { downloadImagefromCanvasHelper, generateLinkfromImageHelper, handleImageInputHelper } from "../../Helpers/imageHelpers";
-import { generateLastDatetoApplyHelper, getCompanyDetailsHelper, addJobDataHelper, updateJobDetails, mapExperiencetoBatch } from "./Helpers";
+import { generateLastDatetoApplyHelper, getCompanyDetailsHelper, addJobDataHelper, updateJobDetails, mapExperiencetoBatch, generateTagsfromRole } from "./Helpers";
 
 import { copyToClipBoard } from "../../Helpers/utility";
 import { generateLinkfromImage } from "../../Helpers/imageHelpers";
@@ -297,6 +297,14 @@ const AddjobsComponent = () => {
         }
     };
 
+    useEffect(() => {
+        const tagsArray = generateTagsfromRole(jobdetails?.role);
+        setJobdetails((prevState) => ({
+            ...prevState,
+            tags: tagsArray,
+        }));
+    }, [jobdetails?.role])
+
     // map the experience to relevant batch
     useEffect(() => {
         if (!jobAlreadyExist) {
@@ -346,7 +354,7 @@ const AddjobsComponent = () => {
                         <CustomTextField label="Role of the job *" value={jobdetails.role} onChange={(val) => handleJobRoleChange(val)} fullWidth />
                     </div>
                     <div className={styles.tagscontainer}>
-                        <p>Select tags : </p>
+                        <p>Select tags* : </p>
                         <Stack direction="row" spacing={1}>
                             {categorytags.map((item) => (
                                 <Chip label={item} variant={jobdetails.tags.includes(item) ? "" : "outlined"} color="primary" onClick={() => handleCategoryTagClick(item)} />
@@ -593,7 +601,7 @@ const AddjobsComponent = () => {
                     style={{ textTransform: "capitalize" }}
                     className={styles.submitbtn}
                     onClick={addJobDetails}
-                    disabled={jobdetails.link.length === 0}
+                    disabled={jobdetails.link.length === 0 || jobdetails.tags?.length === 0}
                     variant="contained"
                     color="primary"
                     size="large"
