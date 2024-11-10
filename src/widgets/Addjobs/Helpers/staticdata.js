@@ -38,6 +38,9 @@ export const batchOptions = [
     "2026 / 2025 / 2024",
     "2026 / 2025",
     "2026",
+    "2027 / 2026 / 2025",
+    "2027 / 2026",
+    "2027",
     "Any graduate",
 ];
 
@@ -91,7 +94,7 @@ export const jobTypeOptions = ["N", "Full time", "Internship", "Part time", "Con
 
 export const companyTypeOptions = ["N", "product", "service", "promo"];
 
-export const categorytags = ["software", "frontend", "backend", "fullstack", "web3", "devops", "testing", "app", "datascience","analytics", "uiux", "ai", "ml","android","ios","blockchain", "hacking", "security"]
+export const categorytags = ["software", "frontend", "backend", "fullstack", "web3", "devops", "testing", "app", "datascience","analytics", "uiux", "ai", "ml","android","ios","blockchain", "hacking", "security","cloud"]
 
 export const workmodeOptions = ["onsite", "hybrid", "remote"]
 
