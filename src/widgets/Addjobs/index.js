@@ -14,7 +14,6 @@ import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 // import helpers
-import { shortenurl } from "../../Helpers/utility";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../Context/userContext";
 import { apiEndpoint } from "../../Helpers/apiEndpoints";
@@ -236,14 +235,6 @@ const AddjobsComponent = () => {
         }
     };
 
-    // shorten link using bit.ly if link length is greater then 10
-    const shortenLink = async () => {
-        if (jobdetails?.link?.length > 10 && !jobdetails?.link?.includes("bit.ly")) {
-            const tempLink = await shortenurl(jobdetails.link);
-            if (!!tempLink) handleInputChange(setJobdetails, "link", tempLink);
-        }
-    };
-
     // get job details with id or official jobId
     const fetchJobDetails = async (id) => {
         const paramsData = {
@@ -370,7 +361,7 @@ const AddjobsComponent = () => {
                         error={igbannertitle?.length > 26}
                     />
 
-                    <CustomTextField label="Link for the job application *" value={jobdetails.link} onBlur={shortenLink} onChange={(val) => handleInputChange(setJobdetails, "link", val)} fullWidth />
+                    <CustomTextField label="Link for the job application *" value={jobdetails.link} onChange={(val) => handleInputChange(setJobdetails, "link", val)} fullWidth />
 
                     <div className={styles.inputcontainer_flex}>
                         <CustomTextField

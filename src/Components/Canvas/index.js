@@ -86,6 +86,18 @@ function Canvas(props) {
         }
     }, [bannerType]);
 
+    useEffect(() => {
+        setJobinfo({
+            degree: jobdetails?.degree,
+            batch: jobdetails?.batch,
+            experience: jobdetails?.experience,
+            salary: jobdetails?.salary,
+            location: jobdetails?.location,
+            role: jobdetails?.role,
+            companyName: jobdetails?.companyName,
+        });
+    }, [jobdetails]);
+
     return (
         <div>
             {/* banner css design input fields */}

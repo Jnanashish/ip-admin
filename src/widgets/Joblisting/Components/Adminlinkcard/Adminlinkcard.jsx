@@ -5,13 +5,12 @@ import styles from "./adminlinkcard.module.scss";
 import EditData from "../Editdata/Editdata";
 
 import { UserContext } from "../../../../Context/userContext";
-import { getLinkClickCount } from "../../../../Helpers/utility";
 import Custombutton from "../../../../Components/Button/Custombutton";
 import { deleteData } from "../../../../Helpers/request";
 import { apiEndpoint } from "../../../../Helpers/apiEndpoints";
 import { generateDateFromISOString } from "../../../../Helpers/utility";
 
-const LinkCard = ({ item, showBitlyClick, isPreview=false }) => {
+const LinkCard = ({ item, isPreview=false }) => {
     const [seletedJobId, setSeletedJobId] = useState("");
     const [deletedId, setDeletedId] = useState("");
     const [linkClickCount, setLinkClickCount] = useState(null);
@@ -35,18 +34,6 @@ const LinkCard = ({ item, showBitlyClick, isPreview=false }) => {
     const context = useContext(UserContext);
     const isUserLogedIn = !!context.user?.email;
 
-    // get bit.ly link count
-    const getBitlyShortClick = async () => {
-        const data = await getLinkClickCount(item.link);
-        setLinkClickCount(data?.link_clicks[0]?.clicks);
-    };
-
-    // when show bit.ly is clicke
-    useEffect(() => {
-        if (showBitlyClick) {
-            getBitlyShortClick();
-        }
-    }, [item.link, showBitlyClick]);
 
     return (
         <div>
@@ -76,14 +63,6 @@ const LinkCard = ({ item, showBitlyClick, isPreview=false }) => {
                                     <b>{item.totalclick}</b>
                                 </h5>
 
-                                {!!showBitlyClick && (
-                                    <>
-                                        <h5>Bit.ly Click : </h5>
-                                        <h5 className={styles.jd_date}>
-                                            <b>{linkClickCount}</b>
-                                        </h5>
-                                    </>
-                                )}
                             </div>
                             {!!item?.jobId && <div className={styles.adminlink_item}>
                                 <h5>Job Id : </h5>

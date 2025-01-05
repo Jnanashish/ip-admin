@@ -27,7 +27,6 @@ import { getJobDetailsHelper } from "../../Apis/Jobs";
 const JobListing = () => {
     const [jobData, setJobData] = useState([]);
     const [isApiCalled, setIsApiCalled] = useState(false);
-    const [showBitlyClick, setShowBitlyClick] = useState(false);
     const [companyName, setCompanyName] = useState("");
     const [filterdData, setFilterdData] = useState([]);
     const [selectedJob, setSelectedJob] = useState([]);
@@ -134,8 +133,6 @@ const JobListing = () => {
                     {/* header part  */}
                     <div className={styles.headerContainer}>
                         <h2 className={styles.adminpanel_title}>List of available Jobs - {jobCount}</h2>
-
-                        <FormControlLabel onChange={() => setShowBitlyClick(!showBitlyClick)} control={<Switch />} label="Show Bit.ly click count" />
                     </div>
 
                     <CustomTextField
@@ -159,7 +156,7 @@ const JobListing = () => {
                         {filterdData?.map((item) => {
                             return (
                                 <div key={item._id} className={styles.updatedata_con}>
-                                    <Adminlinkcard showBitlyClick={showBitlyClick} item={item} />
+                                    <Adminlinkcard item={item} />
 
                                     {/* button section  */}
                                     <div className={styles.adminlink_con}>

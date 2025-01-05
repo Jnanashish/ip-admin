@@ -14,7 +14,6 @@ import { addJobDataHelper } from "../../../Addjobs/Helpers";
 import { showErrorToast, showInfoToast, showSuccessToast } from "../../../../Helpers/toast";
 import CustomDivider from "../../../../Components/Divider/Divider";
 import { updateJobDetails } from "../../../Addjobs/Helpers";
-import { shortenurl } from "../../../../Helpers/utility";
 import { Stack, Chip } from "@mui/material";
 import { categorytags } from "../../../Addjobs/Helpers/staticdata";
 
@@ -77,13 +76,6 @@ const EditData = (props) => {
         }));
     };
 
-    const shortenLink = async () => {
-        if (jobDetails.link.length > 10) {
-            const tempLink = await shortenurl(jobDetails.link);
-            if (!!tempLink) handleJobdetailsChange("link", tempLink);
-        }
-    };
-
     // when category tags clicked
     const handleCategoryTagClick = (tag, jobdetails) => {
         // if tag already selected remove the tag
@@ -122,7 +114,6 @@ const EditData = (props) => {
                     <input
                         className={styles.admin_input}
                         value={jobDetails.link}
-                        onPaste={shortenLink}
                         onChange={(e) => handleJobdetailsChange("link", e.target.value)}
                         type="text"
                         placeholder="Link"

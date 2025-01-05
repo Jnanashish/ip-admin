@@ -16,13 +16,16 @@ import JobList from "./pages/JobList";
 import Header from "./Components/Header";
 import AddCompanyDetails from "./pages/AddCompanyDetails";
 import CompanyList from "./pages/CompanyList";
+import { getCookie } from "./Helpers/cookieHelpers";
 
 function App() {
     // set user details in context
     const [user, setUser] = useState(null);
+    // const [user, setUser] = useState({email : "jhandique1999@gmail.com"});
     const [isAdmin, setIsAdmin] = useState(false);
 
-    const isUserLogedin = !!user?.email;
+    const isUserLogedin = !!user?.email || getCookie("isLogedIn");
+    // || "jhandique1999@gmail.com"
 
     return (
         <BrowserRouter>

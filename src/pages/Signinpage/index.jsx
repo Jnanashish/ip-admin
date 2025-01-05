@@ -7,6 +7,7 @@ import { Button, InputAdornment } from "@mui/material";
 import CustomTextField from "../../Components/Input/Textfield";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import Loader from "../../Components/Loader";
+import { setCookie } from "../../Helpers/cookieHelpers";
 
 // firebase stuff
 import { initializeApp } from "firebase/app";
@@ -32,6 +33,7 @@ const Signin = () => {
                 context.setUser({ email: res.user?.email });
                 if (res?.user?.email === process.env.REACT_APP_ADMIN_EMAIL) {
                     context.setIsAdmin(true);
+                    setCookie("isLogedIn", "TRUE");
                 }
             })
             .catch((err) => {

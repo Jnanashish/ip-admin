@@ -8,13 +8,14 @@ import { useNavigate } from "react-router-dom";
 import styles from "./header.module.scss";
 import { Button } from "@mui/material";
 import Custombutton from "../../Components/Button/Custombutton";
+import { getCookie } from "../../Helpers/cookieHelpers";
 
 const Header = () => {
     const navigate = useNavigate();
     const currentUrl = window.location.pathname;
 
     const context = useContext(UserContext);
-    const isUserLogedIn = context.user?.email;
+    const isUserLogedIn = context.user?.email || getCookie("isLogedIn");
 
     const handleRedirection = (route) => {
         navigate(route);

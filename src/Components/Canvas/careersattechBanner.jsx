@@ -30,6 +30,8 @@ const CareersattechBanner = (props) => {
         setBannerTitle(formettedTitle);
     }, [igbannertitle, role]);
 
+
+
     return (
         <div>
             <div id="careersattech" className={styles.canvas}>
