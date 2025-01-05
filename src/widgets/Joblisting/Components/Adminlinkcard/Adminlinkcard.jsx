@@ -9,6 +9,7 @@ import Custombutton from "../../../../Components/Button/Custombutton";
 import { deleteData } from "../../../../Helpers/request";
 import { apiEndpoint } from "../../../../Helpers/apiEndpoints";
 import { generateDateFromISOString } from "../../../../Helpers/utility";
+import { getCookie } from "../../../../Helpers/cookieHelpers";
 
 const LinkCard = ({ item, isPreview=false }) => {
     const [seletedJobId, setSeletedJobId] = useState("");
@@ -32,7 +33,7 @@ const LinkCard = ({ item, isPreview=false }) => {
     };
 
     const context = useContext(UserContext);
-    const isUserLogedIn = !!context.user?.email;
+    const isUserLogedIn = !!context.user?.email || getCookie("isLogedIn");
 
 
     return (

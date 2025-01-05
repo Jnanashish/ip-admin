@@ -7,8 +7,7 @@ import { Button, InputAdornment } from "@mui/material";
 import CustomTextField from "../../Components/Input/Textfield";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import Loader from "../../Components/Loader";
-import { setCookie } from "../../Helpers/cookieHelpers";
-
+import { setCookie, getCookie } from "../../Helpers/cookieHelpers";
 // firebase stuff
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
@@ -43,7 +42,7 @@ const Signin = () => {
     };
 
     // if user is loged in redirect to addjob page
-    if (!!context.user?.email) {
+    if (!!context.user?.email || getCookie("isLogedIn")) {
         return <Navigate to="/addjob" />;
     }
 
