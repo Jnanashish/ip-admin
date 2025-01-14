@@ -41,7 +41,8 @@ export const copyWhatsAppMessage = (item) => {
 // Instagram
 // generate instagram post caption
 export const generateCaptionHelper = (res) => {
-    const temp = res.title + ". Visit Link in Bio to apply. 🔝" + "\n\nBatch : " + res.batch + "\nDegree : " + res.degree + "\n\nApply Link in Bio " + "\n\n" + "\n.\n.\n.\n" + hash;
+    const title = res?.companyName + " is hiring freshers for " + res?.title + " role."
+    const temp = title + "\n\nBatch : " + res.batch + "\nDegree : " + res.degree + "\n\n👉 Visit link given in Bio to apply. " + "\n\n" + "Follow @careersattech to get regular Job updates." + "\n\n\n" + hash;
 
     navigator.clipboard.writeText(temp);
     showSuccessToast("Copied");
@@ -57,17 +58,18 @@ export const generateLinkedinCaption = (res) => {
 };
 
 // formet the message for whatsapp
-const generateCombinedWhatsAppmessage = (item, index) => {
-    const msg = index + ". " + item.title.replace(/[A-Za-z]/g, translate) + "\nBatch : " + item.batch + "\nDegree : " + item.degree + "\n\nApply Here : " + item.link + "\n\n";
+const generateCombinedWhatsAppmessage = (item, index, useWebsiteLink) => {    
+    const applyLink = (useWebsiteLink || index === 2) ? jobDescriptionLink(item?.title, item?._id) : item.link;
+    const msg = index + ". " + item.title.replace(/[A-Za-z]/g, translate) + "\nBatch : " + item.batch + "\nDegree : " + item.degree + "\n\nApply Here : " + applyLink + "\n\n";
 
     return msg;
 };
 
 // copy message for whatsapp, message will be generated from multiple jobs
-export const generateCombinedWhatsAppMessage = (selectedJobList) => {
+export const generateCombinedWhatsAppMessage = (selectedJobList, useWebsiteLink = false) => {
     let message = "";
     selectedJobList.map((item, index) => {
-        let msg = generateCombinedWhatsAppmessage(item, index + 1);
+        let msg = generateCombinedWhatsAppmessage(item, index + 1, useWebsiteLink);
         message = message + msg;
     });
 
@@ -81,3 +83,26 @@ export const copyApplyLink = (item) => {
     copyToClipBoard(applyLink);
     showSuccessToast("Copied");
 };
+
+
+// generte slug from job title
+export const generateSlugFromrole = (role) => {
+    if (!!role) {
+        return role
+            .toString() // Convert to string
+            .toLowerCase() // Convert to lowercase
+            .trim() // Remove whitespace from both ends
+            .replace(/\s+/g, "-") // Replace spaces with hyphens
+            .replace(/[^\w\-]+/g, "") // Remove all non-word characters
+            .replace(/\-\-+/g, "-"); // Replace multiple hyphens with a single hyphen
+    }
+    return role;
+};
+
+export const jobDescriptionLink = (role, jobId) => {
+    const slugifiedRole = generateSlugFromrole(role);
+    const baseUrl = "https://careersat.tech";
+    const link = `${baseUrl}/${slugifiedRole}/${jobId}`
+    return link;
+}
+

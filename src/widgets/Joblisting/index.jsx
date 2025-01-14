@@ -150,6 +150,12 @@ const JobListing = () => {
                             label={`Message (${selectedJob.length})`}
                             endIcon={<WhatsAppIcon />}
                         />
+                        <Custombutton
+                            disabled={selectedJob.length === 0}
+                            onClick={() => generateCombinedWhatsAppMessage(selectedJob, true)}
+                            label={`Website link Message (${selectedJob.length})`}
+                            endIcon={<WhatsAppIcon />}
+                        />
                     </div>
 
                     <div>
