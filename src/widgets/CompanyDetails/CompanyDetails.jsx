@@ -13,9 +13,9 @@ import { apiEndpoint } from "../../Helpers/apiEndpoints";
 
 const CompanyDetails = () => {
     const [comapnyDetails, setComapnyDetails] = useState({
-        name: "",
-        info: "",
-        linkedinLink: "",
+        companyName: "",
+        companyInfo: "",
+        linkedinPageLink: "",
         careersPageLink: "",
         companyType: "",
         smallLogo: "",
@@ -47,9 +47,9 @@ const CompanyDetails = () => {
         const res = await submitCompanyDetailsHelper(comapnyDetails);
         if (!!res) {
             setComapnyDetails({
-                name: "",
-                info: "",
-                linkedinLink: "",
+                companyName: "",
+                companyInfo: "",
+                linkedinPageLink: "",
                 careersPageLink: "",
                 companyType: "",
                 smallLogo: "",
@@ -59,13 +59,17 @@ const CompanyDetails = () => {
     };
 
     const updateCompanyDetails = async () => {
-        const res = await updateCompanyDetailsHelper(comapnyDetails, comapnyId);
+        const urlParams = new URLSearchParams(window.location.search);
+        const companyid = urlParams.get("companyid");
+        const res = await updateCompanyDetailsHelper(comapnyDetails, companyid);
+        console.log("res", res);
+        
         if (!!res) {
             window.location.href = "/companys"
             setComapnyDetails({
-                name: "",
-                info: "",
-                linkedinLink: "",
+                companyName: "",
+                companyInfo: "",
+                linkedinPageLink: "",
                 careersPageLink: "",
                 companyType: "",
                 smallLogo: "",
@@ -96,9 +100,9 @@ const CompanyDetails = () => {
             if (!!data?.companyName && !!data?.smallLogo) {
                 setIsCompanydetailPresent(true);
                 setComapnyDetails({
-                    name: data?.companyName || "",
-                    info: data?.companyInfo || "",
-                    linkedinLink: data?.linkedinPageLink || "",
+                    companyName: data?.companyName || "",
+                    companyInfo: data?.companyInfo || "",
+                    linkedinPageLink: data?.linkedinPageLink || "",
                     careersPageLink: data?.careerPageLink || "",
                     companyType: data?.companyType || "",
                     smallLogo: data?.smallLogo || "",
@@ -112,6 +116,8 @@ const CompanyDetails = () => {
     const getQueryparam = async () => {
         const urlParams = new URLSearchParams(window.location.search);
         const companyid = urlParams.get("companyid");
+        console.log("companyid", companyid);
+        
         setCompanyId(companyid)
 
         // if company id is present fetch company details based on id
@@ -121,9 +127,9 @@ const CompanyDetails = () => {
             if (!!data) {
                 setIsCompanydetailPresent(true);
                 setComapnyDetails({
-                    name: data?.companyName,
-                    info: data?.companyInfo,
-                    linkedinLink: data?.linkedinPageLink,
+                    companyName: data?.companyName,
+                    companyInfo: data?.companyInfo,
+                    linkedinPageLink: data?.linkedinPageLink,
                     careersPageLink: data?.careerPageLink,
                     companyType: data?.companyType,
                     smallLogo: data?.smallLogo,
@@ -141,11 +147,11 @@ const CompanyDetails = () => {
         <div className={styles.container}>
             <div className={styles.text_input}>
                 <h3 className={styles.admin_label}>Company name : </h3>
-                <CustomTextField label="Title" onBlur={(val)=>handleCompanynameChange(val)} value={comapnyDetails.name} onChange={(val) => handleCompanyDetailChange("name", val)} sx={{ width: "80%" }} />
+                <CustomTextField label="Title" onBlur={(val)=>handleCompanynameChange(val)} value={comapnyDetails.companyName} onChange={(val) => handleCompanyDetailChange("companyName", val)} sx={{ width: "80%" }} />
             </div>
             <div className={styles.text_input}>
                 <h3 className={styles.admin_label}>Company info : </h3>
-                <CustomTextField multiline={true} rows={4} label="Comapny info" value={comapnyDetails.info} onChange={(val) => handleCompanyDetailChange("info", val)} sx={{ width: "80%" }} />
+                <CustomTextField multiline={true} rows={4} label="Comapny info" value={comapnyDetails.companyInfo} onChange={(val) => handleCompanyDetailChange("companyInfo", val)} sx={{ width: "80%" }} />
             </div>
             <div className={styles.text_input}>
                 <h3 className={styles.admin_label}>Company type : </h3>
@@ -164,7 +170,7 @@ const CompanyDetails = () => {
             </div>
             <div className={styles.text_input}>
                 <h3 className={styles.admin_label}>Linkedin link : </h3>
-                <CustomTextField label="Linkedin link" value={comapnyDetails.linkedinLink} onChange={(val) => handleCompanyDetailChange("linkedinLink", val)} sx={{ width: "80%" }} />
+                <CustomTextField label="Linkedin link" value={comapnyDetails.linkedinPageLink} onChange={(val) => handleCompanyDetailChange("linkedinPageLink", val)} sx={{ width: "80%" }} />
             </div>
             <br />
 
@@ -180,7 +186,7 @@ const CompanyDetails = () => {
                 <img src={comapnyDetails.largeLogo} />
             </div>
 
-            <Custombutton disabled={!comapnyDetails.name || !comapnyDetails.largeLogo || !comapnyDetails.smallLogo} onClick={handleButtonClick} label={isCompanydetailPresent ? `Update job details` : `Submit job details`} />
+            <Custombutton disabled={!comapnyDetails.companyName || !comapnyDetails.largeLogo || !comapnyDetails.smallLogo} onClick={handleButtonClick} label={isCompanydetailPresent ? `Update job details` : `Submit job details`} />
             <br />
             <br />
         </div>
