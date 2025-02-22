@@ -38,6 +38,8 @@ const AddjobsComponent = () => {
     const [jobAlreadyExist, setJobAlreadyExist] = useState(false);
     const [savedJobId, setSavedJobId] = useState(null);
 
+    const [jobdataInfo, setJobdataInfo] = useState(null)
+
     const [comapnyDetails, setComapnyDetails] = useState({
         companyName: "",
         companyInfo: "N",
@@ -209,9 +211,9 @@ const AddjobsComponent = () => {
     const generateJobTitle = (companyName, role) => {
         let jobTitle = "";
         if (!!role || !!jobdetails?.role) {
-            jobTitle = companyName + " is hiring " + (role ? role : jobdetails?.role);
+            jobTitle = (companyName || "") + " is hiring " + (role ? role : jobdetails?.role || "");
         } else {
-            jobTitle = companyName + " is hiring ";
+            jobTitle = (companyName || "") + " is hiring ";
         }
 
         setIgbannertitle(jobTitle);
@@ -227,7 +229,7 @@ const AddjobsComponent = () => {
 
     // handle company job title change
     const handleJobRoleChange = (role) => {
-        const jobTitle = generateJobTitle(jobdetails?.companyName, role);
+        const jobTitle = generateJobTitle(jobdetails?.companyName || "", role);
         handleInputChange(setJobdetails, { role, title: jobTitle });
 
         if (role?.toLowerCase()?.includes("intern")) {
@@ -288,13 +290,29 @@ const AddjobsComponent = () => {
         }
     };
 
+    // extract job data from the pasted job details
+    const extractJobData = (jobdataInfo) => {
+        try {
+            const parsedData = JSON.parse(jobdataInfo);
+            if (typeof parsedData === 'object' && parsedData !== null) {
+                Object.keys(parsedData).forEach((key) => {
+                    handleInputChange(setJobdetails, key, parsedData[key]);
+                    handleInputChange(setComapnyDetails, key, parsedData[key]);
+                });
+            }
+        } catch (error) {
+            console.error("Invalid JSON data", error);
+        }
+    };
+
+
     useEffect(() => {
         const tagsArray = generateTagsfromRole(jobdetails?.role);
         setJobdetails((prevState) => ({
             ...prevState,
             tags: tagsArray,
         }));
-    }, [jobdetails?.role])
+    }, [jobdetails?.role]);
 
     // map the experience to relevant batch
     useEffect(() => {
@@ -319,8 +337,18 @@ const AddjobsComponent = () => {
         checkQueryParam();
     }, []);
 
+
     return (
         <div className={styles.container}>
+            <textarea 
+                className={styles.textarea} 
+                placeholder="Job details" 
+                value={jobdataInfo} 
+                onChange={(e) => extractJobData(e.target.value)} 
+                style={{ width: "1080px", height: "60px" }} // Set width and height
+            />
+            <br/> <br/>
+
             <h2>{!!jobAlreadyExist ? "Update" : "Add"} job details : </h2>
 
             {/* circular overlay loader  */}
@@ -342,7 +370,7 @@ const AddjobsComponent = () => {
                             selectedCompany={selectedCompany}
                             setSelectedCompany={setSelectedCompany}
                         />
-                        <CustomTextField label="Role of the job *" value={jobdetails.role} onChange={(val) => handleJobRoleChange(val)} fullWidth />
+                        <CustomTextField label="Role of the job *" value={jobdetails?.role || ""} onChange={(val) => handleJobRoleChange(val)} fullWidth />
                     </div>
                     <div className={styles.tagscontainer}>
                         <p>Select tags* : </p>
@@ -361,7 +389,7 @@ const AddjobsComponent = () => {
                         error={igbannertitle?.length > 26}
                     />
 
-                    <CustomTextField label="Link for the job application *" value={jobdetails.link} onChange={(val) => handleInputChange(setJobdetails, "link", val)} fullWidth />
+                    <CustomTextField label="Link for the job application *" value={jobdetails?.link || ""} onChange={(val) => handleInputChange(setJobdetails, "link", val)} fullWidth />
 
                     <div className={styles.inputcontainer_flex}>
                         <CustomTextField
@@ -592,7 +620,7 @@ const AddjobsComponent = () => {
                     style={{ textTransform: "capitalize" }}
                     className={styles.submitbtn}
                     onClick={addJobDetails}
-                    disabled={jobdetails.link.length === 0 || jobdetails.tags?.length === 0}
+                    disabled={jobdetails?.link?.length === 0 || jobdetails?.tags?.length === 0}
                     variant="contained"
                     color="primary"
                     size="large"
