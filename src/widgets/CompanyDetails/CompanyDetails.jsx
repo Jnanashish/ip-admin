@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import styles from "./companydetails.module.scss";
 
-import { companyTypeOptions } from "../Addjobs/Helpers/staticdata";
+// Import from centralized config
+import { companyTypeOptions } from "../../Config/forms";
 import { generateLinkfromImage } from "../../Helpers/imageHelpers";
 import { showErrorToast, showSuccessToast } from "../../Helpers/toast";
 import { submitCompanyDetailsHelper, updateCompanyDetailsHelper } from "./helper";

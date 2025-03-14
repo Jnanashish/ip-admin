@@ -15,7 +15,8 @@ import { showErrorToast, showInfoToast, showSuccessToast } from "../../../../Hel
 import CustomDivider from "../../../../Components/Divider/Divider";
 import { updateJobDetails } from "../../../Addjobs/Helpers";
 import { Stack, Chip, TextField, Typography, CircularProgress, Paper } from "@mui/material";
-import { categorytags } from "../../../Addjobs/Helpers/staticdata";
+// Import from centralized config
+import { categoryTags as categorytags } from "../../../../Config/categories";
 
 const EditData = (props) => {
     ClassicEditor.defaultConfig = config;

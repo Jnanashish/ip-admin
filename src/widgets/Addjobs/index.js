@@ -19,7 +19,20 @@ import { UserContext } from "../../Context/userContext";
 import { apiEndpoint } from "../../Helpers/apiEndpoints";
 import { get } from "../../Helpers/request";
 
-import { degreeOptions, batchOptions, expOptions, locOptions, jobTypeOptions, companyTypeOptions, categorytags, workmodeOptions, platformOptions, comapnyTypeOption } from "./Helpers/staticdata";
+// Import from centralized config
+import { 
+    degreeOptions, 
+    batchOptions, 
+    expOptions, 
+    locOptions, 
+    jobTypeOptions, 
+    companyTypeOptions, 
+    workmodeOptions, 
+    platformOptions, 
+    companyTypeOption as comapnyTypeOption 
+} from "../../Config/forms";
+import { categoryTags as categorytags } from "../../Config/categories";
+
 import { downloadImagefromCanvasHelper, generateLinkfromImageHelper, handleImageInputHelper } from "../../Helpers/imageHelpers";
 import { generateLastDatetoApplyHelper, getCompanyDetailsHelper, addJobDataHelper, updateJobDetails, mapExperiencetoBatch, generateTagsfromRole } from "./Helpers";
 

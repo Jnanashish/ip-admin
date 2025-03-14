@@ -1,7 +1,8 @@
 import { copyToClipBoard } from "../utility";
 import { showSuccessToast } from "../toast";
 
-import { hashtags, linkedinHashtags } from "./staticdata";
+// Import from centralized config
+import { hashtags, linkedinHashtags } from "../../Config/social";
 
 const date = new Date();
 const weeknum = date.getDay();
