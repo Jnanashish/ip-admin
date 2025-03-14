@@ -13,6 +13,7 @@ function Loader() {
             alignItems: "center",
             justifyContent: "center",
             top: "0px",
+            marginLeft: "-40px",
         }
     }
     return (

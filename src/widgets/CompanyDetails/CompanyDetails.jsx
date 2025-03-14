@@ -60,7 +60,7 @@ const CompanyDetails = () => {
 
     const updateCompanyDetails = async () => {
         const urlParams = new URLSearchParams(window.location.search);
-        const companyid = urlParams.get("companyid");
+        const companyid = urlParams.get("companyid") || comapnyId;
         const res = await updateCompanyDetailsHelper(comapnyDetails, companyid);
         console.log("res", res);
         

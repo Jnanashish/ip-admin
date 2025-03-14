@@ -20,12 +20,18 @@ import { getCookie } from "./Helpers/cookieHelpers";
 
 function App() {
     // set user details in context
-    const [user, setUser] = useState(null);
-    // const [user, setUser] = useState({email : "jhandique1999@gmail.com"});
+    // const [user, setUser] = useState(null);
+    const [user, setUser] = useState({ email: "jhandique1999@gmail.com" });
     const [isAdmin, setIsAdmin] = useState(false);
 
-    const isUserLogedin = !!user?.email || getCookie("isLogedIn");
-    // || "jhandique1999@gmail.com"
+    const isUserLogedin = !!user?.email || getCookie("isLogedIn"); // || "jhandique1999@gmail.com"
+
+    // RouterWrapper is a function that returns a Route component
+    const RouterWrapper = (path, component, isSecured = true) => {
+        return (
+            <Route exact path={path} element={isSecured ? (isUserLogedin ? component : <Navigate to="/signin" />) : component} />
+        );
+    };
 
     return (
         <BrowserRouter>
@@ -34,13 +40,13 @@ function App() {
                     <Header />
                     <ToastContainer autoClose={2000} />
                     <Routes>
-                        <Route exact path="/signin" element={isUserLogedin ? <Navigate to="/addjob" /> : <Signin />} />
-                        <Route exact path="/addjob" element={isUserLogedin ? <Addjobs /> : <Navigate to="/" />} />
-                        <Route exact path="/canvas" element={<Banners />} />
-                        <Route exact path="/addcompany" element={isUserLogedin ? <AddCompanyDetails /> : <Navigate to="/" />} />
-                        <Route exact path="/companys" element={isUserLogedin ? <CompanyList /> : <Navigate to="/" />} />
-                        <Route exact path="/jobs" element={<JobList />} />
-                        <Route exact path="/" element={isUserLogedin ? <Navigate to="/addjob" /> : <Signin />} />
+                        {RouterWrapper("/signin", <Signin />, false)}
+                        {RouterWrapper("/addjob", <Addjobs />)}
+                        {RouterWrapper("/canvas", <Banners />)}
+                        {RouterWrapper("/addcompany", <AddCompanyDetails />)}
+                        {RouterWrapper("/companys", <CompanyList />)}
+                        {RouterWrapper("/jobs", <JobList />)}
+                        {RouterWrapper("/", <Signin />, false)}
                     </Routes>
                 </div>
             </UserContext.Provider>

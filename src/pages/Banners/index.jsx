@@ -7,7 +7,7 @@ import Loader from "../../Components/Loader";
 
 import Backtodashboard from "../../widgets/Addjobs/Components/Backtodashboard";
 import { getCompanyDetailsHelper } from "../../Apis/Company";
-import { getJobDetailsHelper } from "../../Apis/Jobs";
+import { getJobDetailsHelper } from "../../widgets/Addjobs/Helpers";
 
 function Banners() {
     const [jobdetails, setJobdetails] = useState();

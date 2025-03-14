@@ -26,11 +26,9 @@ const CareersattechBanner = (props) => {
 
     useEffect(() => {
         const title = !!igbannertitle ? igbannertitle : role;
-        const formettedTitle = title?.length < 30 ? `is hiring ${title}` : title;
+        const formettedTitle = title?.length < 30 ? `${title}` : title;
         setBannerTitle(formettedTitle);
     }, [igbannertitle, role]);
-
-
 
     return (
         <div>

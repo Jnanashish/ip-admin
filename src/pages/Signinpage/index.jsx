@@ -8,6 +8,7 @@ import CustomTextField from "../../Components/Input/Textfield";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import Loader from "../../Components/Loader";
 import { setCookie, getCookie } from "../../Helpers/cookieHelpers";
+
 // firebase stuff
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
@@ -21,7 +22,7 @@ const Signin = () => {
     const [isPassword, setIsPassword] = useState(true);
     const [showLoader, setShowLoader] = useState(false);
 
-    // when sign in button is clicked
+    // when sign in button is clicked login with firebase
     const handleSignin = () => {
         setShowLoader(true);
 

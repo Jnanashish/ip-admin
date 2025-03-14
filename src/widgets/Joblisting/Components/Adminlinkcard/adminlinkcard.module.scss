@@ -1,18 +1,29 @@
+// Variables
+$primary-color: #0069ff;
+$text-color: #121212;
+$border-color: #3b3b3b;
+$font-family: "IBM Plex Sans", sans-serif;
+
+// Mixins
+@mixin flex-layout($direction: row, $justify: flex-start, $align: center) {
+    display: flex;
+    flex-direction: $direction;
+    justify-content: $justify;
+    align-items: $align;
+}
+
+// Main container
 .adminlinkcard_con {
+    @include flex-layout(row, flex-start, center);
     background-color: #fff;
-    text-align: left;
-    cursor: pointer;
-
-    max-width: 100%;
-    min-height: 90px;
-    margin-bottom: 20px;
-
-    font-family: "IBM Plex Sans", sans-serif;
-    cursor: default;
     padding: 10px 20px;
-    border: 0.8px solid #3b3b3b;
+    min-height: 90px;
+    max-width: 100%;
+    margin-bottom: 20px;
+    border: 0.8px solid $border-color;
     border-radius: 6px;
-
+    font-family: $font-family;
+    cursor: default;
 
     h2 {
         font-size: 1rem;
@@ -22,15 +33,51 @@
     @media screen and (max-width: 900px) {
         max-width: 100%;
     }
-    display: flex;
-    align-items: center;
 }
 
+// Company logo
+.companyLogo {
+    height: 50px;
+    width: 50px;
+    margin-right: 20px;
+
+    @media screen and (max-width: 900px) {
+        height: 40px;
+        width: 40px;
+    }
+}
+
+// Content wrapper
+.adminlinkWrapper {
+    @include flex-layout(row, space-between, center);
+    width: 100%;
+}
+
+// Link item
+.adminlink_item {
+    @include flex-layout(row);
+    color: $text-color;
+    margin-bottom: 4px;
+}
+
+// Date display
 .jd_date {
     color: red;
     margin-right: 30px;
 }
 
+// Button containers
+.buttonContainer {
+    @include flex-layout(column, space-evenly, flex-start);
+}
+
+.updateButtonContainer {
+    @include flex-layout(row);
+    gap: 10px;
+    margin-top: 10px;
+}
+
+// Button styling - restored to original
 .btn {
     text-transform: capitalize;
     background-color: #0069ff;
@@ -40,40 +87,10 @@
     height: 30px;
     width: 100px;
     opacity: 0.6;
+    min-width: 100px !important;
 
     &:hover {
         background-color: #0069ff;
         opacity: 1;
     }
-}
-.buttonContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-}
-.adminlink_item {
-    display: flex;
-    flex-direction: row;
-    color: #121212;
-    margin-bottom: 4px;
-}
-
-.companyLogo {
-    height: 50px;
-    width: 50px;
-    margin-right: 20px;
-    @media screen and (max-width: 900px) {
-        height: 40px;
-        width: 40px;
-    }
-}
-
-.adminlinkWrapper {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-}
-.updateButtonContainer {
-    display: flex;
-    gap: 10px;
 }

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo, useCallback } from "react";
 import styles from "./addjobs.module.scss";
 
 // custom components
@@ -38,7 +38,7 @@ const AddjobsComponent = () => {
     const [jobAlreadyExist, setJobAlreadyExist] = useState(false);
     const [savedJobId, setSavedJobId] = useState(null);
 
-    const [jobdataInfo, setJobdataInfo] = useState(null)
+    const [jobdataInfo, setJobdataInfo] = useState(null);
 
     const [comapnyDetails, setComapnyDetails] = useState({
         companyName: "",
@@ -95,34 +95,109 @@ const AddjobsComponent = () => {
     const navigate = useNavigate();
     let companyName = "";
 
+    // Memoize expensive operations
+    const categoriesWithTags = useMemo(() => {
+        return categorytags.map((item) => <Chip key={item} label={item} variant={jobdetails.tags.includes(item) ? "" : "outlined"} color="primary" onClick={() => handleCategoryTagClick(item)} />);
+    }, [jobdetails.tags]);
+
+    // Define common skill tags for the job
+    const skillTagOptions = useMemo(
+        () => [
+            "JavaScript",
+            "React",
+            "Node.js",
+            "Python",
+            "Java",
+            "C++",
+            "AWS",
+            "Azure",
+            "DevOps",
+            "Docker",
+            "Kubernetes",
+            "SQL",
+            "NoSQL",
+            "MongoDB",
+            "PostgreSQL",
+            "Machine Learning",
+            "AI",
+            "Data Science",
+            "UI/UX",
+            "Frontend",
+            "Backend",
+            "Full Stack",
+        ],
+        []
+    );
+
+    // Memoize skill tags rendering
+    const skillTagsWithChips = useMemo(() => {
+        return skillTagOptions.map((item) => (
+            <Chip key={item} label={item} variant={jobdetails.skilltags.includes(item) ? "" : "outlined"} color="secondary" onClick={() => handleSkillTagClick(item)} />
+        ));
+    }, [jobdetails.skilltags, skillTagOptions]);
+
+    // Convert handler to useCallback for better performance
+    const handleCategoryTagClick = useCallback((tag) => {
+        setJobdetails((prevState) => ({
+            ...prevState,
+            tags: prevState.tags.includes(tag) ? prevState.tags.filter((item) => item !== tag) : [...prevState.tags, tag],
+        }));
+    }, []);
+
+    // Handler for skill tag clicks
+    const handleSkillTagClick = useCallback((tag) => {
+        setJobdetails((prevState) => ({
+            ...prevState,
+            skilltags: prevState.skilltags.includes(tag) ? prevState.skilltags.filter((item) => item !== tag) : [...prevState.skilltags, tag],
+        }));
+    }, []);
+
+    // Custom skill tag input handler
+    const [customSkillTag, setCustomSkillTag] = useState("");
+
+    // Handle adding a new skill tag
+    const handleAddSkillTag = useCallback(() => {
+        if (customSkillTag.trim() === "") return;
+
+        // Add the custom tag if it doesn't already exist
+        if (!jobdetails.skilltags.includes(customSkillTag.trim())) {
+            setJobdetails((prevState) => ({
+                ...prevState,
+                skilltags: [...prevState.skilltags, customSkillTag.trim()],
+            }));
+
+            // Clear the input
+            setCustomSkillTag("");
+        } else {
+            // If skill already exists, just clear the input
+            setCustomSkillTag("");
+        }
+    }, [customSkillTag, jobdetails.skilltags]);
+
+    // Handle removing a skill tag
+    const handleRemoveSkillTag = (skillToRemove) => {
+        setJobdetails((prevState) => ({
+            ...prevState,
+            skilltags: prevState.skilltags.filter((skill) => skill !== skillToRemove),
+        }));
+    };
+
     // when any input filed value change
-    const handleInputChange = (func, key, value) => {
-        if (typeof key === "object") {
-            func((prevState) => ({
+    const handleInputChange = (setStateFunction, key, value) => {
+        // If key is an object, we're doing a batch update
+        if (typeof key === "object" && key !== null) {
+            setStateFunction((prevState) => ({
                 ...prevState,
                 ...key,
             }));
-        } else {
-            func((prevState) => ({
+        } else if (typeof key === "string") {
+            // Single key update
+            setStateFunction((prevState) => ({
                 ...prevState,
                 [key]: value,
             }));
-        }
-    };
-
-    // when category tags clicked
-    const handleCategoryTagClick = (tag) => {
-        // if tag already selected remove the tag
-        if (jobdetails.tags.includes(tag)) {
-            setJobdetails((prevState) => ({
-                ...prevState,
-                tags: prevState.tags.filter((item) => item !== tag),
-            }));
         } else {
-            setJobdetails((prevState) => ({
-                ...prevState,
-                tags: [...prevState.tags, tag],
-            }));
+            console.error("Invalid key type in handleInputChange:", typeof key);
         }
     };
 
@@ -205,15 +280,16 @@ const AddjobsComponent = () => {
         }
 
         if (res?.status === 200 || res?.status === 201) navigate("/jobs");
+        setShowLoader(false);
     };
 
     // generate job title from company name and role
     const generateJobTitle = (companyName, role) => {
         let jobTitle = "";
         if (!!role || !!jobdetails?.role) {
-            jobTitle = (companyName || "") + " is hiring " + (role ? role : jobdetails?.role || "");
+            jobTitle = " is hiring " + (role ? role : jobdetails?.role || "");
         } else {
-            jobTitle = (companyName || "") + " is hiring ";
+            jobTitle = " is hiring ";
         }
 
         setIgbannertitle(jobTitle);
@@ -230,10 +306,17 @@ const AddjobsComponent = () => {
     // handle company job title change
     const handleJobRoleChange = (role) => {
         const jobTitle = generateJobTitle(jobdetails?.companyName || "", role);
+
+        // Update role and title without affecting tags
         handleInputChange(setJobdetails, { role, title: jobTitle });
 
+        // Special handling for intern roles
         if (role?.toLowerCase()?.includes("intern")) {
-            handleInputChange(setJobdetails, { jobtype: "Internship", experience: "College students", batch: "2025 / 2024 / 2023" });
+            handleInputChange(setJobdetails, {
+                jobtype: "Internship",
+                experience: "College students",
+                batch: "2025 / 2024 / 2023",
+            });
         }
     };
 
@@ -263,11 +346,32 @@ const AddjobsComponent = () => {
         handleInputChange(setComapnyDetails, "companyInfo", val);
     };
 
-    const filterJobBasedonName = (companyList, company) => {
-        if (!!companyList && (!!companyName || !!company || !!comapnyDetails?.companyName)) {
-            const name = !!comapnyDetails?.companyName ? comapnyDetails?.companyName : companyName || company;
+    const filterJobBasedonName = (companyList, companyNameToFind) => {
+        // Early return if no company list or no company name to find
+        if (!companyList || !Array.isArray(companyList) || companyList.length === 0) {
+            return;
+        }
 
-            const companyData = companyList?.find((item) => item?.companyName?.toLowerCase() == name?.toLowerCase() || item?.companyName?.toLowerCase().includes(name?.toLowerCase()));
+        // Determine which company name to use, prioritizing the passed parameter
+        const nameToFind = companyNameToFind || comapnyDetails?.companyName || companyName;
+
+        if (!nameToFind) {
+            return;
+        }
+
+        // Normalize the name for case-insensitive comparison
+        const normalizedNameToFind = nameToFind.toLowerCase().trim();
+
+        // Find the company in the list
+        const companyData = companyList.find((item) => {
+            if (!item?.companyName) return false;
+
+            const normalizedCompanyName = item.companyName.toLowerCase().trim();
+            return normalizedCompanyName === normalizedNameToFind || normalizedCompanyName.includes(normalizedNameToFind);
+        });
+
+        // Set the selected company if found
+        if (companyData) {
             setSelectedCompany(companyData);
         }
     };
@@ -292,27 +396,72 @@ const AddjobsComponent = () => {
 
     // extract job data from the pasted job details
     const extractJobData = (jobdataInfo) => {
+        if (!jobdataInfo) return;
+
         try {
             const parsedData = JSON.parse(jobdataInfo);
-            if (typeof parsedData === 'object' && parsedData !== null) {
-                Object.keys(parsedData).forEach((key) => {
-                    handleInputChange(setJobdetails, key, parsedData[key]);
-                    handleInputChange(setComapnyDetails, key, parsedData[key]);
-                });
+            if (typeof parsedData !== "object" || parsedData === null) {
+                console.error("Invalid JSON format: Not an object");
+                return;
+            }
+
+            // Batch state updates for better performance
+            const jobDetailsUpdates = {};
+            const companyDetailsUpdates = {};
+
+            // Process all fields first
+            Object.keys(parsedData).forEach((key) => {
+                if (key in jobdetails) {
+                    // Special handling for tags and skilltags arrays to ensure they're properly processed
+                    if ((key === "tags" || key === "skilltags") && Array.isArray(parsedData[key])) {
+                        jobDetailsUpdates[key] = [...parsedData[key]]; // Create a copy of the array
+                    } else {
+                        jobDetailsUpdates[key] = parsedData[key];
+                    }
+                }
+                if (key in comapnyDetails) {
+                    companyDetailsUpdates[key] = parsedData[key];
+                }
+            });
+
+            // Apply batch updates
+            if (Object.keys(jobDetailsUpdates).length > 0) {
+                handleInputChange(setJobdetails, jobDetailsUpdates);
+            }
+
+            if (Object.keys(companyDetailsUpdates).length > 0) {
+                handleInputChange(setComapnyDetails, companyDetailsUpdates);
+            }
+
+            // Handle special fields that need additional processing
+            if (parsedData.companyName) {
+                handleCompanyNameChange(parsedData.companyName);
+
+                // Find and set the selected company if company list is available
+                if (comapnyListData && comapnyListData.length > 0) {
+                    filterJobBasedonName(comapnyListData, parsedData.companyName);
+                }
+            }
+
+            // Handle role separately to trigger title generation
+            // Note: We're not generating tags from role here anymore since we want to preserve
+            // any tags that came from the JSON data
+            if (parsedData.role) {
+                handleJobRoleChange(parsedData.role);
             }
         } catch (error) {
-            console.error("Invalid JSON data", error);
+            console.error("Error parsing JSON data:", error.message);
         }
     };
 
-
-    useEffect(() => {
-        const tagsArray = generateTagsfromRole(jobdetails?.role);
-        setJobdetails((prevState) => ({
-            ...prevState,
-            tags: tagsArray,
-        }));
-    }, [jobdetails?.role]);
+    // Textarea change handler - separated for clarity
+    const handleTextareaChange = (e) => {
+        const newValue = e.target.value;
+        setJobdataInfo(newValue);
+        if (newValue) {
+            extractJobData(newValue);
+        }
+    };
 
     // map the experience to relevant batch
     useEffect(() => {
@@ -337,19 +486,11 @@ const AddjobsComponent = () => {
         checkQueryParam();
     }, []);
 
-
     return (
         <div className={styles.container}>
-            <textarea 
-                className={styles.textarea} 
-                placeholder="Job details" 
-                value={jobdataInfo} 
-                onChange={(e) => extractJobData(e.target.value)} 
-                style={{ width: "1080px", height: "60px" }} // Set width and height
-            />
-            <br/> <br/>
+            <textarea className={styles.textarea} placeholder="Paste job details JSON here" value={jobdataInfo || ""} onChange={handleTextareaChange} aria-label="Job details JSON input" />
 
-            <h2>{!!jobAlreadyExist ? "Update" : "Add"} job details : </h2>
+            <h2>{jobAlreadyExist ? "Update" : "Add"} job details : </h2>
 
             {/* circular overlay loader  */}
             {!!showLoader && (
@@ -375,10 +516,45 @@ const AddjobsComponent = () => {
                     <div className={styles.tagscontainer}>
                         <p>Select tags* : </p>
                         <Stack direction="row" spacing={1}>
-                            {categorytags.map((item) => (
-                                <Chip label={item} variant={jobdetails.tags.includes(item) ? "" : "outlined"} color="primary" onClick={() => handleCategoryTagClick(item)} />
-                            ))}
+                            {categoriesWithTags}
                         </Stack>
+                    </div>
+
+                    {/* Skill Tags Input Section */}
+                    <div className={styles.skillTagsSection}>
+                        <h3>Skills Required</h3>
+                        <div className={styles.skillInputContainer}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={handleAddSkillTag}
+                                    disabled={!customSkillTag.trim()}
+                                    className={styles.addSkillBtn}
+                                    style={{ textTransform: "capitalize" }}
+                                     size="small"
+                                >
+                                    Add Skill
+                                </Button>
+                            <CustomTextField label="Add skill" value={customSkillTag} onChange={(val) => setCustomSkillTag(val)} fullWidth placeholder="Type a skill and press Enter to add" />
+                        </div>
+
+                        {/* Common skill tags for quick selection */}
+                        <div className={styles.commonSkillTags}>
+                            <p>Common skills (click to add):</p>
+                            <div className={styles.skillChipsContainer}>{skillTagsWithChips}</div>
+                        </div>
+
+                        {/* Display selected skill tags */}
+                        {jobdetails.skilltags.length > 0 && (
+                            <div className={styles.selectedSkills}>
+                                <p>Skills required for this job:</p>
+                                <div className={styles.skillChipsContainer}>
+                                    {jobdetails.skilltags.map((skill) => (
+                                        <Chip key={skill} label={skill} color="secondary" onDelete={() => handleRemoveSkillTag(skill)} className={styles.skillChip} />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     <CustomTextField
@@ -607,10 +783,13 @@ const AddjobsComponent = () => {
                     <input type="file" onChange={(e) => generateImageCDNlink(e)} />
                 </div>
                 <div>
-                    <p>Banner Link : {jobdetails.jdBanner}</p>
-                    <IconButton color="secondary" aria-label="delete" size="small" onClick={() => copyToClipBoard(jobdetails.jdBanner)}>
-                        <ContentCopyIcon fontSize="inherit" />
-                    </IconButton>
+                    <p>Banner Link : </p>
+                    <p className={styles.copyText} style={{ wordBreak: "break-all", maxWidth: "100%" }}>
+                        {jobdetails.jdBanner}
+                        <IconButton color="secondary" aria-label="copy" size="small" onClick={() => copyToClipBoard(jobdetails.jdBanner)}>
+                            <ContentCopyIcon fontSize="inherit" />
+                        </IconButton>
+                    </p>
                 </div>
                 <CustomDivider />
             </div>
@@ -620,12 +799,12 @@ const AddjobsComponent = () => {
                     style={{ textTransform: "capitalize" }}
                     className={styles.submitbtn}
                     onClick={addJobDetails}
-                    disabled={jobdetails?.link?.length === 0 || jobdetails?.tags?.length === 0}
+                    disabled={showLoader || jobdetails?.link?.length === 0 || jobdetails?.tags?.length === 0}
                     variant="contained"
                     color="primary"
                     size="large"
                 >
-                    {`${jobAlreadyExist ? "Update" : "Submit"}`} Job details
+                    {showLoader ? <CircularProgress size={24} color="inherit" /> : `${jobAlreadyExist ? "Update" : "Submit"} Job details`}
                 </Button>
             </div>
             <CustomDivider />

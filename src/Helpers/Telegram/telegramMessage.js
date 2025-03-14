@@ -1,4 +1,4 @@
-import { showErrorToast, showSuccessToast, showInfoToast, showWarnToast } from "./toast";
+import { showErrorToast, showSuccessToast } from "../toast";
 const BOT_API_KEY = process.env.REACT_APP_BOT_API_KEY;
 
 const translate = (char) => {

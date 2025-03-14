@@ -9,34 +9,106 @@
         width: 100%;
     }
 }
-.cardcontainer{
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+
+    h2 {
+        margin: 0;
+        font-weight: 600;
+    }
+}
+
+.searchContainer {
+    width: 300px;
+    max-width: 100%;
+    position: relative;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+
+    &:focus {
+        outline: none;
+        border-color: #2196f3;
+        box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+    }
+}
+
+.noResults, .errorMessage {
+    text-align: center;
+    padding: 40px;
+    font-size: 16px;
+    border-radius: 6px;
+    margin-top: 20px;
+}
+
+.noResults {
+    color: #666;
+    background-color: #f9f9f9;
+}
+
+.errorMessage {
+    color: #721c24;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+.cardcontainer {
     border: 0.8px solid #121212;
     margin-top: 20px;
     padding: 20px 40px;
     border-radius: 6px;
-}
-.jobdetails{
-    border-top: 0.4px solid #3b3b3b;
-    p{
-        margin-top: 12px;
+    transition: box-shadow 0.3s ease;
+
+    &:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 }
-.companycard{
+
+.jobdetails {
+    border-top: 0.4px solid #3b3b3b;
+    padding-top: 10px;
+    
+    p {
+        margin-top: 12px;
+        font-size: 14px;
+    }
+}
+
+.companycard {
     background-color: #F4FAFF;
     margin-bottom: 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 30px;
+    padding: 15px;
+    border-radius: 4px;
 
-    h2{
+    h2 {
         font-size: 1.2rem;
         font-weight: 600;
     }
 
+    h3 {
+        margin: 0;
+    }
 
     img {
         height: 50px;
+        object-fit: contain;
+        border-radius: 4px;
     }
 
     span {
@@ -46,6 +118,36 @@
 
         button {
             text-transform: capitalize;
+            min-width: 80px;
         }
+    }
+}
+
+@media (max-width: 768px) {
+    .companylist {
+        padding: 15px;
+    }
+    
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .searchContainer {
+        width: 100%;
+    }
+    
+    .companycard {
+        flex-direction: column;
+        align-items: flex-start;
+        
+        span {
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+    
+    .cardcontainer {
+        padding: 15px;
     }
 }

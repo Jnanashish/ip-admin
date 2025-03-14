@@ -30,9 +30,14 @@ export const getCompanyDetailsHelper = async (companyName, companyId) => {
     return data;
 };
 
-export const getJobDetailsHelper = async (params) => {
+export const getJobDetailsHelper = async (params, page, size = 10) => {
     if (!!params && !!params?.key && !!params?.value) {
-        const apiUrl = `${apiEndpoint.getAllJobDetails}?${params?.key}=${params?.value}`;
+        let apiUrl = `${apiEndpoint.getAllJobDetails}?${params?.key}=${params?.value}`;
+        
+        if (page && size) {
+            apiUrl += `&page=${page}&size=${size}`;
+        }
+        
         const data = await get(apiUrl);
 
         if (!!data) {
@@ -94,7 +99,8 @@ const generateFormData = (jobdetails) => {
         "jobId",
         "imagePath",
         "companyId",
-        "isActive"
+        "isActive",
+        "skilltags"
     ];
     fields.forEach((field) => {
         if (jobdetails[field] !== undefined && jobdetails[field] !== null) {
