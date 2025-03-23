@@ -91,7 +91,7 @@ const AddjobsComponent = () => {
     });
 
     const context = useContext(UserContext);
-    const canvasId = context?.isAdmin ? "careersattech" : "jobsattech";
+    const canvasId = "careersattech";
     const navigate = useNavigate();
     let companyName = "";
 

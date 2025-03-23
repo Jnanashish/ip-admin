@@ -103,21 +103,26 @@ function Canvas(props) {
     const availableCTAs = useMemo(() => [
         {
             id: 1,
+            title: null,
+            line: "Comment Link to get the apply link in DM",
+        },
+        {
+            id: 2,
             title: "Apply Link : ",
             line: "Link in Bio (visit : careersat.tech)",
         },
         {
-            id: 2,
+            id: 3,
             title: "Apply Here : ",
             line: "Check our website for more details",
         },
         {
-            id: 3,
+            id: 4,
             title: null,
             line: "Join instagram channel for apply link 👇",
         },
         {
-            id: 4,
+            id: 5,
             title: null,
             line: "Comment YES for the apply link",
         },
@@ -169,7 +174,7 @@ function Canvas(props) {
     const handleDownloadBanner = async () => {
         if (bannerType !== "carousel") {
             const bannername = jobdetails.companyName + "_" + bannerType;
-            downloadImagefromCanvasHelper(bannername, canvasId, false);
+            downloadImagefromCanvasHelper(bannername, "careersattech", false);
         } else {
             const bannername = jobdetails.companyName + "_" + "carousel1";
             downloadImagefromCanvasHelper(bannername, "carousel1", false);
