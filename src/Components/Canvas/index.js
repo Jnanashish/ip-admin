@@ -169,7 +169,7 @@ function Canvas(props) {
     const handleDownloadBanner = async () => {
         if (bannerType !== "carousel") {
             const bannername = jobdetails.companyName + "_" + bannerType;
-            downloadImagefromCanvasHelper(bannername, canvasId, false);
+            downloadImagefromCanvasHelper(bannername, "careersattech", false);
         } else {
             const bannername = jobdetails.companyName + "_" + "carousel1";
             downloadImagefromCanvasHelper(bannername, "carousel1", false);

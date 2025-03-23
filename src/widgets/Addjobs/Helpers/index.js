@@ -54,20 +54,20 @@ export const getJobDetailsHelper = async (params, page, size = 10) => {
 // Function to map experience with the batch
 export const mapExperiencetoBatch = (experience) => {
     let batch = "";
-    if (experience === "0 - 1 years") batch = "2024 / 2023 / 2022";
-    if (experience === "0 - 2 years") batch = "2024 / 2023 / 2022 / 2021";
-    if (experience === "0 - 3 years") batch = "2024 / 2023 / 2022 / 2021 / 2020";
-    if (experience === "0 - 4 years") batch = "2024 / 2023 / 2022 / 2021 / 2020 / 2019";
-    if (experience === "1 - 2 years") batch = "2023 / 2022 / 2021";
-    if (experience === "1 - 3 years") batch = "2023 / 2022 / 2021 / 2020";
-    if (experience === "1 - 4 years") batch = "2023 / 2022 / 2021 / 2020 / 2019";
-    if (experience === "0+ years") batch = "2023 / 2022 / 2021 / 2020 / 2019";
-    if (experience === "1 years") batch = "2023 / 2022";
-    if (experience === "1+ years") batch = "2023 / 2022 / 2021 / 2020 / 2019";
-    if (experience === "2+ years") batch = "2022 / 2021 / 2020 / 2019";
-    if (experience === "3+ years") batch = "2021 / 2020 / 2019";
-    if (experience === "College students" || experience === "Final year students") batch = "2025 / 2024";
-    if (experience === "Freshers") batch = "2024 / 2023 / 2022";
+    if (experience === "0 - 1 years") batch = "2025 / 2024 / 2023";
+    if (experience === "0 - 2 years") batch = "2025 / 2024 / 2023 / 2022";
+    if (experience === "0 - 3 years") batch = "2025 / 2024 / 2023 / 2022 / 2021";
+    if (experience === "0 - 4 years") batch = "2025 / 2024 / 2023 / 2022 / 2021 / 2020";
+    if (experience === "1 - 2 years") batch = "2024 / 2023 / 2022";
+    if (experience === "1 - 3 years") batch = "2024 / 2023 / 2022 / 2021";
+    if (experience === "1 - 4 years") batch = "2024 / 2023 / 2022 / 2021 / 2020";
+    if (experience === "0+ years") batch = "2025 / 2024 / 2023 / 2022 / 2021 / 2020";
+    if (experience === "1 years") batch = "2024 / 2023 / 2022";
+    if (experience === "1+ years") batch = "2024 / 2023 / 2022 / 2021 / 2020";
+    if (experience === "2+ years") batch = "2023 / 2022 / 2021 / 2020 / 2019";
+    if (experience === "3+ years") batch = "2022 / 2021 / 2020 / 2019";
+    if (experience === "College students" || experience === "Final year students") batch = "2026 / 2025 / 2024";
+    if (experience === "Freshers") batch = "2025 / 2024 / 2023 / 2022";
     return batch;
 };
 
