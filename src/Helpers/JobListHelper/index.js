@@ -11,18 +11,20 @@ const linkedinHashtag = linkedinHashtags[weeknum % 3];
 export const messageTemplate = (item, platform, useWebsiteLink = false) => {
     switch (platform) {
         case "whatsapp":
-            const title = item?.title.replace(/[A-Za-z]/g, translate);
+            const companyName = item?.companyName?.replace(/[A-Za-z]/g, translate);
+            const title = companyName + item?.title.replace(/[A-Za-z]/g, translate);
             const applyLink = useWebsiteLink ? generateLinkFromRole(item?.title, item?._id) : item.link;
             return title +
                 "\nBatch : " + item.batch +
                 "\nDegree : " + item.degree +
-                "\n\nApply Here 👉 " + applyLink +
-                "\n\nFor more Jobs visit " +
-                "https://bit.ly/careersattechWA";
+                "\n\nApply Here 👉 " + applyLink
+                // "\n\nFor more Jobs visit " +
+                // "https://bit.ly/careersattechWA";
             
         case "instagram":
-            const igTitle = item?.companyName + " is hiring freshers for " + item?.title + " role.";
-            return igTitle + 
+            const commentLink = "Comment 👉 Link to get the apply link in your DM \n"
+            const igTitle = item?.companyName + " is hiring freshers for " + item?.role + " role.";
+            return commentLink + igTitle + 
                 "\n\nBatch : " + item.batch + 
                 "\nDegree : " + item.degree + 
                 "\n\n👉 Visit link given in Bio to apply. " + 
