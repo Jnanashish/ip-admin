@@ -41,7 +41,7 @@ const LinkCard = ({ item, isPreview = false }) => {
     return (
         <div>
             <div
-                className="flex flex-row items-center bg-white px-5 py-2.5 min-h-[90px] max-w-full mb-5 border border-text-secondary rounded-md font-ibm"
+                className="flex flex-row items-center bg-card text-card-foreground px-5 py-2.5 min-h-[90px] max-w-full mb-3 border rounded-md font-ibm"
                 style={{ opacity: item?.isActive ? "100%" : "40%" }}
             >
                 {!isPreview && (
@@ -90,7 +90,7 @@ const LinkCard = ({ item, isPreview = false }) => {
                                 disableElevation
                                 size="small"
                                 onClick={() => deleteJobData(item._id)}
-                                style={{ backgroundColor: "red" }}
+                                variant="destructive"
                                 label="Delete"
                                 disabled={!isUserLoggedIn}
                             />

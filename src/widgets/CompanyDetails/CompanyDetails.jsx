@@ -6,6 +6,7 @@ import { showErrorToast, showSuccessToast } from "../../Helpers/toast";
 import { submitCompanyDetailsHelper, updateCompanyDetailsHelper } from "./helper";
 import Custombutton from "../../Components/Button/Custombutton";
 import CustomTextField from "../../Components/Input/Textfield";
+import { Card, CardContent, CardHeader, CardTitle } from "Components/ui/card";
 
 import { get } from "../../Helpers/request";
 import { apiEndpoint } from "../../Helpers/apiEndpoints";
@@ -111,7 +112,6 @@ const CompanyDetails = () => {
         const urlParams = new URLSearchParams(window.location.search);
         const companyid = urlParams.get("companyid");
 
-        // Validate ObjectId format (24-character hex string)
         if (companyid && /^[a-f\d]{24}$/i.test(companyid)) {
             setCompanyId(companyid);
 
@@ -137,51 +137,113 @@ const CompanyDetails = () => {
     }, []);
 
     return (
-        <div className="flex items-center justify-center w-full flex-col mt-5 [&_button]:capitalize">
-            <div className="flex w-[60%] items-center justify-between">
-                <h3 className="justify-self-end text-base text-foreground">Company name : </h3>
-                <CustomTextField label="Title" onBlur={(val) => handleCompanynameChange(val)} value={comapnyDetails.companyName} onChange={(val) => handleCompanyDetailChange("companyName", val)} sx={{ width: "80%" }} />
-            </div>
-            <div className="flex w-[60%] items-center justify-between">
-                <h3 className="justify-self-end text-base text-foreground">Company info : </h3>
-                <CustomTextField multiline={true} rows={4} label="Company info" value={comapnyDetails.companyInfo} onChange={(val) => handleCompanyDetailChange("companyInfo", val)} sx={{ width: "80%" }} />
-            </div>
-            <div className="flex w-[60%] items-center justify-between">
-                <h3 className="justify-self-end text-base text-foreground">Company type : </h3>
-                <CustomTextField
-                    label="Company type"
-                    value={comapnyDetails.companyType}
-                    onChange={(val) => handleCompanyDetailChange("companyType", val)}
-                    sx={{ width: "80%" }}
-                    type="select"
-                    optionData={companyTypeOptions}
+        <div className="max-w-3xl mx-auto">
+            <h2 className="text-2xl font-semibold mb-6">{isCompanydetailPresent ? "Update" : "Add"} Company Details</h2>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg">Company Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Company Name</label>
+                        <CustomTextField
+                            label="Company name"
+                            onBlur={(val) => handleCompanynameChange(val)}
+                            value={comapnyDetails.companyName}
+                            onChange={(val) => handleCompanyDetailChange("companyName", val)}
+                            fullWidth
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Company Info</label>
+                        <CustomTextField
+                            multiline={true}
+                            rows={4}
+                            label="Company info"
+                            value={comapnyDetails.companyInfo}
+                            onChange={(val) => handleCompanyDetailChange("companyInfo", val)}
+                            fullWidth
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Company Type</label>
+                        <CustomTextField
+                            label="Company type"
+                            value={comapnyDetails.companyType}
+                            onChange={(val) => handleCompanyDetailChange("companyType", val)}
+                            fullWidth
+                            type="select"
+                            optionData={companyTypeOptions}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Career Page Link</label>
+                        <CustomTextField
+                            label="Careers page"
+                            value={comapnyDetails.careersPageLink}
+                            onChange={(val) => handleCompanyDetailChange("careersPageLink", val)}
+                            fullWidth
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">LinkedIn Link</label>
+                        <CustomTextField
+                            label="Linkedin link"
+                            value={comapnyDetails.linkedinPageLink}
+                            onChange={(val) => handleCompanyDetailChange("linkedinPageLink", val)}
+                            fullWidth
+                        />
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Card className="mt-4">
+                <CardHeader>
+                    <CardTitle className="text-lg">Company Logos</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                    <div className="flex items-center gap-6 flex-wrap">
+                        <div className="flex-1 min-w-[200px] space-y-2">
+                            <label className="text-sm font-medium">Small Logo</label>
+                            <input
+                                accept=".jpeg, .jpg, .png, .webp, .heic, .svg"
+                                className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer"
+                                onChange={(e) => handleCompanyLogoInput(e)}
+                                name="image"
+                                type="file"
+                            />
+                        </div>
+                        {comapnyDetails.smallLogo && (
+                            <img src={comapnyDetails.smallLogo} className="h-20 w-auto object-contain rounded border p-1" alt="Small logo" />
+                        )}
+                    </div>
+
+                    <div className="flex items-center gap-6 flex-wrap">
+                        <div className="flex-1 min-w-[200px] space-y-2">
+                            <label className="text-sm font-medium">Large Logo</label>
+                            <input
+                                accept=".jpeg, .jpg, .png, .webp, .heic, .svg"
+                                className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer"
+                                onChange={(e) => handleCompanyLogoInput(e, false)}
+                                name="image"
+                                type="file"
+                            />
+                        </div>
+                        {comapnyDetails.largeLogo && (
+                            <img src={comapnyDetails.largeLogo} className="h-20 w-auto object-contain rounded border p-1" alt="Large logo" />
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
+
+            <div className="mt-6 mb-10">
+                <Custombutton
+                    disabled={!comapnyDetails.companyName || !comapnyDetails.largeLogo || !comapnyDetails.smallLogo}
+                    onClick={handleButtonClick}
+                    label={isCompanydetailPresent ? "Update company details" : "Submit company details"}
                 />
             </div>
-            <div className="flex w-[60%] items-center justify-between">
-                <h3 className="justify-self-end text-base text-foreground">Career page link : </h3>
-                <CustomTextField label="Careers page" value={comapnyDetails.careersPageLink} onChange={(val) => handleCompanyDetailChange("careersPageLink", val)} sx={{ width: "80%" }} />
-            </div>
-            <div className="flex w-[60%] items-center justify-between">
-                <h3 className="justify-self-end text-base text-foreground">Linkedin link : </h3>
-                <CustomTextField label="Linkedin link" value={comapnyDetails.linkedinPageLink} onChange={(val) => handleCompanyDetailChange("linkedinPageLink", val)} sx={{ width: "80%" }} />
-            </div>
-            <br />
-
-            <div className="grid grid-cols-[20%_30%_50%] items-center max-lg:flex max-lg:flex-col max-lg:mx-5 border border-text-secondary w-4/5 h-[200px] mb-5 rounded-md [&_img]:h-[120px] [&_img]:w-auto [&_img]:max-w-[90%] [&_b]:text-center [&_b]:text-red-500 [&_b]:ml-8 [&_b]:text-xl">
-                <h3 className="justify-self-end text-base text-foreground">Company small logo : </h3>
-                <input accept=".jpeg, .jpg, .png, .webp, .heic, .svg" className="p-3 text-base w-3/4 rounded border-none max-lg:my-2.5 max-lg:w-full" onChange={(e) => handleCompanyLogoInput(e)} name="image" type="file" />
-                <img src={comapnyDetails.smallLogo} />
-            </div>
-
-            <div className="grid grid-cols-[20%_30%_50%] items-center max-lg:flex max-lg:flex-col max-lg:mx-5 border border-text-secondary w-4/5 h-[200px] mb-5 rounded-md [&_img]:h-[120px] [&_img]:w-auto [&_img]:max-w-[90%] [&_b]:text-center [&_b]:text-red-500 [&_b]:ml-8 [&_b]:text-xl">
-                <h3 className="justify-self-end text-base text-foreground">Company BIG logo : </h3>
-                <input accept=".jpeg, .jpg, .png, .webp, .heic, .svg" className="p-3 text-base w-3/4 rounded border-none max-lg:my-2.5 max-lg:w-full" onChange={(e) => handleCompanyLogoInput(e, false)} name="image" type="file" />
-                <img src={comapnyDetails.largeLogo} />
-            </div>
-
-            <Custombutton disabled={!comapnyDetails.companyName || !comapnyDetails.largeLogo || !comapnyDetails.smallLogo} onClick={handleButtonClick} label={isCompanydetailPresent ? `Update job details` : `Submit job details`} />
-            <br />
-            <br />
         </div>
     );
 };

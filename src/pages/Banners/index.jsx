@@ -4,7 +4,6 @@ import Canvas from "../../Components/Canvas";
 import Custombutton from "../../Components/Button/Custombutton";
 import Loader from "../../Components/Loader";
 
-import Backtodashboard from "../../widgets/Addjobs/Components/Backtodashboard";
 import { getCompanyDetailsHelper } from "../../Apis/Company";
 import { getJobDetailsHelper } from "../../widgets/Addjobs/Helpers";
 
@@ -19,7 +18,6 @@ function Banners() {
         const companyname = urlParams.get("companyname");
         const companyid = urlParams.get("companyid");
 
-        // Validate ObjectId format (24-character hex string)
         if (jobId && /^[a-f\d]{24}$/i.test(jobId)) {
             const params = {
                 key: "id",
@@ -30,7 +28,6 @@ function Banners() {
             !!jobdata && jobdata?.data && setJobdetails(jobdata?.data);
         }
 
-        // Validate companyid ObjectId format if provided
         if ((companyname || (companyid && /^[a-f\d]{24}$/i.test(companyid)))) {
             const companyData = await getCompanyDetailsHelper(companyname, companyid);
             !!companyData && Array.isArray(companyData) && setComapnyDetails(companyData[0]);
@@ -42,12 +39,10 @@ function Banners() {
     }, []);
 
     return (
-        <div className="px-[60px] py-5 bg-background max-lg:px-5">
-            <Backtodashboard />
-            <br />
-            <br />
+        <div>
+            <h2 className="text-2xl font-semibold mb-4">Banner Generator</h2>
 
-            <div className="flex flex-wrap gap-5">
+            <div className="flex flex-wrap gap-3 mb-6">
                 <Custombutton variant={bannerType === "careersattech" ? "" : "outlined"} onClick={() => setBannerType("careersattech")} label="Careersattech banner" fullWidth={false} />
                 <Custombutton variant={bannerType === "jobsattech" ? "" : "outlined"} onClick={() => setBannerType("jobsattech")} label="Jobsattech" fullWidth={false} />
                 <Custombutton variant={bannerType === "linkedinbanner" ? "" : "outlined"} onClick={() => setBannerType("linkedinbanner")} label="Linkedin" fullWidth={false} />
@@ -57,7 +52,7 @@ function Banners() {
             {!!jobdetails && !!comapnyDetails ? (
                 <Canvas bannerType={bannerType} jobdetails={jobdetails} comapnyDetails={comapnyDetails} />
             ) : (
-                <div className="flex items-center justify-center h-[80vh]">
+                <div className="flex items-center justify-center h-[60vh]">
                     <Loader />
                 </div>
             )}

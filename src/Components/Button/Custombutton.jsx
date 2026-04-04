@@ -6,6 +6,7 @@ const variantMap = {
     contained: "default",
     outlined: "outline",
     text: "ghost",
+    destructive: "destructive",
 };
 
 const sizeMap = {

@@ -1,11 +1,15 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Custombutton from "../../Components/Button/Custombutton";
+import { Button } from "Components/ui/button";
+import { Input } from "Components/ui/input";
+import { Card, CardContent } from "Components/ui/card";
+import { Badge } from "Components/ui/badge";
 import Adminlinkcard from "../Joblisting/Components/Adminlinkcard/Adminlinkcard";
 import Loader from "../../Components/Loader/index";
 import { getCompanyList, deleteCompany } from "../../Apis/Company";
 import { showErrorToast } from "../../Helpers/toast";
+import { Search, Pencil, Trash2 } from "lucide-react";
 
 function CompanyListing() {
     const navigate = useNavigate();
@@ -16,9 +20,7 @@ function CompanyListing() {
 
     const filteredCompanies = useMemo(() => {
         if (!companyData) return null;
-
         if (!searchTerm.trim()) return companyData;
-
         return companyData.filter((company) => company.companyName.toLowerCase().includes(searchTerm.toLowerCase()));
     }, [companyData, searchTerm]);
 
@@ -62,41 +64,72 @@ function CompanyListing() {
 
     const renderCompanyCard = useCallback(
         (company, index) => (
-            <div className="border border-foreground mt-5 px-10 py-5 rounded-md transition-shadow hover:shadow-md max-md:px-4" key={company._id || index}>
-                <div className="bg-background mb-5 flex items-center justify-between gap-8 p-4 rounded max-md:flex-col max-md:items-start [&_h2]:text-xl [&_h2]:font-semibold [&_img]:h-[50px] [&_img]:object-contain [&_img]:rounded [&_button]:capitalize">
-                    <span>
-                        <h3>{company?.companyName} : </h3>
-                        {company?.smallLogo && <img src={company.smallLogo} alt="Small logo" />}
-                        {company?.largeLogo && <img src={company.largeLogo} alt="Large logo" />}
-                    </span>
-                    <span>
-                        <Custombutton disableElevation label="Update" onClick={() => handleCompanyUpdate(company)} />
-                        <Custombutton style={{ backgroundColor: "red" }} onClick={() => handleCompanyDelete(company)} disableElevation label="Delete" />
-                    </span>
-                </div>
+            <Card className="mb-4" key={company._id || index}>
+                <CardContent className="pt-6">
+                    <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
+                        <div className="flex items-center gap-4">
+                            {company?.smallLogo && (
+                                <img src={company.smallLogo} alt="Logo" className="h-10 w-10 object-contain rounded" />
+                            )}
+                            <div>
+                                <h3 className="font-semibold text-base">{company?.companyName}</h3>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <Badge variant="secondary">
+                                        {company?.listedJobs?.length || 0} jobs
+                                    </Badge>
+                                    {company?.companyInfo !== "N" && (
+                                        <Badge variant="outline">Info present</Badge>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button variant="outline" size="sm" onClick={() => handleCompanyUpdate(company)}>
+                                <Pencil className="h-3.5 w-3.5 mr-1.5" />
+                                Update
+                            </Button>
+                            <Button variant="destructive" size="sm" onClick={() => handleCompanyDelete(company)}>
+                                <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                                Delete
+                            </Button>
+                        </div>
+                    </div>
 
-                <div className="border-t border-text-secondary pt-2.5 [&_p]:mt-3 [&_p]:text-sm">
-                    <p>About company : {company?.companyInfo !== "N" ? "Company info Present" : "Not present"}</p>
-                    <p>Listed Job : {company?.listedJobs?.length || 0}</p>
-                    <br />
-                    {company?.listedJobs?.length > 0 && company.listedJobs.map((item, idx) => <Adminlinkcard key={item._id || idx} item={item} isPreview={true} />)}
-                </div>
-            </div>
+                    {company?.largeLogo && (
+                        <img src={company.largeLogo} alt="Large logo" className="h-12 object-contain rounded mb-4" />
+                    )}
+
+                    {company?.listedJobs?.length > 0 && (
+                        <div className="border-t pt-4 space-y-2">
+                            <p className="text-sm text-muted-foreground font-medium">Listed Jobs:</p>
+                            {company.listedJobs.map((item, idx) => (
+                                <Adminlinkcard key={item._id || idx} item={item} isPreview={true} />
+                            ))}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
         ),
         [handleCompanyDelete, handleCompanyUpdate]
     );
 
     return (
-        <div className="px-10 py-5 max-md:px-4">
-            <div className="flex justify-between items-center mb-5 flex-wrap gap-4 max-md:flex-col max-md:items-start">
-                <h2>List of available companies : {filteredCompanies?.length || 0}</h2>
-                <div className="w-[300px] max-w-full relative max-md:w-full">
-                    <input
+        <div>
+            <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
+                <div>
+                    <h2 className="text-2xl font-semibold">Company List</h2>
+                    <p className="text-sm text-muted-foreground mt-1">
+                        {filteredCompanies?.length || 0} companies available
+                    </p>
+                </div>
+                <div className="relative w-[300px] max-w-full">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
                         type="text"
                         placeholder="Search company by name..."
                         value={searchTerm}
                         onChange={handleSearchChange}
-                        className="w-full px-4 py-2.5 border border-gray-300 rounded text-sm transition-all focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                        className="pl-9"
                         aria-label="Search companies"
                     />
                 </div>
@@ -108,16 +141,22 @@ function CompanyListing() {
                 </div>
             )}
 
-            {error && <div className="text-center p-10 text-base rounded mt-5 text-red-800 bg-red-100 border border-red-300">{error}</div>}
+            {error && (
+                <Card className="border-destructive">
+                    <CardContent className="pt-6 text-center text-destructive">{error}</CardContent>
+                </Card>
+            )}
 
             {!isLoading && !error && (
                 <>
                     {filteredCompanies?.length > 0 ? (
                         filteredCompanies.map(renderCompanyCard)
                     ) : (
-                        <div className="text-center p-10 text-base rounded mt-5 text-gray-500 bg-[#f9f9f9]">
-                            {searchTerm ? "No companies found matching your search." : "No companies available."}
-                        </div>
+                        <Card>
+                            <CardContent className="pt-6 text-center text-muted-foreground">
+                                {searchTerm ? "No companies found matching your search." : "No companies available."}
+                            </CardContent>
+                        </Card>
                     )}
                 </>
             )}

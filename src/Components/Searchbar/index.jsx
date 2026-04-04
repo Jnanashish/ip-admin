@@ -61,7 +61,7 @@ function SearchBar(props) {
             <CustomTextField onFocus={handleInputFocus} label="Company name *" value={inputValue} onChange={(val) => handleInputChange(val)} fullWidth />
 
             {!!showSearchSuggestion && !!filteredSuggestionList && (
-                <div className="absolute left-0 z-10 w-full max-h-[300px] overflow-auto bg-white border border-t-0 border-[#b3b3b3] rounded-b-md text-left text-[#373737]">
+                <div className="absolute left-0 z-10 w-full max-h-[300px] overflow-auto bg-popover text-popover-foreground border border-t-0 border-border rounded-b-md shadow-md text-left">
                     {!!filteredSuggestionList?.length !== 0 && (
                         <ul className="p-2.5 list-none">
                             {filteredSuggestionList?.map((item) => {

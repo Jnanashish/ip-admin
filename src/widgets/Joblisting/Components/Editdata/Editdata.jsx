@@ -185,8 +185,8 @@ const EditData = (props) => {
     );
 
     return (
-        <div className="w-full mx-auto mb-8 p-6 bg-[#f9f9f9] rounded-lg shadow-sm">
-            <div className="w-full mx-auto mb-8 p-6 bg-[#f9f9f9] rounded-lg shadow-sm">
+        <div className="w-full mx-auto mb-8 p-6 bg-muted rounded-lg shadow-sm">
+            <div className="w-full mx-auto mb-8 p-6 bg-muted rounded-lg shadow-sm">
                 <h2 className="text-2xl font-bold text-center py-4">Edit Job Details</h2>
             </div>
 

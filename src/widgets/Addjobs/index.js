@@ -12,6 +12,7 @@ import { Button } from "Components/ui/button";
 import { Badge } from "Components/ui/badge";
 import { Switch } from "Components/ui/switch";
 import { Label } from "Components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "Components/ui/card";
 
 // lucide icons
 import { CloudDownload, Copy, X } from "lucide-react";
@@ -179,17 +180,13 @@ const AddjobsComponent = () => {
     const handleAddSkillTag = useCallback(() => {
         if (customSkillTag.trim() === "") return;
 
-        // Add the custom tag if it doesn't already exist
         if (!jobdetails.skilltags.includes(customSkillTag.trim())) {
             setJobdetails((prevState) => ({
                 ...prevState,
                 skilltags: [...prevState.skilltags, customSkillTag.trim()],
             }));
-
-            // Clear the input
             setCustomSkillTag("");
         } else {
-            // If skill already exists, just clear the input
             setCustomSkillTag("");
         }
     }, [customSkillTag, jobdetails.skilltags]);
@@ -204,14 +201,12 @@ const AddjobsComponent = () => {
 
     // when any input filed value change
     const handleInputChange = (setStateFunction, key, value) => {
-        // If key is an object, we're doing a batch update
         if (typeof key === "object" && key !== null) {
             setStateFunction((prevState) => ({
                 ...prevState,
                 ...key,
             }));
         } else if (typeof key === "string") {
-            // Single key update
             setStateFunction((prevState) => ({
                 ...prevState,
                 [key]: value,
@@ -235,7 +230,6 @@ const AddjobsComponent = () => {
 
     // [COMPANY DATA] get details of entered company on company input change
     const getCompanyDetails = async (jobdetails) => {
-        // clear all the logo field
         handleInputChange(setComapnyDetails, { smallLogo: "", largeLogo: "" });
         handleInputChange(setJobdetails, "imagePath", "");
 
@@ -266,7 +260,6 @@ const AddjobsComponent = () => {
                 handleInputChange(setJobdetails, "imagePath", link);
             }
         } else {
-            // TODO: Need to compress big images also
             if (fileSize < 500000) {
                 link = await generateLinkfromImage(e, false);
                 handleInputChange(setComapnyDetails, "largeLogo", link);
@@ -282,12 +275,10 @@ const AddjobsComponent = () => {
         setShowLoader(true);
         let jobDetailsforAPI = {};
 
-        // update already existing company details
         if (!!selectedCompany && !!selectedCompany?._id) {
             updateCompanyDetailsHelper(comapnyDetails, selectedCompany?._id);
             jobDetailsforAPI = { ...jobdetails, companyId: selectedCompany?._id };
         } else {
-            // if company details not present add company details before adding job details
             let companyId = await submitCompanyDetailsHelper(comapnyDetails);
             jobDetailsforAPI = { ...jobdetails, companyId: companyId?.id };
         }
@@ -326,11 +317,8 @@ const AddjobsComponent = () => {
     // handle company job title change
     const handleJobRoleChange = (role) => {
         const jobTitle = generateJobTitle(jobdetails?.companyName || "", role);
-
-        // Update role and title without affecting tags
         handleInputChange(setJobdetails, { role, title: jobTitle });
 
-        // Special handling for intern roles
         if (role?.toLowerCase()?.includes("intern")) {
             handleInputChange(setJobdetails, {
                 jobtype: "Internship",
@@ -367,30 +355,20 @@ const AddjobsComponent = () => {
     };
 
     const filterJobBasedonName = (companyList, companyNameToFind) => {
-        // Early return if no company list or no company name to find
         if (!companyList || !Array.isArray(companyList) || companyList.length === 0) {
             return;
         }
 
-        // Determine which company name to use, prioritizing the passed parameter
         const nameToFind = companyNameToFind || comapnyDetails?.companyName || companyName;
+        if (!nameToFind) return;
 
-        if (!nameToFind) {
-            return;
-        }
-
-        // Normalize the name for case-insensitive comparison
         const normalizedNameToFind = nameToFind.toLowerCase().trim();
-
-        // Find the company in the list
         const companyData = companyList.find((item) => {
             if (!item?.companyName) return false;
-
             const normalizedCompanyName = item.companyName.toLowerCase().trim();
             return normalizedCompanyName === normalizedNameToFind || normalizedCompanyName.includes(normalizedNameToFind);
         });
 
-        // Set the selected company if found
         if (companyData) {
             setSelectedCompany(companyData);
         }
@@ -408,7 +386,6 @@ const AddjobsComponent = () => {
         const urlParams = new URLSearchParams(window.location.search);
         const jobId = urlParams.get("jobid");
 
-        // Validate ObjectId format (24-character hex string)
         if (jobId && /^[a-f\d]{24}$/i.test(jobId)) {
             setSavedJobId(jobId);
             fetchJobDetails(jobId);
@@ -426,43 +403,32 @@ const AddjobsComponent = () => {
                 return;
             }
 
-            // Batch state updates for better performance
             const jobDetailsUpdates = {};
             const companyDetailsUpdates = {};
-
-            // Fields that should not be set via mass assignment
             const blockedFields = new Set(["_id", "companyId", "isActive", "priority"]);
 
-            // Process all fields first
             Object.keys(parsedData).forEach((key) => {
-                // Prevent mass assignment of sensitive fields
                 if (blockedFields.has(key)) return;
 
                 if (key in jobdetails) {
-                    // Special handling for tags and skilltags arrays to ensure they're properly processed
                     if ((key === "tags" || key === "skilltags") && Array.isArray(parsedData[key])) {
-                        jobDetailsUpdates[key] = [...parsedData[key]]; // Create a copy of the array
+                        jobDetailsUpdates[key] = [...parsedData[key]];
                     } else if (key === "link" && typeof parsedData[key] === "string") {
-                        // Sanitize URL fields to prevent javascript: URIs
                         jobDetailsUpdates[key] = safeUrl(parsedData[key]);
                     } else if (typeof parsedData[key] === "string" && parsedData[key].length < 10000) {
-                        // Validate string length to prevent DoS via huge strings
                         jobDetailsUpdates[key] = parsedData[key];
                     } else if (typeof parsedData[key] !== "string") {
-                        // Allow non-string types (arrays, etc) if already validated above
                         jobDetailsUpdates[key] = parsedData[key];
                     }
                 }
                 if (key in comapnyDetails) {
                     if (typeof comapnyDetails[key] === "string" && parsedData[key]?.length > 10000) {
-                        // Skip fields with suspiciously large strings
                         return;
                     }
                     companyDetailsUpdates[key] = parsedData[key];
                 }
             });
 
-            // Apply batch updates
             if (Object.keys(jobDetailsUpdates).length > 0) {
                 handleInputChange(setJobdetails, jobDetailsUpdates);
             }
@@ -471,19 +437,13 @@ const AddjobsComponent = () => {
                 handleInputChange(setComapnyDetails, companyDetailsUpdates);
             }
 
-            // Handle special fields that need additional processing
             if (parsedData.companyName) {
                 handleCompanyNameChange(parsedData.companyName);
-
-                // Find and set the selected company if company list is available
                 if (comapnyListData && comapnyListData.length > 0) {
                     filterJobBasedonName(comapnyListData, parsedData.companyName);
                 }
             }
 
-            // Handle role separately to trigger title generation
-            // Note: We're not generating tags from role here anymore since we want to preserve
-            // any tags that came from the JSON data
             if (parsedData.role) {
                 handleJobRoleChange(parsedData.role);
             }
@@ -492,7 +452,7 @@ const AddjobsComponent = () => {
         }
     };
 
-    // Textarea change handler - separated for clarity
+    // Textarea change handler
     const handleTextareaChange = (e) => {
         const newValue = e.target.value;
         setJobdataInfo(newValue);
@@ -525,259 +485,273 @@ const AddjobsComponent = () => {
     }, []);
 
     return (
-        <div className="bg-background px-10 py-4 w-full max-w-full box-border overflow-x-hidden max-lg:px-4">
-            <textarea
-                className="w-full h-[140px] p-4 rounded-md border border-[#b3b3b3] text-base font-sans bg-white resize-y outline-none mb-4 focus:border-primary placeholder:text-[#757575]"
-                placeholder="Paste job details JSON here"
-                value={jobdataInfo || ""}
-                onChange={handleTextareaChange}
-                aria-label="Job details JSON input"
-            />
+        <div className="max-w-full overflow-x-hidden">
+            <h2 className="text-2xl font-semibold mb-6">{jobAlreadyExist ? "Update" : "Add"} Job Details</h2>
 
-            <h2>{jobAlreadyExist ? "Update" : "Add"} job details : </h2>
-
-            {/* circular overlay loader  */}
+            {/* circular overlay loader */}
             {!!showLoader && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20">
                     <div className="h-[90px] w-[90px] animate-spin rounded-full border-4 border-primary border-t-transparent" />
                 </div>
             )}
 
-            {/* main job details input section  */}
-            <div className="flex justify-between gap-4 w-full mt-4 max-xl:flex-col">
-                <div className="w-[70%] max-xl:w-full">
-                    <div className="flex justify-between items-center gap-2 mb-4 max-lg:flex-col max-lg:gap-4 max-lg:items-start max-lg:w-full">
-                        <p></p>
-                        <SearchBar
-                            handleCompanyNameChange={handleCompanyNameChange}
-                            width="400px"
-                            searchSuggestionList={comapnyListData}
-                            selectedCompany={selectedCompany}
-                            setSelectedCompany={setSelectedCompany}
-                        />
-                        <CustomTextField label="Role of the job *" value={jobdetails?.role || ""} onChange={(val) => handleJobRoleChange(val)} fullWidth />
-                    </div>
-                    <div className="flex justify-between gap-4 mb-2 flex-wrap max-sm:flex-col max-sm:items-start">
-                        <p className="whitespace-nowrap font-medium">Select tags* : </p>
-                        <div className="flex flex-wrap gap-1">
-                            {categoriesWithTags}
-                        </div>
-                    </div>
-
-                    {/* Skill Tags Input Section */}
-                    <div className="my-6 w-full">
-                        <h3 className="mb-2 text-base font-medium text-[#333]">Skills Required</h3>
-                        <div className="flex justify-between gap-4 mb-4 max-sm:flex-col max-sm:items-stretch">
-                            <Button
-                                variant="default"
-                                onClick={handleAddSkillTag}
-                                disabled={!customSkillTag.trim()}
-                                className="h-10 min-w-[120px] text-base px-4 max-sm:w-full capitalize"
-                            >
-                                Add Skill
-                            </Button>
-                            <CustomTextField label="Add skill" value={customSkillTag} onChange={(val) => setCustomSkillTag(val)} fullWidth placeholder="Type a skill and press Enter to add" />
-                        </div>
-
-                        {/* Common skill tags for quick selection */}
-                        <div className="my-4 mb-6">
-                            <p className="mb-2 font-medium text-[#555]">Common skills (click to add):</p>
-                            <div className="flex flex-wrap gap-2 mb-2">{skillTagsWithChips}</div>
-                        </div>
-
-                        {/* Display selected skill tags */}
-                        {jobdetails.skilltags.length > 0 && (
-                            <div className="mt-4">
-                                <p className="mb-2 font-medium text-[#555]">Skills required for this job:</p>
-                                <div className="flex flex-wrap gap-2 mb-2">
-                                    {jobdetails.skilltags.map((skill) => (
-                                        <Badge key={skill} className="mb-2 transition-all hover:-translate-y-0.5">
-                                            {skill}
-                                            <button onClick={() => handleRemoveSkillTag(skill)}>
-                                                <X className="ml-1 h-3 w-3" />
-                                            </button>
-                                        </Badge>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    <CustomTextField
-                        fullWidth
-                        label={igbannertitle?.length > 30 ? "Max length is 30" : "Banner title of the job (for instagram or linkedin)"}
-                        value={igbannertitle}
-                        onChange={(val) => setIgbannertitle(val)}
-                        error={igbannertitle?.length > 26}
+            {/* JSON Paste Section */}
+            <Card className="mb-6">
+                <CardContent className="pt-6">
+                    <textarea
+                        className="w-full h-[120px] p-4 rounded-md border border-input bg-background text-sm resize-y outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
+                        placeholder="Paste job details JSON here"
+                        value={jobdataInfo || ""}
+                        onChange={handleTextareaChange}
+                        aria-label="Job details JSON input"
                     />
+                </CardContent>
+            </Card>
 
-                    <CustomTextField label="Link for the job application *" value={jobdetails?.link || ""} onChange={(val) => handleInputChange(setJobdetails, "link", val)} fullWidth />
+            {/* Main job details section */}
+            <div className="flex justify-between gap-6 w-full max-xl:flex-col">
+                <div className="w-[70%] max-xl:w-full space-y-6">
+                    {/* Company & Role */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg">Company & Role</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="flex justify-between items-center gap-4 max-lg:flex-col max-lg:items-start max-lg:w-full">
+                                <SearchBar
+                                    handleCompanyNameChange={handleCompanyNameChange}
+                                    width="400px"
+                                    searchSuggestionList={comapnyListData}
+                                    selectedCompany={selectedCompany}
+                                    setSelectedCompany={setSelectedCompany}
+                                />
+                                <CustomTextField label="Role of the job *" value={jobdetails?.role || ""} onChange={(val) => handleJobRoleChange(val)} fullWidth />
+                            </div>
 
-                    <div className="flex justify-between items-center gap-2 mb-4 max-lg:flex-col max-lg:gap-4 max-lg:items-start max-lg:w-full">
-                        <CustomTextField
-                            label="Job Id (Mentioned in official page)"
-                            value={jobdetails.jobId}
-                            onBlur={fetchJobDetails}
-                            onChange={(val) => handleInputChange(setJobdetails, "jobId", val)}
-                            fullWidth
-                        />
-                        <CustomTextField
-                            label="Degree required*"
-                            value={jobdetails.degree}
-                            onChange={(val) => handleInputChange(setJobdetails, "degree", val)}
-                            fullWidth
-                            type="select"
-                            optionData={degreeOptions}
-                        />
-                    </div>
+                            <div>
+                                <p className="text-sm font-medium mb-2">Select tags* :</p>
+                                <div className="flex flex-wrap gap-1.5">{categoriesWithTags}</div>
+                            </div>
+                        </CardContent>
+                    </Card>
 
-                    <div className="flex justify-between items-center gap-2 mb-4 max-lg:flex-col max-lg:gap-4 max-lg:items-start max-lg:w-full">
-                        <CustomTextField
-                            label="Experience needed *"
-                            value={jobdetails.experience}
-                            onChange={(val) => handleInputChange(setJobdetails, "experience", val)}
-                            fullWidth
-                            type="select"
-                            optionData={expOptions}
-                        />
+                    {/* Skills Section */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg">Skills Required</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="flex gap-4 max-sm:flex-col max-sm:items-stretch">
+                                <Button
+                                    variant="default"
+                                    onClick={handleAddSkillTag}
+                                    disabled={!customSkillTag.trim()}
+                                    className="h-10 min-w-[120px] capitalize"
+                                >
+                                    Add Skill
+                                </Button>
+                                <CustomTextField label="Add skill" value={customSkillTag} onChange={(val) => setCustomSkillTag(val)} fullWidth placeholder="Type a skill and click Add" />
+                            </div>
 
-                        <CustomTextField
-                            label="Batch eligible*"
-                            value={jobdetails.batch}
-                            onChange={(val) => handleInputChange(setJobdetails, "batch", val)}
-                            fullWidth
-                            type="select"
-                            optionData={batchOptions}
-                        />
-                    </div>
-                    <div className="flex justify-between items-center gap-2 mb-4 max-lg:flex-col max-lg:gap-4 max-lg:items-start max-lg:w-full">
-                        <CustomTextField
-                            label="Location *"
-                            value={jobdetails.location}
-                            onChange={(val) => handleInputChange(setJobdetails, "location", val)}
-                            fullWidth
-                            type="select"
-                            optionData={locOptions}
-                        />
-                        <CustomTextField
-                            label="Work Mode *"
-                            value={jobdetails.workMode}
-                            onChange={(val) => handleInputChange(setJobdetails, "workMode", val)}
-                            fullWidth
-                            type="select"
-                            optionData={workmodeOptions}
-                        />
-                    </div>
-                    <div className="flex justify-between items-center gap-2 mb-4 max-lg:flex-col max-lg:gap-4 max-lg:items-start max-lg:w-full">
-                        <CustomTextField
-                            label="Expected salary"
-                            sx={{ width: "50%" }}
-                            value={jobdetails.salary}
-                            onChange={(val) => handleInputChange(setJobdetails, "salary", val)}
-                            optionData={batchOptions}
-                        />
-                        <CustomTextField
-                            label="Type of Job"
-                            sx={{ width: "50%" }}
-                            value={jobdetails.jobtype}
-                            onChange={(val) => handleInputChange(setJobdetails, "jobtype", val)}
-                            type="select"
-                            optionData={jobTypeOptions}
-                        />
-                    </div>
-                    <div className="flex justify-between items-center gap-2 mb-4 max-lg:flex-col max-lg:gap-4 max-lg:items-start max-lg:w-full">
-                        <CustomTextField
-                            label="Type of the company"
-                            value={jobdetails.companytype}
-                            onChange={(val) => handleInputChange(setJobdetails, "companytype", val)}
-                            sx={{ width: "50%" }}
-                            type="select"
-                            optionData={companyTypeOptions}
-                        />
-                        <CustomTextField
-                            label="Redirection platform"
-                            value={jobdetails.platform}
-                            onChange={(val) => handleInputChange(setJobdetails, "platform", val)}
-                            sx={{ width: "50%" }}
-                            type="select"
-                            optionData={platformOptions}
-                        />
-                    </div>
+                            <div>
+                                <p className="text-sm text-muted-foreground mb-2">Common skills (click to add):</p>
+                                <div className="flex flex-wrap gap-1.5">{skillTagsWithChips}</div>
+                            </div>
 
-                    <div className="flex justify-between items-center gap-2 flex-wrap my-4 items-start flex-col w-full">
-                        <label className="text-xs text-text-secondary mb-1">Last date to apply</label>
-                        <input
-                            className="p-4 rounded-md border border-[#b3b3b3] text-start w-1/2 text-base max-sm:w-full focus:outline-none focus:border-primary"
-                            type="date"
-                            value={jobdetails.lastdate}
-                            min="2018-01-01"
-                            max="2026-12-31"
-                            onChange={(e) => handleInputChange(setJobdetails, "lastdate", e.target.value)}
-                        />
-                    </div>
-                    <CustomTextField label="Priority" value={jobdetails.priority} onChange={(val) => handleInputChange(setJobdetails, "priority", val)} sx={{ width: "50%" }} />
+                            {jobdetails.skilltags.length > 0 && (
+                                <div>
+                                    <p className="text-sm text-muted-foreground mb-2">Selected skills:</p>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {jobdetails.skilltags.map((skill) => (
+                                            <Badge key={skill} className="transition-all hover:-translate-y-0.5">
+                                                {skill}
+                                                <button onClick={() => handleRemoveSkillTag(skill)}>
+                                                    <X className="ml-1 h-3 w-3" />
+                                                </button>
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+
+                    {/* Job Details */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="text-lg">Job Details</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <CustomTextField
+                                fullWidth
+                                label={igbannertitle?.length > 30 ? "Max length is 30" : "Banner title (for IG/LinkedIn)"}
+                                value={igbannertitle}
+                                onChange={(val) => setIgbannertitle(val)}
+                                error={igbannertitle?.length > 26}
+                            />
+
+                            <CustomTextField label="Link for the job application *" value={jobdetails?.link || ""} onChange={(val) => handleInputChange(setJobdetails, "link", val)} fullWidth />
+
+                            <div className="grid grid-cols-2 gap-4 max-lg:grid-cols-1">
+                                <CustomTextField
+                                    label="Job Id (Official page)"
+                                    value={jobdetails.jobId}
+                                    onBlur={fetchJobDetails}
+                                    onChange={(val) => handleInputChange(setJobdetails, "jobId", val)}
+                                    fullWidth
+                                />
+                                <CustomTextField
+                                    label="Degree required*"
+                                    value={jobdetails.degree}
+                                    onChange={(val) => handleInputChange(setJobdetails, "degree", val)}
+                                    fullWidth
+                                    type="select"
+                                    optionData={degreeOptions}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 max-lg:grid-cols-1">
+                                <CustomTextField
+                                    label="Experience needed *"
+                                    value={jobdetails.experience}
+                                    onChange={(val) => handleInputChange(setJobdetails, "experience", val)}
+                                    fullWidth
+                                    type="select"
+                                    optionData={expOptions}
+                                />
+                                <CustomTextField
+                                    label="Batch eligible*"
+                                    value={jobdetails.batch}
+                                    onChange={(val) => handleInputChange(setJobdetails, "batch", val)}
+                                    fullWidth
+                                    type="select"
+                                    optionData={batchOptions}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 max-lg:grid-cols-1">
+                                <CustomTextField
+                                    label="Location *"
+                                    value={jobdetails.location}
+                                    onChange={(val) => handleInputChange(setJobdetails, "location", val)}
+                                    fullWidth
+                                    type="select"
+                                    optionData={locOptions}
+                                />
+                                <CustomTextField
+                                    label="Work Mode *"
+                                    value={jobdetails.workMode}
+                                    onChange={(val) => handleInputChange(setJobdetails, "workMode", val)}
+                                    fullWidth
+                                    type="select"
+                                    optionData={workmodeOptions}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 max-lg:grid-cols-1">
+                                <CustomTextField
+                                    label="Expected salary"
+                                    value={jobdetails.salary}
+                                    onChange={(val) => handleInputChange(setJobdetails, "salary", val)}
+                                    fullWidth
+                                />
+                                <CustomTextField
+                                    label="Type of Job"
+                                    value={jobdetails.jobtype}
+                                    onChange={(val) => handleInputChange(setJobdetails, "jobtype", val)}
+                                    fullWidth
+                                    type="select"
+                                    optionData={jobTypeOptions}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 max-lg:grid-cols-1">
+                                <CustomTextField
+                                    label="Type of the company"
+                                    value={jobdetails.companytype}
+                                    onChange={(val) => handleInputChange(setJobdetails, "companytype", val)}
+                                    fullWidth
+                                    type="select"
+                                    optionData={companyTypeOptions}
+                                />
+                                <CustomTextField
+                                    label="Redirection platform"
+                                    value={jobdetails.platform}
+                                    onChange={(val) => handleInputChange(setJobdetails, "platform", val)}
+                                    fullWidth
+                                    type="select"
+                                    optionData={platformOptions}
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4 max-lg:grid-cols-1">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium">Last date to apply</label>
+                                    <input
+                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                        type="date"
+                                        value={jobdetails.lastdate}
+                                        min="2018-01-01"
+                                        max="2026-12-31"
+                                        onChange={(e) => handleInputChange(setJobdetails, "lastdate", e.target.value)}
+                                    />
+                                </div>
+                                <CustomTextField label="Priority" value={jobdetails.priority} onChange={(val) => handleInputChange(setJobdetails, "priority", val)} fullWidth />
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {!!jobAlreadyExist && (
+                        <Card>
+                            <CardContent className="pt-6">
+                                <div className="flex items-center gap-3">
+                                    <span className="text-sm font-medium">Job expired:</span>
+                                    <Switch
+                                        checked={jobdetails.isActive}
+                                        onCheckedChange={() => handleInputChange(setJobdetails, "isActive", !jobdetails.isActive)}
+                                    />
+                                    <Label className="text-muted-foreground">Turn off if expired</Label>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
                 </div>
             </div>
-            {!!jobAlreadyExist && (
-                <>
-                    <CustomDivider />
-                    <h3>
-                        Is job expired :
-                        <div className="flex items-center gap-2 inline-flex ml-2">
-                            <Switch
-                                checked={jobdetails.isActive}
-                                onCheckedChange={() => handleInputChange(setJobdetails, "isActive", !jobdetails.isActive)}
-                            />
-                            <Label>Turn off if the job is expired</Label>
+
+            {/* Company Logos Section */}
+            <Card className="mt-6">
+                <CardHeader>
+                    <CardTitle className="text-lg">Company Logos</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="flex items-center gap-4 flex-wrap">
+                        <div className="space-y-1">
+                            <p className="text-sm font-medium">Small Logo (Max 20kb)</p>
+                            <input type="file" className="text-sm text-muted-foreground file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-secondary file:text-secondary-foreground cursor-pointer" onChange={(e) => handleCompanyLogoInput(e)} />
                         </div>
-                    </h3>
-                </>
-            )}
-
-            <CustomDivider />
-            <div>
-                <>
-                    {/* company logo upload section  */}
-                    <div style={{ display: "flex" }}>
-                        <p style={{ paddingRight: "10px", fontWeight: "600" }}>
-                            <span>**</span> Upload Company logo (Max Size 20kb) :
-                        </p>
-
-                        <input type="file" onChange={(e) => handleCompanyLogoInput(e)} />
-                        <p>File Size : {companyLogoSize}</p>
+                        <p className="text-sm text-muted-foreground">Size: {companyLogoSize}kb</p>
+                        {comapnyDetails.smallLogo && <img src={comapnyDetails.smallLogo} width="50" height="50" alt="logo" className="rounded" />}
                     </div>
-                    {companyLogoSize > 10 && <p className="text-destructive text-sm mt-4">Image size should be less then 10 kb after compression</p>}
+                    {companyLogoSize > 10 && <p className="text-destructive text-sm">Image size should be less than 10kb after compression</p>}
 
-                    {!!comapnyDetails.smallLogo && (
-                        <div style={{ display: "flex", marginTop: "10px", alignItems: "center" }}>
-                            <p style={{ paddingRight: "10px" }}>Logo uploaded :</p>
-                            <img src={comapnyDetails.smallLogo} width="50" height="50" alt="logo" />
+                    <div className="flex items-center gap-4 flex-wrap">
+                        <div className="space-y-1">
+                            <p className="text-sm font-medium">Banner Logo</p>
+                            <input accept="image/*" type="file" className="text-sm text-muted-foreground file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-secondary file:text-secondary-foreground cursor-pointer" onChange={(e) => handleCompanyLogoInput(e, false)} />
                         </div>
-                    )}
-
-                    <div style={{ justifyContent: "flex-start", marginTop: "40px" }} className="flex justify-between items-center gap-2 flex-wrap">
-                        <div className="flex justify-between items-center gap-2 flex-wrap">
-                            <h4>* Company Logo for Banner : </h4>
-                            <label htmlFor="contained-button-file">
-                                <input accept="image/*" id="contained-button-file" multiple type="file" onChange={(e) => handleCompanyLogoInput(e, false)} />
-                            </label>
-                        </div>
+                        {comapnyDetails.largeLogo && <img src={comapnyDetails.largeLogo} width="200" height="60" alt="logo" className="rounded" />}
                     </div>
+                </CardContent>
+            </Card>
 
-                    {!!comapnyDetails.largeLogo && (
-                        <div style={{ display: "flex", marginTop: "10px", alignItems: "center" }}>
-                            <p style={{ paddingRight: "10px" }}>Logo uploaded :</p>
-                            <img src={comapnyDetails.largeLogo} width="200" height="60" alt="logo" />
-                        </div>
-                    )}
-                </>
-
-                <CustomDivider />
-                <div>
-                    <h3>Enter company Informations : </h3>
+            {/* Company Information */}
+            <Card className="mt-6">
+                <CardHeader>
+                    <CardTitle className="text-lg">Company Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
                     <CustomTextField fullWidth label="Company careers page" value={comapnyDetails.careerPageLink} onChange={(val) => handleInputChange(setComapnyDetails, "careerPageLink", val)} />
-
-                    <CustomTextField fullWidth label="Linkeding page link" value={comapnyDetails.linkedinPageLink} onChange={(val) => handleInputChange(setComapnyDetails, "linkedinPageLink", val)} />
+                    <CustomTextField fullWidth label="LinkedIn page link" value={comapnyDetails.linkedinPageLink} onChange={(val) => handleInputChange(setComapnyDetails, "linkedinPageLink", val)} />
                     <CustomTextField
                         fullWidth
                         label="Type of the company"
@@ -786,66 +760,63 @@ const AddjobsComponent = () => {
                         type="select"
                         optionData={comapnyTypeOption}
                     />
-                    <CustomCKEditor label="About the company : " value={comapnyDetails.companyInfo} onChange={(val) => handleCompanyInfoChange(val)} />
-                    <CustomDivider />
-                </div>
+                    <CustomCKEditor label="About the company" value={comapnyDetails.companyInfo} onChange={(val) => handleCompanyInfoChange(val)} />
+                </CardContent>
+            </Card>
 
-                <div className="flex justify-between items-center gap-2 flex-wrap">
-                    <Button
-                        onClick={() => downloadImagefromCanvasHelper(jobdetails?.companyName, canvasId, false)}
-                        variant="default"
-                        className="capitalize"
-                    >
-                        Download IG Banner
-                        <CloudDownload className="ml-2 h-4 w-4" />
-                    </Button>
-                </div>
-                <br />
+            {/* Banner Download */}
+            <div className="my-6">
+                <Button
+                    onClick={() => downloadImagefromCanvasHelper(jobdetails?.companyName, canvasId, false)}
+                    variant="outline"
+                    className="capitalize"
+                >
+                    Download IG Banner
+                    <CloudDownload className="ml-2 h-4 w-4" />
+                </Button>
             </div>
 
-            {/* job description section  */}
-            <div>
-                <div>
-                    <div className="flex items-center gap-2">
+            {/* Job Description Section */}
+            <Card className="mb-6">
+                <CardHeader>
+                    <div className="flex items-center gap-3">
                         <Switch
                             checked={jobdetails.jdpage}
                             onCheckedChange={() => handleInputChange(setJobdetails, "jdpage", !jobdetails.jdpage)}
                         />
-                        <Label>Add Job description fields*</Label>
+                        <CardTitle className="text-lg">Job Description Fields</CardTitle>
                     </div>
-                </div>
-
+                </CardHeader>
                 {!!jobdetails.jdpage && (
-                    <div className="w-full overflow-x-hidden">
-                        <div className="grid grid-cols-1 gap-6 w-full">
-                            <CustomCKEditor label="Job Description : " value={jobdetails.jobdesc} onChange={(val) => handleInputChange(setJobdetails, "jobdesc", val)} />
-                            <CustomCKEditor label="Eligibility Criteria : " value={jobdetails.eligibility} onChange={(val) => handleInputChange(setJobdetails, "eligibility", val)} />
-                            <CustomCKEditor label="Responsibility of the job : " value={jobdetails.responsibility} onChange={(val) => handleInputChange(setJobdetails, "responsibility", val)} />
-                            <CustomCKEditor label="Benifits : " value={jobdetails.benifits} onChange={(val) => handleInputChange(setJobdetails, "benifits", val)} />
-                            <CustomCKEditor label="Skills needed : " value={jobdetails.skills} onChange={(val) => handleInputChange(setJobdetails, "skills", val)} />
-                        </div>
-                    </div>
+                    <CardContent className="space-y-6">
+                        <CustomCKEditor label="Job Description" value={jobdetails.jobdesc} onChange={(val) => handleInputChange(setJobdetails, "jobdesc", val)} />
+                        <CustomCKEditor label="Eligibility Criteria" value={jobdetails.eligibility} onChange={(val) => handleInputChange(setJobdetails, "eligibility", val)} />
+                        <CustomCKEditor label="Responsibility" value={jobdetails.responsibility} onChange={(val) => handleInputChange(setJobdetails, "responsibility", val)} />
+                        <CustomCKEditor label="Benefits" value={jobdetails.benifits} onChange={(val) => handleInputChange(setJobdetails, "benifits", val)} />
+                        <CustomCKEditor label="Skills needed" value={jobdetails.skills} onChange={(val) => handleInputChange(setJobdetails, "skills", val)} />
+                    </CardContent>
                 )}
-                <CustomDivider />
-            </div>
+            </Card>
 
-            <div className="mt-10">
-                <div>
-                    <p>Upload JD banner : </p>
-                    <input type="file" onChange={(e) => generateImageCDNlink(e)} />
-                </div>
-                <div>
-                    <p>Banner Link : </p>
-                    <p className="cursor-pointer" style={{ wordBreak: "break-all", maxWidth: "100%" }}>
-                        {jobdetails.jdBanner}
-                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyToClipBoard(jobdetails.jdBanner)}>
-                            <Copy className="h-3 w-3" />
-                        </Button>
-                    </p>
-                </div>
-                <CustomDivider />
-            </div>
+            {/* JD Banner Upload */}
+            <Card className="mb-6">
+                <CardContent className="pt-6 space-y-3">
+                    <div className="flex items-center gap-4">
+                        <p className="text-sm font-medium">Upload JD banner:</p>
+                        <input type="file" className="text-sm text-muted-foreground file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-secondary file:text-secondary-foreground cursor-pointer" onChange={(e) => generateImageCDNlink(e)} />
+                    </div>
+                    {jobdetails.jdBanner !== "N" && (
+                        <div className="flex items-center gap-2">
+                            <p className="text-sm text-muted-foreground break-all">{jobdetails.jdBanner}</p>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={() => copyToClipBoard(jobdetails.jdBanner)}>
+                                <Copy className="h-3 w-3" />
+                            </Button>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
 
+            {/* Submit Button */}
             <div className="w-[70%] mb-10 max-xl:w-full">
                 <Button
                     className="w-full py-2 text-base capitalize"
@@ -860,9 +831,10 @@ const AddjobsComponent = () => {
                     )}
                 </Button>
             </div>
+
             <CustomDivider />
 
-            {/* instagram banner */}
+            {/* Canvas - DO NOT MODIFY */}
             <Canvas jobdetails={jobdetails} comapnyDetails={comapnyDetails} igbannertitle={igbannertitle} />
         </div>
     );
