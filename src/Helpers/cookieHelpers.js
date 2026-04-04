@@ -4,7 +4,7 @@ export const setCookie = (cname, cvalue, minutes = 10) => {
     date.setTime(date.getTime() + (minutes * 60 * 1000));
     const expires = "expires=" + date.toUTCString();
 
-    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/;SameSite=Lax";
 };
 
 // get cookie value from name

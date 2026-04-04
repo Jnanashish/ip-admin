@@ -12,7 +12,7 @@ const sendTelegramMsgHelper = async (chanelName, title, batch, degree, link) => 
     const btitle = title.replace(/[A-Za-z]/g, translate);
     const msg = btitle + "%0A%0ABatch%20%3A%20" + batch + "%0A%0ADegree%20%3A%20" + degree + "%0A%0AApply Link%20%3A%20" + link;
 
-    return fetch(`https://api.telegram.org/botw${BOT_API_KEY}/sendMessage?chat_id=${chanelName}&text=${msg}&disable_web_page_preview=true&disable_notification=true`, { method: "POST" })
+    return fetch(`https://api.telegram.org/bot${BOT_API_KEY}/sendMessage?chat_id=${chanelName}&text=${msg}&disable_web_page_preview=true&disable_notification=true`, { method: "POST" })
         .then((res) => {
             showSuccessToast("Message sent");
         })
@@ -25,7 +25,7 @@ const sendTelegramMsgwithImageHelper = async (chanelName, title, link, telegramb
     const btitle = title.replace(/[A-Za-z]/g, translate);
     const msg = btitle + "%0A%0AApply Link%20%3A%20" + link;
 
-    return fetch(`https://api.telegram.org/botw${BOT_API_KEY}/sendPhoto?chat_id=${chanelName}&photo=${telegrambanner}&caption=${msg}&disable_web_page_preview=true&disable_notification=true`, {
+    return fetch(`https://api.telegram.org/bot${BOT_API_KEY}/sendPhoto?chat_id=${chanelName}&photo=${telegrambanner}&caption=${msg}&disable_web_page_preview=true&disable_notification=true`, {
         method: "POST",
     })
         .then((res) => {

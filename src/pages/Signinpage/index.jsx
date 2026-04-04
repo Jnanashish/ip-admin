@@ -1,75 +1,65 @@
 import React, { useState, useContext } from "react";
 import { Navigate } from "react-router-dom";
+import { showErrorToast } from "../../Helpers/toast";
 
-import styles from "./signin.module.scss";
 import { UserContext } from "../../Context/userContext";
-import { Button, InputAdornment } from "@mui/material";
+import { Button } from "Components/ui/button";
 import CustomTextField from "../../Components/Input/Textfield";
-import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import { Eye, EyeOff } from "lucide-react";
 import Loader from "../../Components/Loader";
-import { setCookie, getCookie } from "../../Helpers/cookieHelpers";
 
-// firebase stuff
-import { initializeApp } from "firebase/app";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import firebaseConfig from "../../Config/firebase_config";
-initializeApp(firebaseConfig);
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../Config/firebase_config";
 
 const Signin = () => {
-    const context = useContext(UserContext);
+    const { user } = useContext(UserContext);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isPassword, setIsPassword] = useState(true);
     const [showLoader, setShowLoader] = useState(false);
 
-    // when sign in button is clicked login with firebase
     const handleSignin = () => {
         setShowLoader(true);
 
-        const auth = getAuth();
         signInWithEmailAndPassword(auth, email, password)
-            .then((res) => {
+            .then(() => {
                 setShowLoader(false);
-                context.setUser({ email: res.user?.email });
-                if (res?.user?.email === process.env.REACT_APP_ADMIN_EMAIL) {
-                    context.setIsAdmin(true);
-                    setCookie("isLogedIn", "TRUE");
-                }
+                localStorage.setItem("loginTimestamp", Date.now().toString());
             })
             .catch((err) => {
                 setShowLoader(false);
-                alert(err.message);
+                showErrorToast(err.message);
             });
     };
 
-    // if user is loged in redirect to addjob page
-    if (!!context.user?.email || getCookie("isLogedIn")) {
+    if (user?.email) {
         return <Navigate to="/addjob" />;
     }
 
     return (
-        <div style={{ position: "relative" }}>
-            <div className={styles.container}>
+        <div className="relative">
+            <div className="flex flex-col mt-[100px] mx-auto items-start text-left w-[60%] max-lg:w-[90%] max-lg:mt-[50px] space-y-5">
                 <h1>Sign in for Admin</h1>
                 <p>Enter your email</p>
-                <CustomTextField value={email} fullWidth className={styles.input_field} onChange={(val) => setEmail(val)} type="email" />
+                <CustomTextField value={email} fullWidth onChange={(val) => setEmail(val)} type="email" />
                 <p>Enter password</p>
-                <CustomTextField
-                    value={password}
-                    fullWidth
-                    className={styles.input_field}
-                    onChange={(val) => setPassword(val)}
-                    type={isPassword ? "password" : "text"}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment style={{ cursor: "pointer" }} onClick={() => setIsPassword(!isPassword)} position="start">
-                                <RemoveRedEyeIcon />
-                            </InputAdornment>
-                        ),
-                    }}
-                />
+                <div className="relative w-full">
+                    <CustomTextField
+                        value={password}
+                        fullWidth
+                        onChange={(val) => setPassword(val)}
+                        type={isPassword ? "password" : "text"}
+                    />
+                    <button
+                        type="button"
+                        className="absolute right-3 top-1/2 translate-y-[-20%] text-gray-500 hover:text-gray-700"
+                        onClick={() => setIsPassword(!isPassword)}
+                    >
+                        {isPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+                    </button>
+                </div>
 
-                <Button className={styles.button} onClick={handleSignin} variant="contained">
+                <Button className="w-full mt-8 capitalize" onClick={handleSignin} variant="default">
                     Sign in
                 </Button>
             </div>

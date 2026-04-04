@@ -1,13 +1,15 @@
 import React, { useState, useContext, useEffect, useMemo, useCallback } from "react";
-import styles from "./joblinks.module.scss";
 
 import Custombutton from "../../Components/Button/Custombutton";
 import CustomDivider from "../../Components/Divider/Divider";
 
-// mui imports
-import SendIcon from "@mui/icons-material/Send";
+// icons
+import { Send } from "lucide-react";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import { Switch, FormControlLabel, CircularProgress, Checkbox } from "@mui/material";
+
+// shadcn
+import { Checkbox } from "Components/ui/checkbox";
+import { Switch } from "Components/ui/switch";
 
 // import components
 import Adminlinkcard from "./Components/Adminlinkcard/Adminlinkcard";
@@ -45,7 +47,7 @@ const JobListing = () => {
     // fetch job details
     const getJobDetailsData = useCallback(async () => {
         if (isApiCalled) return;
-        
+
         setIsApiCalled(true);
         try {
             const params = {
@@ -78,7 +80,7 @@ const JobListing = () => {
 
     // select multiple jobs to generate message, caption
     const handleSelectJob = useCallback((item) => {
-        setSelectedJob(prev => 
+        setSelectedJob(prev =>
             prev.some(job => job._id === item._id)
                 ? prev.filter(job => job._id !== item._id)
                 : [...prev, item]
@@ -88,9 +90,9 @@ const JobListing = () => {
     // Memoized job expiration handler
     const handleExpireJob = useCallback((jobdata) => {
         const updatedJobData = { ...jobdata, isActive: !jobdata?.isActive };
-        setFilteredData(prev => 
-            prev.map(item => 
-                item._id === jobdata._id 
+        setFilteredData(prev =>
+            prev.map(item =>
+                item._id === jobdata._id
                     ? { ...item, isActive: !jobdata?.isActive }
                     : item
             )
@@ -155,31 +157,29 @@ const JobListing = () => {
 
     // Memoized job card render function
     const renderJobCard = useCallback((item) => (
-        <div key={item._id} className={styles.updatedata_con}>
+        <div key={item._id}>
             <Adminlinkcard item={item} />
-            <div className={styles.adminlink_con}>
-                <div className={styles.btn_con}>
-                    <Checkbox onChange={() => handleSelectJob(item)} />
-                    <Custombutton 
-                        style={{ backgroundColor: "green" }} 
-                        disabled={item.jdbanner === "N"} 
-                        onClick={() => downloadBanner(item)} 
-                        label="Banner" 
+            <div className="flex flex-row w-full justify-between flex-wrap gap-y-2.5 mb-5 max-lg:flex-col">
+                <div className="flex flex-row justify-between gap-2.5 py-2.5 [&_button]:px-4 [&_button]:py-1.5 [&_button]:capitalize">
+                    <Checkbox onCheckedChange={() => handleSelectJob(item)} />
+                    <Custombutton
+                        style={{ backgroundColor: "green" }}
+                        disabled={item.jdbanner === "N"}
+                        onClick={() => downloadBanner(item)}
+                        label="Banner"
                     />
                     <Custombutton onClick={() => copyApplyLink(item)} label="Copy Link" />
-                    <FormControlLabel 
-                        checked={!item?.isActive} 
-                        onChange={() => handleExpireJob(item)} 
-                        control={<Switch />} 
-                        label="Job expired" 
-                    />
+                    <div className="flex items-center gap-2">
+                        <Switch checked={!item?.isActive} onCheckedChange={() => handleExpireJob(item)} />
+                        <span>Job expired</span>
+                    </div>
                 </div>
-                <div className={styles.btn_con2}>
-                    <Custombutton 
-                        disabled={!context.isAdmin} 
-                        onClick={() => handleTelegramSubmitHelper(item)} 
-                        endIcon={<SendIcon />} 
-                        label="Telegram" 
+                <div className="flex flex-row justify-between gap-2.5 py-2.5 [&_button]:px-4 [&_button]:py-1.5 [&_button]:capitalize max-lg:flex-col max-lg:gap-2.5">
+                    <Custombutton
+                        disabled={!context.isAdmin}
+                        onClick={() => handleTelegramSubmitHelper(item)}
+                        endIcon={<Send size={16} />}
+                        label="Telegram"
                     />
                     <Custombutton onClick={() => genererateInstagramCaption(item)} label="Caption (IG)" />
                     <Custombutton onClick={() => generateLinkedinCaption(item)} label="Caption (Linkedin)" />
@@ -191,15 +191,15 @@ const JobListing = () => {
     ), [context.isAdmin, handleExpireJob, handleSelectJob]);
 
     return (
-        <div className={styles.update_data_container}>
+        <div className="px-[50px] py-10 [&_button]:capitalize max-lg:px-5">
             {jobData?.length === 0 && isApiCalled ? (
-                <div className={styles.loaderCon}>
-                    <CircularProgress size={80} />
+                <div className="flex justify-center items-center h-[50vh]">
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
                 </div>
             ) : (
                 <>
-                    <div className={styles.headerContainer}>
-                        <h2 className={styles.adminpanel_title}>List of available Jobs - {jobCount}</h2>
+                    <div className="flex justify-between max-lg:block">
+                        <h2 className="mb-5 text-blue-600 text-xl max-lg:px-4">List of available Jobs - {jobCount}</h2>
                     </div>
 
                     <CustomTextField
@@ -208,17 +208,17 @@ const JobListing = () => {
                         value={companyName}
                         onChange={(val) => setCompanyName(val)}
                         fullWidth
-                        className={styles.companyNameInput}
+                        className="bg-white rounded mb-5"
                         placeholder="Enter company name or 'id' followed by job ID"
                         disabled={isApiCalled}
                     />
 
-                    <div className={styles.captionButton_container}>
-                        <Custombutton 
-                            disabled={selectedJob.length === 0} 
-                            onClick={() => generateWhatsAppMessage(selectedJob)} 
-                            label={`Message (${selectedJob.length})`} 
-                            endIcon={<WhatsAppIcon />} 
+                    <div className="flex gap-5 mb-5">
+                        <Custombutton
+                            disabled={selectedJob.length === 0}
+                            onClick={() => generateWhatsAppMessage(selectedJob)}
+                            label={`Message (${selectedJob.length})`}
+                            endIcon={<WhatsAppIcon />}
                         />
                         <Custombutton
                             disabled={selectedJob.length === 0}
@@ -231,13 +231,13 @@ const JobListing = () => {
                     <div>
                         {filteredJobs?.map(renderJobCard)}
                     </div>
-                    
-                    <Custombutton 
-                        style={{ backgroundColor: "green" }} 
-                        size="large" 
-                        fullWidth 
-                        onClick={() => setPageno(prev => prev + 1)} 
-                        label="Load more" 
+
+                    <Custombutton
+                        style={{ backgroundColor: "green" }}
+                        size="large"
+                        fullWidth
+                        onClick={() => setPageno(prev => prev + 1)}
+                        label="Load more"
                     />
                 </>
             )}

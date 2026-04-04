@@ -1,23 +1,34 @@
 import React from "react";
-import { Button } from "@mui/material";
+import { Button } from "Components/ui/button";
+import { cn } from "lib/utils";
+
+const variantMap = {
+    contained: "default",
+    outlined: "outline",
+    text: "ghost",
+};
+
+const sizeMap = {
+    small: "sm",
+    medium: "default",
+    large: "lg",
+};
 
 function Custombutton(props) {
-    const { size, disableElevation, fullWidth, label, variant, endIcon, disabled, style, startIcon, className } = props;
+    const { size, fullWidth, label, variant, endIcon, disabled, style, startIcon, className } = props;
     return (
         <div>
             <Button
-                size={!!size ? size : "medium"}
-                disableElevation={!!disableElevation ? disableElevation : true}
-                className={!!className ? className : {}}
-                fullWidth={!!fullWidth ? fullWidth : true}
-                disabled={!!disabled ? disabled : false}
-                onClick={() => props.onClick()}
-                variant={!!variant ? variant : "contained"}
-                endIcon={!!endIcon ? endIcon : ""}
-                startIcon={!!startIcon ? startIcon : ""}
-                style={!!style ? style : {}}
+                variant={variantMap[variant] || "default"}
+                size={sizeMap[size] || "default"}
+                className={cn("capitalize", fullWidth !== false && "w-full", className)}
+                disabled={disabled || false}
+                onClick={() => props.onClick?.()}
+                style={style || {}}
             >
+                {startIcon && <span className="mr-2">{startIcon}</span>}
                 {label}
+                {endIcon && <span className="ml-2">{endIcon}</span>}
             </Button>
         </div>
     );

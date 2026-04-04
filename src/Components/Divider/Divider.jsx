@@ -1,18 +1,18 @@
-import { Divider } from "@mui/material";
+import { Separator } from "Components/ui/separator";
 
 const CustomDivider = (props) => {
     return (
         <>
             {!!props.count ? (
                 <>
-                    <Divider />
+                    <Separator />
                     <br />
                 </>
             ) : (
                 <>
                     <br />
                     <br />
-                    <Divider />
+                    <Separator />
                     <br />
                     <br />
                 </>

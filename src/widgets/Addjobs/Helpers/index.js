@@ -114,8 +114,6 @@ const generateFormData = (jobdetails) => {
 // [ADD JOB DETAILS] add job details data and redirect to admin page if success
 export const addJobDataHelper = async (jobdetails) => {
     const formData = generateFormData(jobdetails);
-    console.log("jobdetails in add", jobdetails);
-    console.log("formData", formData);
 
     const res = await post(apiEndpoint.addJobData, formData, "Add new job");
     if (!!res) {

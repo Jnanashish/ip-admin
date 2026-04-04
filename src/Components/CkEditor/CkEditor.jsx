@@ -1,5 +1,4 @@
 import React from "react";
-import styles from "./ckeditor.module.scss";
 
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
@@ -10,9 +9,8 @@ const CustomCKEditor = (props) => {
     const { label, value } = props;
     return (
         <>
-            {!!label && <p className={styles.editor_label}>{label}</p>}
+            {!!label && <p className="my-4 mb-2 text-foreground font-semibold">{label}</p>}
             <CKEditor
-                className={styles.ck_input}
                 editor={ClassicEditor}
                 data={!!value ? value : ""}
                 onChange={(e, editor) => {

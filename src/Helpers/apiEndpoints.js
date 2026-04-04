@@ -6,13 +6,14 @@ export const apiEndpoint = {
     getAllJobDetails: "/jd/get",
     all_job_details: "/jd/get",
     deleteJob: "/jd/delete",
-    updateJobDetails : "/jd/update/",
+    updateJobDetails: "/jd/update/",
     addJobData: "/jd/add",
+    trackApplyClick: "/jd/update/count",
 
     // company details
     addCompanyDetails: "/companydetails/add",
     get_company_details: "/companydetails/get",
-    addCompanyLogo: "/companydetails/add",
-    update_company_details : "/companydetails/update",
-    delete_company_details : "/companydetails/delete",
+    get_company_logo: "/companydetails/logo",
+    update_company_details: "/companydetails/update",
+    delete_company_details: "/companydetails/delete",
 };

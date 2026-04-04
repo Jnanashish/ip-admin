@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from "react";
 
-//import css
-import styles from "./style.module.scss";
+import { toast } from "react-toastify";
 
-// import react toast
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
-import { Button } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import SendIcon from "@mui/icons-material/Send";
+import { Button } from "Components/ui/button";
+import { Trash2, Send } from "lucide-react";
 
 import { API } from "../../Backend";
+
+const API_KEY = process.env.REACT_APP_API_KEY;
 
 const AddBanner = () => {
     const [link, setLink] = useState("");
@@ -22,12 +18,12 @@ const AddBanner = () => {
         formData.append("photo", file[0]);
     };
 
-    // add data to backend via API
     const addData = async (e) => {
         e.preventDefault();
         formData.append("link", link);
         const res = await fetch(`${API}/sda/banner/add`, {
             method: "POST",
+            headers: { "x-api-key": API_KEY },
             body: formData,
         });
 
@@ -38,12 +34,10 @@ const AddBanner = () => {
         }
     };
 
-    // load the already existed data if any
     useEffect(() => {
         getData();
     }, []);
 
-    // store the ad data from website
     const [data, setData] = useState([]);
     const getData = async () => {
         try {
@@ -51,68 +45,69 @@ const AddBanner = () => {
             const data = await res.json();
             setData(data);
         } catch (error) {
-            console.log(error);
             toast.error("An error Occured");
         }
     };
 
-    // delete the particular ad with id
     const deleteData = (id) => {
-        fetch(`${API}/sda/banner/delete/${id}`, { method: "DELETE" })
+        fetch(`${API}/sda/banner/delete/${id}`, {
+            method: "DELETE",
+            headers: { "x-api-key": API_KEY },
+        })
             .then((res) => {
                 toast("Data deleted Successfully");
                 getData();
             })
             .catch((err) => {
                 toast.error("Can not delete Data");
-                console.log(err);
             });
     };
 
     return (
         <div className="admin">
-            <h2 className={styles.adminpanel_title}>Ads with Banner</h2>
-            <p className={styles.note}>* Add max 1 ad at one time</p>
+            <h2 className="adminpanel-title">Ads with Banner</h2>
+            <p className="text-center text-red-500 mb-1">* Add max 1 ad at one time</p>
             <div>
                 <form>
-                    <div className={styles.admin_grid}>
-                        <h3 className={styles.admin_label}>Link to register : </h3>
-                        <input className={styles.admin_input} value={link} onChange={(e) => setLink(e.target.value)} type="text" placeholder="Link" />
+                    <div className="grid grid-cols-[25%_75%] max-lg:flex max-lg:flex-col max-lg:mx-5">
+                        <h3 className="justify-self-end text-base mt-2 text-foreground">Link to register : </h3>
+                        <input className="p-3 text-base w-[85%] mx-4 mb-[18px] rounded border-none max-lg:mx-0 max-lg:w-full" value={link} onChange={(e) => setLink(e.target.value)} type="text" placeholder="Link" />
                     </div>
-                    <div className={styles.admin_grid}>
-                        <h3 className={styles.admin_label}>Ad Banner : </h3>
-                        <input className={styles.admin_input} onChange={handleimginp} name="image" type="file" />
+                    <div className="grid grid-cols-[25%_75%] max-lg:flex max-lg:flex-col max-lg:mx-5">
+                        <h3 className="justify-self-end text-base mt-2 text-foreground">Ad Banner : </h3>
+                        <input className="p-3 text-base w-[85%] mx-4 mb-[18px] rounded border-none max-lg:mx-0 max-lg:w-full" onChange={handleimginp} name="image" type="file" />
                     </div>
-                    <div className={styles.admin_grid}>
+                    <div className="grid grid-cols-[25%_75%] max-lg:flex max-lg:flex-col max-lg:mx-5">
                         <div></div>
-                        <button className={styles.adminlinkcard_btn} type="button" onClick={addData}>
+                        <Button type="button" onClick={addData}>
                             Submit
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>
 
             <hr />
             <br />
-            <h2 className={styles.adminpanel_title}>Ad banner count : {data.length}</h2>
+            <h2 className="adminpanel-title">Ad banner count : {data.length}</h2>
             {data.map((item) => {
                 return (
-                    <div className={styles.banner_con}>
-                        <img className={styles.adimage} src={item.imagePath} alt="Ad-poster" />
+                    <div key={item._id} className="p-5 w-[90%] mx-auto my-5 border border-foreground flex flex-row justify-between items-center">
+                        <img className="w-[300px]" src={item.imagePath} alt="Ad-poster" />
                         <br />
-                        <div className={styles.banner_btn_con}>
-                            <Button onClick={() => deleteData(item._id)} variant="contained" startIcon={<DeleteIcon />}>
+                        <div className="flex flex-col gap-5">
+                            <Button onClick={() => deleteData(item._id)} variant="destructive">
+                                <Trash2 className="mr-2 h-4 w-4" />
                                 Delete
                             </Button>
 
                             <a href={item.link} target="_blank" rel="noopener noreferrer">
-                                <Button variant="contained" endIcon={<SendIcon />}>
+                                <Button>
                                     Visit Link
+                                    <Send className="ml-2 h-4 w-4" />
                                 </Button>
                             </a>
-                            <ToastContainer />
                         </div>
-                        <h2 className={styles.t_click}>
+                        <h2 className="[&_b]:text-red-500">
                             Total Click : <b>{item.totalclick}</b>
                         </h2>
                     </div>

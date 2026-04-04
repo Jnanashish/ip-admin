@@ -1,16 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
-import { TextField, MenuItem } from "@mui/material";
-
-import { useTheme } from "@mui/material/styles";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputLabel from "@mui/material/InputLabel";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
 import CustomTextField from "../Input/Textfield";
-import styles from "./index.module.scss";
 
 function SearchBar(props) {
-
     const parentRef = useRef(null);
     const { searchSuggestionList, selectedCompany, setSelectedCompany, width, handleCompanyNameChange } = props;
 
@@ -22,17 +13,11 @@ function SearchBar(props) {
         setShowSearchSuggestion(true);
     };
 
-    // function to check if user searched query is present in a string
     const isQueryPresent = (userInput, item) => {
         const trimmedUserInput = userInput?.replace(/\s+/g, " ")?.trim()?.toLowerCase();
         return item?.companyName?.toLowerCase()?.includes(trimmedUserInput);
     };
 
-    const filterJobBasedonName = (searchVal) => {
-        return searchSuggestionList?.find((item) => item?.companyName?.toLowerCase() == searchVal?.toLowerCase());
-    };
-
-    // when user enter any input in search bar
     const handleInputChange = (val) => {
         const userInput = val;
         setShowSearchSuggestion(true);
@@ -51,7 +36,6 @@ function SearchBar(props) {
         setShowSearchSuggestion(false);
         if (!!value) {
             setFilteredSuggestionList(searchSuggestionList);
-
             setInputValue(value?.companyName);
             setSelectedCompany(value);
         }
@@ -59,7 +43,6 @@ function SearchBar(props) {
 
     const handleBlur = (e) => {
         setShowSearchSuggestion(false);
-
         if (!parentRef.current.contains(e.relatedTarget)) {
             setShowSearchSuggestion(false);
         }
@@ -70,23 +53,23 @@ function SearchBar(props) {
     }, [searchSuggestionList]);
 
     useEffect(() => {
-        console.log("selectedCompany", selectedCompany);
-        // if (!!selectedCompany && !!searchSuggestionList) {
-        //     const companyData = filterJobBasedonName(selectedCompany?.companyName);
-            handleSearchSuggestionClick(selectedCompany);
-        // }
+        handleSearchSuggestionClick(selectedCompany);
     }, [selectedCompany]);
 
     return (
-        <div onMouseLeave={(e) => handleBlur(e)} style={{ width: width }} ref={parentRef} className={styles.searchbar}>
-            <CustomTextField onFocus={handleInputFocus} label="Comapny name *" value={inputValue} onChange={(val) => handleInputChange(val)} fullWidth />
+        <div onMouseLeave={(e) => handleBlur(e)} style={{ width: width }} ref={parentRef} className="relative w-full mx-auto">
+            <CustomTextField onFocus={handleInputFocus} label="Company name *" value={inputValue} onChange={(val) => handleInputChange(val)} fullWidth />
 
             {!!showSearchSuggestion && !!filteredSuggestionList && (
-                <div className={styles.searchbar_suggesstion}>
-                    {!!filteredSuggestionList?.length != 0 && (
-                        <ul>
+                <div className="absolute left-0 z-10 w-full max-h-[300px] overflow-auto bg-white border border-t-0 border-[#b3b3b3] rounded-b-md text-left text-[#373737]">
+                    {!!filteredSuggestionList?.length !== 0 && (
+                        <ul className="p-2.5 list-none">
                             {filteredSuggestionList?.map((item) => {
-                                return <li onClick={() => handleSearchSuggestionClick(item)}>{item?.companyName}</li>;
+                                return (
+                                    <li key={item?.companyName} className="cursor-pointer mb-5 last:mb-0 hover:bg-accent rounded px-2 py-1" onClick={() => handleSearchSuggestionClick(item)}>
+                                        {item?.companyName}
+                                    </li>
+                                );
                             })}
                         </ul>
                     )}

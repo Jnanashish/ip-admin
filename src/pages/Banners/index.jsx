@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import styles from "./banners.module.scss";
 
 import Canvas from "../../Components/Canvas";
 import Custombutton from "../../Components/Button/Custombutton";
@@ -14,7 +13,6 @@ function Banners() {
     const [comapnyDetails, setComapnyDetails] = useState();
     const [bannerType, setBannerType] = useState("careersattech");
 
-    // get company details and job details based on jobId and company name
     const getQueryparam = async () => {
         const urlParams = new URLSearchParams(window.location.search);
         const jobId = urlParams.get("jobid");
@@ -30,36 +28,35 @@ function Banners() {
             const jobdata = await getJobDetailsHelper(params);
             !!jobdata && jobdata?.data && setJobdetails(jobdata?.data);
         }
-        
+
         if (!!companyname || !!companyid) {
             const companyData = await getCompanyDetailsHelper(companyname, companyid);
             !!companyData && Array.isArray(companyData) && setComapnyDetails(companyData[0]);
         }
     };
 
-    // check for query params in url
     useEffect(() => {
         getQueryparam();
     }, []);
 
     return (
-        <div className={styles.canvas}>
+        <div className="px-[60px] py-5 bg-background max-lg:px-5">
             <Backtodashboard />
-            <br /><br />
+            <br />
+            <br />
 
-            <div className={styles.canvas_buttoncontainer}>
-                <Custombutton variant={bannerType === "careersattech" ? "" : "outlined"} onClick={() => setBannerType("careersattech")} label="Careersattech banner" />
-                <Custombutton variant={bannerType === "jobsattech" ? "" : "outlined"} onClick={() => setBannerType("jobsattech")} label="Jobsattech" />
-                <Custombutton variant={bannerType === "linkedinbanner" ? "" : "outlined"} onClick={() => setBannerType("linkedinbanner")} label="Linkedin" />
-                <Custombutton variant={bannerType === "carousel" ? "" : "outlined"} onClick={() => setBannerType("carousel")} label="Carousel" />
+            <div className="flex flex-wrap gap-5">
+                <Custombutton variant={bannerType === "careersattech" ? "" : "outlined"} onClick={() => setBannerType("careersattech")} label="Careersattech banner" fullWidth={false} />
+                <Custombutton variant={bannerType === "jobsattech" ? "" : "outlined"} onClick={() => setBannerType("jobsattech")} label="Jobsattech" fullWidth={false} />
+                <Custombutton variant={bannerType === "linkedinbanner" ? "" : "outlined"} onClick={() => setBannerType("linkedinbanner")} label="Linkedin" fullWidth={false} />
+                <Custombutton variant={bannerType === "carousel" ? "" : "outlined"} onClick={() => setBannerType("carousel")} label="Carousel" fullWidth={false} />
             </div>
 
-            {/* show loader when job details are fetcing */}
             {!!jobdetails && !!comapnyDetails ? (
                 <Canvas bannerType={bannerType} jobdetails={jobdetails} comapnyDetails={comapnyDetails} />
             ) : (
-                <div className={styles.canvas_loader}>
-                   <Loader/>
+                <div className="flex items-center justify-center h-[80vh]">
+                    <Loader />
                 </div>
             )}
         </div>

@@ -1,45 +1,43 @@
-import React,{useState} from 'react'
-import {API} from "../../Backend"
+import React, { useState } from "react";
+import { API } from "../../Backend";
 
-import styles from "./adpoptype.module.scss"
-import { Button } from '@mui/material';
+import { Button } from "Components/ui/button";
 
-// import react toast
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from "react-toastify";
 
+const API_KEY = process.env.REACT_APP_API_KEY;
 
 function Adpoptype() {
-    const [adtype, setAdtype] = useState('none')
-    const AddadShowPop = async (e) =>{
+    const [adtype, setAdtype] = useState("none");
+    const AddadShowPop = async (e) => {
         setAdtype(e);
         const formData = new FormData();
-        formData.append("adpoptype", adtype)
-        const res = await fetch(`${API}/showadpop/update/61b56f22afa325ec398b2770`,{
-            method : "PUT",
-            body : formData
-        })
-        if(res.status === 200){
-            toast(`Ad type changed to ${e}`)
+        formData.append("adpoptype", e);
+        const res = await fetch(`${API}/showadpop/update/${process.env.REACT_APP_AD_POP_TYPE_ID}`, {
+            method: "PUT",
+            headers: { "x-api-key": API_KEY },
+            body: formData,
+        });
+        if (res.status === 200) {
+            toast(`Ad type changed to ${e}`);
         } else {
-            toast.error("An error Occured")
+            toast.error("An error Occured");
         }
-    }
+    };
 
     return (
-        <div className={styles.adtype_panel}>
-            <Button sx={{ width: '10ch' }} onClick={()=>{AddadShowPop('ad')}} variant="contained" color="success">
+        <div className="flex justify-center items-center w-full h-[50vh] gap-2.5">
+            <Button className="bg-green-600 hover:bg-green-700 text-white w-[10ch] capitalize" onClick={() => AddadShowPop("ad")}>
                 AD
             </Button>
-            <Button sx={{ width: '10ch' }} onClick={()=>{AddadShowPop('email')}} variant="contained" color="success">
+            <Button className="bg-green-600 hover:bg-green-700 text-white w-[10ch] capitalize" onClick={() => AddadShowPop("email")}>
                 Email
             </Button>
-            <Button sx={{ width: '10ch' }} onClick={()=>{AddadShowPop('none')}} variant="contained" color="success">
+            <Button className="bg-green-600 hover:bg-green-700 text-white w-[10ch] capitalize" onClick={() => AddadShowPop("none")}>
                 None
-            </Button>    
-            <ToastContainer />          
+            </Button>
         </div>
-    )
+    );
 }
 
-export default Adpoptype
+export default Adpoptype;

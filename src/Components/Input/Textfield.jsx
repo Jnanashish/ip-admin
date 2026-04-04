@@ -1,54 +1,67 @@
 import React from "react";
-import { TextField, MenuItem } from "@mui/material";
+import { Input } from "Components/ui/input";
+import { Textarea } from "Components/ui/textarea";
+import { Label } from "Components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "Components/ui/select";
+import { cn } from "lib/utils";
 
 const CustomTextField = (props) => {
-    const { label, value, type, size, disabled, error, multiline, rows } = props;
-    return (
-        <>
-            {type !== "select" && (
-                <TextField
-                    size={!!size ? size : "Normal"}
-                    margin="normal"
-                    fullWidth={!!props.fullWidth ? true : ""}
-                    label={label}
-                    value={value}
+    const { label, value, type, disabled, error, multiline, rows, className } = props;
+    const fullWidth = props.fullWidth !== false;
+    const widthStyle = props.sx?.width ? { width: props.sx.width } : {};
+
+    if (type === "select") {
+        return (
+            <div className={cn("mt-4", fullWidth && "w-full")} style={widthStyle}>
+                {label && <Label className="mb-1.5 block text-sm text-muted-foreground">{label}</Label>}
+                <Select value={value || ""} onValueChange={(val) => props.onChange(val)} disabled={disabled || false}>
+                    <SelectTrigger className={cn(error && "border-destructive", className)}>
+                        <SelectValue placeholder={label || "Select..."} />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {props?.optionData?.map((option) => (
+                            <SelectItem key={option} value={option}>
+                                {option}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
+        );
+    }
+
+    if (multiline) {
+        return (
+            <div className={cn("mt-4", fullWidth && "w-full")} style={widthStyle}>
+                {label && <Label className="mb-1.5 block text-sm text-muted-foreground">{label}</Label>}
+                <Textarea
+                    value={value || ""}
                     onChange={(e) => props.onChange(e.target.value)}
-                    sx={!!props.sx ? props.sx : {}}
-                    InputProps={!!props.InputProps ? props.InputProps : {}}
-                    onBlur={!!props.onBlur ? (e) => props.onBlur(e.target.value) : () => {}}
-                    onFocus={!!props.onFocus ? (e) => props.onFocus(e.target.value) : () => {}}
-                    onKeyUp={!!props.onKeyUp ? (e) => props.onKeyUp(e.target.value) : () => {}}
-                    disabled={disabled ? disabled : false}
-                    error={error ? error : false}
-                    className={!!props.className ? props.className : ""}
-                    style={{ backgroundColor: "#FFF", borderRadius: "8px" }}
-                    multiline={!!multiline ? multiline : false}
-                    rows={!!rows ? rows : 1}
-                    type={!!type ? type : ""}
+                    onBlur={props.onBlur ? (e) => props.onBlur(e.target.value) : undefined}
+                    onFocus={props.onFocus ? (e) => props.onFocus(e.target.value) : undefined}
+                    onKeyUp={props.onKeyUp ? (e) => props.onKeyUp(e.target.value) : undefined}
+                    disabled={disabled || false}
+                    className={cn(error && "border-destructive", className)}
+                    rows={rows || 3}
                 />
-            )}
-            {type === "select" && (
-                <TextField
-                    select
-                    size="Normal"
-                    margin="normal"
-                    fullWidth={!!props.fullWidth ? true : ""}
-                    label={label}
-                    value={value}
-                    onChange={(e) => props.onChange(e.target.value)}
-                    sx={!!props.sx ? props.sx : {}}
-                    InputProps={!!props.InputProps ? props.InputProps : {}}
-                    disabled={disabled ? disabled : false}
-                    style={{ backgroundColor: "#FFF", borderRadius: "8px" }}
-                >
-                    {props?.optionData.map((option) => (
-                        <MenuItem key={option} value={option}>
-                            {option}
-                        </MenuItem>
-                    ))}
-                </TextField>
-            )}
-        </>
+            </div>
+        );
+    }
+
+    return (
+        <div className={cn("mt-4", fullWidth && "w-full")} style={widthStyle}>
+            {label && <Label className="mb-1.5 block text-sm text-muted-foreground">{label}</Label>}
+            <Input
+                value={value || ""}
+                onChange={(e) => props.onChange(e.target.value)}
+                onBlur={props.onBlur ? (e) => props.onBlur(e.target.value) : undefined}
+                onFocus={props.onFocus ? (e) => props.onFocus(e.target.value) : undefined}
+                onKeyUp={props.onKeyUp ? (e) => props.onKeyUp(e.target.value) : undefined}
+                disabled={disabled || false}
+                className={cn(error && "border-destructive", className)}
+                type={type || "text"}
+            />
+        </div>
     );
 };
 

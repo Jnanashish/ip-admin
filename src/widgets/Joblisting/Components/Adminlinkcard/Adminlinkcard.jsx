@@ -1,7 +1,6 @@
 import React, { useState, useContext } from "react";
-import DeleteIcon from "@mui/icons-material/Delete";
+import { Trash2 } from "lucide-react";
 
-import styles from "./adminlinkcard.module.scss";
 import EditData from "../Editdata/Editdata";
 
 import { UserContext } from "../../../../Context/userContext";
@@ -9,14 +8,12 @@ import Custombutton from "../../../../Components/Button/Custombutton";
 import { deleteData } from "../../../../Helpers/request";
 import { apiEndpoint } from "../../../../Helpers/apiEndpoints";
 import { generateDateFromISOString } from "../../../../Helpers/utility";
-import { getCookie } from "../../../../Helpers/cookieHelpers";
-
 const LinkCard = ({ item, isPreview = false }) => {
     const [selectedJobId, setSelectedJobId] = useState("");
     const [deletedId, setDeletedId] = useState("");
 
     const { user } = useContext(UserContext);
-    const isUserLoggedIn = !!user?.email || getCookie("isLogedIn");
+    const isUserLoggedIn = !!user?.email;
 
     const handleUpdateClick = (id) => {
         setSelectedJobId((prevId) => (prevId !== "" ? "" : id));
@@ -40,18 +37,27 @@ const LinkCard = ({ item, isPreview = false }) => {
 
     return (
         <div>
-            <div className={styles.adminlinkcard_con} style={{ opacity: item?.isActive ? "100%" : "40%" }}>
-                {!isPreview && <img className={styles.companyLogo} src={item.imagePath} alt={`${item.title} logo`} />}
-                <div className={styles.adminlinkWrapper}>
+            <div
+                className="flex flex-row items-center bg-white px-5 py-2.5 min-h-[90px] max-w-full mb-5 border border-text-secondary rounded-md font-ibm"
+                style={{ opacity: item?.isActive ? "100%" : "40%" }}
+            >
+                {!isPreview && (
+                    <img
+                        className="h-[50px] w-[50px] mr-5 max-lg:h-10 max-lg:w-10 object-contain"
+                        src={item.imagePath}
+                        alt={`${item.title} logo`}
+                    />
+                )}
+                <div className="flex flex-row justify-between items-center w-full">
                     <a href={item.link} target="_blank" rel="noopener noreferrer">
                         <h2>{item.title}</h2>
-                        <div className={styles.adminlink_item}>
+                        <div className="flex flex-row items-center text-foreground mb-1">
                             <h5>Created At : </h5>
                             <h5>{generateDateFromISOString(item.createdAt)}</h5>
                         </div>
 
                         {item.lastdate !== "2022-11-00-" && !isPreview && (
-                            <div className={styles.adminlink_item}>
+                            <div className="flex flex-row items-center text-foreground mb-1">
                                 <h5>Last date : </h5>
                                 <h5 style={{ color: "red" }}>
                                     <b> {item.lastdate}</b>
@@ -59,38 +65,37 @@ const LinkCard = ({ item, isPreview = false }) => {
                             </div>
                         )}
 
-                        <div className={styles.adminlink_item}>
+                        <div className="flex flex-row items-center text-foreground mb-1">
                             <h5>Total Click : </h5>
-                            <h5 className={styles.jd_date}>
+                            <h5 className="text-red-500 mr-8">
                                 <b>{item.totalclick}</b>
                             </h5>
                         </div>
                         {!!item?.jobId && (
-                            <div className={styles.adminlink_item}>
+                            <div className="flex flex-row items-center text-foreground mb-1">
                                 <h5>Job Id : </h5>
                                 <h5>{item?.jobId}</h5>
                             </div>
                         )}
                     </a>
 
-                    {/* button section  */}
-                    <div className={styles.buttonContainer}>
+                    {/* button section */}
+                    <div className="flex flex-col justify-evenly items-start">
                         {!isPreview && (
                             <Custombutton
-                                startIcon={<DeleteIcon />}
+                                startIcon={<Trash2 size={16} />}
                                 disableElevation
                                 size="small"
                                 onClick={() => deleteJobData(item._id)}
                                 style={{ backgroundColor: "red" }}
                                 label="Delete"
-                                className={styles.btn}
                                 disabled={!isUserLoggedIn}
                             />
                         )}
 
-                        <div className={styles.updateButtonContainer}>
-                            <Custombutton disabled={!isUserLoggedIn} disableElevation size="small" onClick={() => handleUpdateClick(item._id)} label="Update" className={styles.btn} />
-                            <Custombutton disabled={!isUserLoggedIn} disableElevation size="small" onClick={() => handleUpdateRedirectionClick(item._id)} label="Update New" className={styles.btn} />
+                        <div className="flex flex-row gap-2.5 mt-2.5">
+                            <Custombutton disabled={!isUserLoggedIn} disableElevation size="small" onClick={() => handleUpdateClick(item._id)} label="Update" />
+                            <Custombutton disabled={!isUserLoggedIn} disableElevation size="small" onClick={() => handleUpdateRedirectionClick(item._id)} label="Update New" />
                         </div>
                     </div>
                 </div>

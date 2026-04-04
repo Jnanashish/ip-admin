@@ -112,27 +112,6 @@ export const downloadImagefromCanvasHelper = async (fileName, canvasId, generate
     }
 };
 
-// -- convert and canvas to image and download it, get image cdn url
-//export const downloadImagefromCanvasHelper = async (fileName, canvasId) => {
-//    const element = document.getElementById(canvasId);
-//    const canvas = await html2canvas(element);
-//
-//    var data = canvas.toDataURL("image/jpg");
-//    var link = document.createElement("a");
-//
-//    link.href = data;
-//    link.download = fileName + ".jpg";
-//    document.body.appendChild(link);
-//    link.click();
-//    document.body.removeChild(link);
-//
-//    const blob = await new Promise(resolve => canvas.toBlob(resolve));
-//    const bannerUrl = await generateLinkfromImageHelper(null, blob);
-//
-//
-//    return bannerUrl;
-//};
-
 // upload html canvas to cdn and return image link
 export const uploadBannertoCDNHelper = async (canvasId) => {
     const element = document.getElementById(canvasId);
