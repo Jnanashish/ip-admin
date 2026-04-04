@@ -8,6 +8,10 @@ import {
   Image,
   LogOut,
   ChevronsUpDown,
+  Bot,
+  Inbox,
+  ScrollText,
+  HeartPulse,
 } from "lucide-react";
 import { UserContext } from "Context/userContext";
 import {
@@ -54,6 +58,15 @@ const navGroups = [
     label: "Tools",
     items: [
       { title: "Banners", url: "/canvas", icon: Image },
+    ],
+  },
+  {
+    label: "Scraper",
+    items: [
+      { title: "Dashboard", url: "/admin/scraper", icon: Bot },
+      { title: "Staging Queue", url: "/admin/scraper/staging", icon: Inbox },
+      { title: "Scrape Logs", url: "/admin/scraper/logs", icon: ScrollText },
+      { title: "Adapter Health", url: "/admin/scraper/health", icon: HeartPulse },
     ],
   },
 ];
@@ -104,7 +117,7 @@ const AppLayout = () => {
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton
                         asChild
-                        isActive={location.pathname === item.url}
+                        isActive={location.pathname === item.url || location.pathname.startsWith(item.url + "/")}
                         tooltip={item.title}
                       >
                         <a

@@ -15,6 +15,11 @@ import Banners from "./pages/Banners/index";
 import JobList from "./pages/JobList";
 import AddCompanyDetails from "./pages/AddCompanyDetails";
 import CompanyList from "./pages/CompanyList";
+import ScraperDashboard from "./pages/Scraper/Dashboard";
+import ScraperStaging from "./pages/Scraper/Staging";
+import ScraperStagingDetail from "./pages/Scraper/StagingDetail";
+import ScraperLogs from "./pages/Scraper/Logs";
+import ScraperHealth from "./pages/Scraper/Health";
 import Loader from "./Components/Loader";
 import AppLayout from "./Components/Layout/AppLayout";
 
@@ -44,6 +49,11 @@ function AppRoutes() {
                     <Route path="/addcompany" element={<AddCompanyDetails />} />
                     <Route path="/companys" element={<CompanyList />} />
                     <Route path="/jobs" element={<JobList />} />
+                    <Route path="/admin/scraper" element={<ScraperDashboard />} />
+                    <Route path="/admin/scraper/staging" element={<ScraperStaging />} />
+                    <Route path="/admin/scraper/staging/:id" element={<ScraperStagingDetail />} />
+                    <Route path="/admin/scraper/logs" element={<ScraperLogs />} />
+                    <Route path="/admin/scraper/health" element={<ScraperHealth />} />
                 </Route>
                 <Route path="/" element={isAuthenticated ? <Navigate to="/addjob" /> : <Navigate to="/signin" />} />
                 <Route path="*" element={<Navigate to="/signin" />} />

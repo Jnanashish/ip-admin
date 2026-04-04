@@ -20,12 +20,22 @@ const routeLabels = {
   "/addcompany": "Add Company",
   "/companys": "Company List",
   "/canvas": "Banners",
+  "/admin/scraper": "Scraper Dashboard",
+  "/admin/scraper/staging": "Staging Queue",
+  "/admin/scraper/logs": "Scrape Logs",
+  "/admin/scraper/health": "Adapter Health",
+};
+
+const getRouteLabel = (pathname) => {
+  if (routeLabels[pathname]) return routeLabels[pathname];
+  if (pathname.startsWith("/admin/scraper/staging/")) return "Job Review";
+  return "Dashboard";
 };
 
 const AppHeader = () => {
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
-  const currentLabel = routeLabels[location.pathname] || "Dashboard";
+  const currentLabel = getRouteLabel(location.pathname);
 
   return (
     <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 transition-[width,height] ease-linear">
