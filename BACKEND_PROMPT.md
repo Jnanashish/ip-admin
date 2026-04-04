@@ -1,231 +1,271 @@
-# Backend Security Implementation Prompt
+# Backend Security Implementation Prompt — Firebase Only
 
 Copy and paste this for your backend engineer:
 
 ---
 
-## 🔒 Implement Backend Security Changes (From Frontend Audit)
+## 🔒 Implement Firebase ID Token Authentication
 
 ### Context
 
-The frontend team completed a security audit and implemented 11 client-side fixes. We now need backend changes to complete the security remediation. The frontend is already updated and waiting for these backend endpoints and changes.
+The frontend team completed a security audit. We need to update the backend to use Firebase ID token authentication instead of the current static `x-api-key` header.
 
-**Priority: Critical** — Deploy within 1-2 weeks
-
-**Reference Documentation:** See `BACKEND_SECURITY_REQUIREMENTS.md` in the repo for detailed implementation guides with code examples.
+**Priority: Critical** — Deploy ASAP
 
 ---
 
-## Task Summary: 5 Critical Backend Changes
+## Task: Replace Static API Key with Firebase ID Token Authentication
 
-### 1. Replace Static API Key with Firebase ID Token Authentication (CRITICAL)
+### What & Why
 
-**What:** All API endpoints must now verify Firebase ID tokens instead of checking a static `x-api-key` header.
+**Current (Vulnerable):**
+- All API requests use `x-api-key: REACT_APP_API_KEY` header
+- The API key is hardcoded and visible in the JS bundle
+- Anyone can extract it from DevTools and call the API directly
 
-**Why:** The current API key is visible in the production JS bundle. Anyone can extract it and call the API directly.
+**Required:**
+- Accept `Authorization: Bearer <firebaseIdToken>` header on all requests
+- Verify the token using Firebase Admin SDK
+- Return 401 Unauthorized for invalid/missing tokens
+- Keep old `x-api-key` check as fallback for 1-2 weeks (with deprecation warning)
+- After 2 weeks, remove the old check and rotate the API key
 
-**Implementation:**
-1. Install Firebase Admin SDK: `npm install firebase-admin`
-2. Initialize with your Firebase service account key
-3. Create auth middleware that:
-   - Extracts `Authorization: Bearer <token>` header
-   - Calls `admin.auth().verifyIdToken(token)`
-   - Attaches decoded user info to request: `req.firebaseUser = { uid, email }`
-   - Returns 401 Unauthorized if token is invalid/missing
-4. Apply this middleware to all protected routes (POST, PUT, DELETE)
-5. Keep the old `x-api-key` check as a fallback for 1-2 weeks with deprecation warning
-6. Remove the old `REACT_APP_API_KEY` from `.env` once migrated
+---
 
-**Affected Endpoints (all of them):**
-- `/jd/add`, `/jd/update/:id`, `/jd/delete/:id`
-- `/companydetails/add`, `/companydetails/update/:id`, `/companydetails/delete/:id`
-- `/sda/banner/add`, `/sda/banner/delete/:id`
-- `/sda/link/add`, `/sda/link/delete/:id`
-- `/sda/linkimg/add`, `/sda/linkimg/delete/:id`
+## Implementation Steps
+
+### Step 1: Set Up Firebase Admin SDK
+
+```bash
+npm install firebase-admin
+```
+
+### Step 2: Initialize Firebase Admin
+
+```javascript
+import admin from 'firebase-admin';
+
+admin.initializeApp({
+  credential: admin.credential.cert(require('./firebase-key.json')),
+  projectId: 'careersattech-d5495'
+});
+```
+
+**Get firebase-key.json from:**
+1. Go to Firebase Console (console.firebase.google.com)
+2. careersattech-d5495 project → Settings → Service Accounts
+3. Generate a new private key (download as JSON)
+4. Add to your backend `.env` or secure config
+
+### Step 3: Create Authentication Middleware
+
+```javascript
+// src/middleware/firebaseAuth.js (or similar)
+
+export const verifyFirebaseToken = async (req, reply) => {
+  const authHeader = req.headers.authorization;
+  
+  // Check header exists
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return reply.code(401).send({ 
+      error: 'Unauthorized: Missing or invalid token' 
+    });
+  }
+  
+  // Extract token
+  const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+  
+  try {
+    // Verify token with Firebase
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    
+    // Attach user info to request
+    req.firebaseUser = {
+      uid: decodedToken.uid,
+      email: decodedToken.email,
+    };
+  } catch (error) {
+    console.error('Token verification failed:', error);
+    return reply.code(401).send({ 
+      error: 'Unauthorized: Invalid token' 
+    });
+  }
+};
+```
+
+### Step 4: Apply Middleware to All Protected Routes
+
+```javascript
+// Example: Job endpoints
+
+// Before:
+app.post('/jd/add', async (req, reply) => {
+  const apiKey = req.headers['x-api-key'];
+  if (apiKey !== process.env.API_KEY) {
+    return reply.code(401).send({ error: 'Invalid API key' });
+  }
+  // ... add job logic
+});
+
+// After:
+app.post('/jd/add',
+  { preHandler: verifyFirebaseToken },
+  async (req, reply) => {
+    console.log(`Job added by: ${req.firebaseUser.email}`);
+    // ... add job logic
+  }
+);
+```
+
+**Apply to ALL these endpoints:**
+- `POST /jd/add`
+- `PUT /jd/update/:id`
+- `DELETE /jd/delete/:id`
+- `POST /companydetails/add`
+- `PUT /companydetails/update/:id`
+- `DELETE /companydetails/delete/:id`
+- `POST /sda/banner/add`
+- `DELETE /sda/banner/delete/:id`
+- `POST /sda/link/add`
+- `DELETE /sda/link/delete/:id`
+- `POST /sda/linkimg/add`
+- `DELETE /sda/linkimg/delete/:id`
 - Any other endpoint that modifies data
 
-**Frontend Status:** ✅ Already updated — will send Firebase ID tokens in Authorization header
+**Read endpoints (GET) can remain unauthenticated or require only token verification without the middleware, your choice.**
 
----
+### Step 5: Add Fallback for Old API Key (Optional, for 2-week grace period)
 
-### 2. Create Backend Proxy for Telegram Messages (HIGH)
+```javascript
+// Optional: Keep old x-api-key check as fallback
+const verifyAuthLegacy = async (req, reply) => {
+  // Try Firebase token first
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith('Bearer ')) {
+    return verifyFirebaseToken(req, reply);
+  }
+  
+  // Fallback to old API key (show deprecation warning)
+  const apiKey = req.headers['x-api-key'];
+  if (apiKey === process.env.API_KEY) {
+    console.warn('DEPRECATED: x-api-key authentication used. Switch to Firebase tokens.');
+    req.firebaseUser = { email: 'api-key-user', uid: 'api-key' };
+    return; // Continue
+  }
+  
+  return reply.code(401).send({ error: 'Unauthorized' });
+};
 
-**What:** Move Telegram API calls from frontend to backend. Frontend will call your backend instead of `api.telegram.org`.
-
-**Why:** The Telegram bot token is currently in the JS bundle. Anyone can send messages to your channels.
-
-**Create Two Endpoints:**
-
-1. **`POST /api/notify/telegram`**
-   ```
-   Request:  { title, batch, degree, link }
-   Response: { success: true, messageId: 12345 }
-   Route must have: preHandler: [verifyFirebaseToken, verifyAdmin]
-   ```
-   Logic: Format message and call `api.telegram.org/sendMessage` with your bot token from `.env`
-
-2. **`POST /api/notify/telegram-photo`**
-   ```
-   Request:  { title, link, photoUrl }
-   Response: { success: true, messageId: 12345 }
-   Route must have: preHandler: [verifyFirebaseToken, verifyAdmin]
-   ```
-   Logic: Call `api.telegram.org/sendPhoto` with your bot token from `.env`
-
-**Frontend Status:** ✅ Already updated — calls these endpoints instead of Telegram directly
-
----
-
-### 3. Create Backend Proxy for Bitly URL Shortening (HIGH)
-
-**What:** Move Bitly API calls from frontend to backend.
-
-**Why:** The Bitly API token is currently in the JS bundle. Anyone can shorten URLs through your account.
-
-**Create Two Endpoints:**
-
-1. **`POST /api/util/shorten`**
-   ```
-   Request:  { longUrl: "https://example.com/apply" }
-   Response: { shortUrl: "https://bit.ly/abc123", link: "https://bit.ly/abc123" }
-   Route must have: preHandler: verifyFirebaseToken
-   ```
-   Logic: Validate URL format, call `api-ssl.bitly.com/v4/shorten` with your token from `.env`
-
-2. **`GET /api/util/link-clicks/:shortCode`**
-   ```
-   Response: { clicks: 42, shortUrl: "https://bit.ly/abc123" }
-   Route must have: preHandler: verifyFirebaseToken
-   ```
-   Logic: Call Bitly API to get click count
-
-**Frontend Status:** ✅ Already updated — calls these endpoints instead of Bitly directly
-
----
-
-### 4. Implement Backend Admin Authorization (MEDIUM)
-
-**What:** Verify user is admin on the backend before allowing sensitive operations.
-
-**Why:** Currently only checked on frontend. No server-side verification.
-
-**Implementation:**
-- Use Firebase Custom Claims (recommended):
-  1. Set `isAdmin: true` claim for admin users: `admin.auth().setCustomUserClaims(uid, { isAdmin: true })`
-  2. Verify in middleware: Check if `req.firebaseUser.isAdmin === true`
-  3. Create `verifyAdmin` middleware that returns 403 Forbidden if not admin
-  4. Apply to all admin endpoints
-
-**Admin Endpoints (apply verifyAdmin middleware):**
-- All `/jd/*` POST/PUT/DELETE routes (create, update, delete jobs)
-- All `/companydetails/*` POST/PUT/DELETE routes
-- All `/sda/*` POST/DELETE routes (banners, links)
-
-**User/Read Endpoints (only need verifyFirebaseToken):**
-- All GET routes (anyone authenticated can read)
-
----
-
-### 5. Add Server-Side File Upload Validation (MEDIUM)
-
-**What:** Validate file type and size on backend (not just frontend).
-
-**Why:** Frontend validation can be bypassed. We need server-side enforcement.
-
-**Implementation:**
-1. Check file size: Reject if > 500KB for logos, > 5MB for banners
-2. Check MIME type: Only allow `image/jpeg`, `image/png`, `image/webp`
-3. Optional but recommended: Verify file signature (magic bytes) to prevent disguised files
-4. Return 400 Bad Request with descriptive error if validation fails
-
-**Apply to File Upload Endpoints:**
-- Company logo uploads (in `/companydetails/add` and `/companydetails/update/:id`)
-- Job banners (in `/jd/add` and `/jd/update/:id`)
-- Ad banners (in `/sda/banner/add`)
-- Link images (in `/sda/linkimg/add`)
-
----
-
-## Environment Variables to Add
-
-Add these to `.env` (NEVER expose in frontend):
-
+// Use this instead of verifyFirebaseToken for 2 weeks
+app.post('/jd/add',
+  { preHandler: verifyAuthLegacy },
+  async (req, reply) => { /* ... */ }
+);
 ```
-# Firebase Admin SDK (get from Firebase Console → Service Accounts)
+
+### Step 6: Remove Old Check After 2 Weeks
+
+After 2 weeks:
+1. Remove all `verifyAuthLegacy` references
+2. Use only `verifyFirebaseToken`
+3. Rotate/delete the old `REACT_APP_API_KEY`
+
+---
+
+## Environment Variables
+
+Add to your backend `.env`:
+
+```env
+# Firebase Admin SDK credentials (from Service Accounts page)
 FIREBASE_PROJECT_ID=careersattech-d5495
-FIREBASE_PRIVATE_KEY=<your-private-key>
-FIREBASE_CLIENT_EMAIL=<your-client-email>
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxx@careersattech-d5495.iam.gserviceaccount.com
 
-# Telegram (keep these SECRET)
-TELEGRAM_BOT_TOKEN=<your-bot-token>
-TELEGRAM_CHANNEL_2022=<channel-id>
-TELEGRAM_CHANNEL_2023=<channel-id>
-TELEGRAM_CHANNEL_DEFAULT=<channel-id>
-
-# Bitly (keep this SECRET)
-BITLY_API_TOKEN=<your-token>
+# OPTIONAL: Keep for 2-week grace period, then remove
+API_KEY=<old-key>
 ```
 
 ---
 
-## Implementation Order (Recommended)
+## Testing
 
-1. **Week 1:**
-   - [ ] Set up Firebase Admin SDK
-   - [ ] Create Telegram proxy endpoints (`/api/notify/telegram`, `/api/notify/telegram-photo`)
-   - [ ] Create Bitly proxy endpoints (`/api/util/shorten`, `/api/util/link-clicks/:shortCode`)
-   - [ ] Add file upload validation to existing endpoints
-   - [ ] Keep old `x-api-key` check as fallback (log deprecation warning)
+### Manual Testing
 
-2. **Week 2:**
-   - [ ] Implement Firebase token verification middleware
-   - [ ] Apply to all endpoints
-   - [ ] Test with updated frontend
-   - [ ] Implement admin role verification
+1. **Get a Firebase token (from frontend):**
+   ```javascript
+   const token = await firebase.auth().currentUser.getIdToken();
+   console.log(token);
+   ```
 
-3. **Week 3:**
-   - [ ] Remove old `x-api-key` fallback
-   - [ ] **CRITICAL: Rotate all exposed credentials:**
-     - Generate new API key
-     - Generate new Telegram bot token
-     - Generate new Bitly token
-     - Generate new Firebase API key
-   - [ ] Update `.env` in all environments
-   - [ ] Redeploy
+2. **Test endpoint with token:**
+   ```bash
+   curl -X POST http://localhost:3000/jd/add \
+     -H "Authorization: Bearer <token>" \
+     -H "Content-Type: application/json" \
+     -d '{"title": "Test Job"}'
+   ```
+   Expected: 200 Success (or validation error, but not 401)
 
----
+3. **Test without token:**
+   ```bash
+   curl -X POST http://localhost:3000/jd/add
+   ```
+   Expected: 401 Unauthorized
 
-## Testing Checklist
-
-Before merging:
-- [ ] POST requests with valid Firebase token succeed
-- [ ] POST requests without token return 401
-- [ ] Admin endpoints return 403 for non-admin users
-- [ ] Telegram messages are sent through backend endpoint
-- [ ] Bitly URLs are shortened through backend endpoint
-- [ ] File uploads with invalid MIME types are rejected with 400
-- [ ] File uploads over size limit are rejected with 400
-- [ ] Old `x-api-key` still works (shows deprecation warning in logs)
+4. **Test with old API key (if using fallback):**
+   ```bash
+   curl -X POST http://localhost:3000/jd/add \
+     -H "x-api-key: <old-key>"
+   ```
+   Expected: 200 Success + deprecation warning in logs
 
 ---
 
-## Reference
+## Deployment Timeline
 
-- **Detailed Guide:** `BACKEND_SECURITY_REQUIREMENTS.md` (in repo)
-- **Full Audit Report:** `/Users/jnanashish/.claude/plans/tranquil-hatching-toucan.md`
-- **Frontend Fixes:** Deployed in commit `cdea5f9`
+1. **Day 1:** Deploy Firebase token verification
+   - Apply to all endpoints
+   - Keep old `x-api-key` as fallback (with warning)
+   - Monitor logs for any issues
+
+2. **Week 1:** Verify all frontend requests work
+   - Test with updated frontend
+   - Ensure no 401 errors in production logs
+
+3. **Week 2-3:** Remove old API key
+   - Remove the fallback check
+   - Rotate the old API key
+   - Delete from all `.env` files
 
 ---
 
-## Questions
+## Checklist
 
-Refer to `BACKEND_SECURITY_REQUIREMENTS.md` for:
-- Complete code examples for each endpoint
-- Middleware implementation patterns
-- Error handling specifications
-- Security considerations
+Before deploying:
+- [ ] Firebase Admin SDK installed
+- [ ] Firebase service account key configured
+- [ ] Middleware created and tested
+- [ ] Applied to all modifying endpoints (POST, PUT, DELETE)
+- [ ] 401 returned for missing/invalid tokens
+- [ ] 200 returned for valid tokens
+- [ ] User info available in `req.firebaseUser`
+- [ ] Old `x-api-key` fallback working (if using)
 
 ---
 
-**Status:** Frontend ready ✅ | Backend implementation needed 🔴
+## Frontend Status
+
+✅ **Already Updated** — Frontend now sends:
+```
+Authorization: Bearer <firebaseIdToken>
+```
+
+Frontend is ready to use the new authentication. No changes needed there.
+
+---
+
+## Questions?
+
+Refer to `BACKEND_SECURITY_REQUIREMENTS.md` for more detailed examples and error handling patterns.
 
