@@ -10,7 +10,13 @@ const translate = (char) => {
 
 const sendTelegramMsgHelper = async (chanelName, title, batch, degree, link) => {
     const btitle = title.replace(/[A-Za-z]/g, translate);
-    const msg = btitle + "%0A%0ABatch%20%3A%20" + batch + "%0A%0ADegree%20%3A%20" + degree + "%0A%0AApply Link%20%3A%20" + link;
+    // Encode user-controlled data to prevent URL injection
+    const encodedBatch = encodeURIComponent(batch);
+    const encodedDegree = encodeURIComponent(degree);
+    const encodedLink = encodeURIComponent(link);
+    const msg = encodeURIComponent(
+        btitle + "\n\nBatch: " + encodedBatch + "\n\nDegree: " + encodedDegree + "\n\nApply Link: " + encodedLink
+    );
 
     return fetch(`https://api.telegram.org/bot${BOT_API_KEY}/sendMessage?chat_id=${chanelName}&text=${msg}&disable_web_page_preview=true&disable_notification=true`, { method: "POST" })
         .then((res) => {
@@ -23,9 +29,12 @@ const sendTelegramMsgHelper = async (chanelName, title, batch, degree, link) => 
 
 const sendTelegramMsgwithImageHelper = async (chanelName, title, link, telegrambanner) => {
     const btitle = title.replace(/[A-Za-z]/g, translate);
-    const msg = btitle + "%0A%0AApply Link%20%3A%20" + link;
+    // Encode user-controlled data to prevent URL injection
+    const encodedLink = encodeURIComponent(link);
+    const encodedPhoto = encodeURIComponent(telegrambanner);
+    const msg = encodeURIComponent(btitle + "\n\nApply Link: " + encodedLink);
 
-    return fetch(`https://api.telegram.org/bot${BOT_API_KEY}/sendPhoto?chat_id=${chanelName}&photo=${telegrambanner}&caption=${msg}&disable_web_page_preview=true&disable_notification=true`, {
+    return fetch(`https://api.telegram.org/bot${BOT_API_KEY}/sendPhoto?chat_id=${chanelName}&photo=${encodedPhoto}&caption=${msg}&disable_web_page_preview=true&disable_notification=true`, {
         method: "POST",
     })
         .then((res) => {

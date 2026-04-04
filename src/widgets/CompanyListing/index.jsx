@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Custombutton from "../../Components/Button/Custombutton";
 import Adminlinkcard from "../Joblisting/Components/Adminlinkcard/Adminlinkcard";
@@ -7,6 +8,7 @@ import { getCompanyList, deleteCompany } from "../../Apis/Company";
 import { showErrorToast } from "../../Helpers/toast";
 
 function CompanyListing() {
+    const navigate = useNavigate();
     const [companyData, setCompanyData] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
     const [isLoading, setIsLoading] = useState(true);
@@ -47,8 +49,8 @@ function CompanyListing() {
     }, []);
 
     const handleCompanyUpdate = useCallback((item) => {
-        window.location.href = `/addcompany?companyid=${item._id}`;
-    }, []);
+        navigate(`/addcompany?companyid=${encodeURIComponent(item._id)}`);
+    }, [navigate]);
 
     const handleSearchChange = useCallback((e) => {
         setSearchTerm(e.target.value);

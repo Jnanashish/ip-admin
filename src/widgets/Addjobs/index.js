@@ -28,6 +28,7 @@ import { generateLastDatetoApplyHelper, getCompanyDetailsHelper, addJobDataHelpe
 
 import { copyToClipBoard } from "../../Helpers/utility";
 import { generateLinkfromImage } from "../../Helpers/imageHelpers";
+import { safeUrl } from "../../Helpers/sanitize";
 import { submitCompanyDetailsHelper, updateCompanyDetailsHelper } from "../CompanyDetails/helper";
 import { showErrorToast } from "../../Helpers/toast";
 import { getJobDetailsHelper } from "./Helpers";
@@ -407,7 +408,8 @@ const AddjobsComponent = () => {
         const urlParams = new URLSearchParams(window.location.search);
         const jobId = urlParams.get("jobid");
 
-        if (!!jobId) {
+        // Validate ObjectId format (24-character hex string)
+        if (jobId && /^[a-f\d]{24}$/i.test(jobId)) {
             setSavedJobId(jobId);
             fetchJobDetails(jobId);
         }
@@ -428,17 +430,34 @@ const AddjobsComponent = () => {
             const jobDetailsUpdates = {};
             const companyDetailsUpdates = {};
 
+            // Fields that should not be set via mass assignment
+            const blockedFields = new Set(["_id", "companyId", "isActive", "priority"]);
+
             // Process all fields first
             Object.keys(parsedData).forEach((key) => {
+                // Prevent mass assignment of sensitive fields
+                if (blockedFields.has(key)) return;
+
                 if (key in jobdetails) {
                     // Special handling for tags and skilltags arrays to ensure they're properly processed
                     if ((key === "tags" || key === "skilltags") && Array.isArray(parsedData[key])) {
                         jobDetailsUpdates[key] = [...parsedData[key]]; // Create a copy of the array
-                    } else {
+                    } else if (key === "link" && typeof parsedData[key] === "string") {
+                        // Sanitize URL fields to prevent javascript: URIs
+                        jobDetailsUpdates[key] = safeUrl(parsedData[key]);
+                    } else if (typeof parsedData[key] === "string" && parsedData[key].length < 10000) {
+                        // Validate string length to prevent DoS via huge strings
+                        jobDetailsUpdates[key] = parsedData[key];
+                    } else if (typeof parsedData[key] !== "string") {
+                        // Allow non-string types (arrays, etc) if already validated above
                         jobDetailsUpdates[key] = parsedData[key];
                     }
                 }
                 if (key in comapnyDetails) {
+                    if (typeof comapnyDetails[key] === "string" && parsedData[key]?.length > 10000) {
+                        // Skip fields with suspiciously large strings
+                        return;
+                    }
                     companyDetailsUpdates[key] = parsedData[key];
                 }
             });

@@ -9,6 +9,7 @@ import CustomTextField from "../../Components/Input/Textfield";
 
 import { get } from "../../Helpers/request";
 import { apiEndpoint } from "../../Helpers/apiEndpoints";
+import { safeUrl } from "../../Helpers/sanitize";
 
 const CompanyDetails = () => {
     const [comapnyDetails, setComapnyDetails] = useState({
@@ -110,9 +111,10 @@ const CompanyDetails = () => {
         const urlParams = new URLSearchParams(window.location.search);
         const companyid = urlParams.get("companyid");
 
-        setCompanyId(companyid);
+        // Validate ObjectId format (24-character hex string)
+        if (companyid && /^[a-f\d]{24}$/i.test(companyid)) {
+            setCompanyId(companyid);
 
-        if (!!companyid) {
             const res = await get(`${apiEndpoint.get_company_details}?id=${companyid}`);
             const data = res[0];
             if (!!data) {
@@ -120,8 +122,8 @@ const CompanyDetails = () => {
                 setComapnyDetails({
                     companyName: data?.companyName,
                     companyInfo: data?.companyInfo,
-                    linkedinPageLink: data?.linkedinPageLink,
-                    careersPageLink: data?.careerPageLink,
+                    linkedinPageLink: safeUrl(data?.linkedinPageLink || "#"),
+                    careersPageLink: safeUrl(data?.careerPageLink || "#"),
                     companyType: data?.companyType,
                     smallLogo: data?.smallLogo,
                     largeLogo: data?.largeLogo,

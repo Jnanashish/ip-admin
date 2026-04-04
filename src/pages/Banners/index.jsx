@@ -19,7 +19,8 @@ function Banners() {
         const companyname = urlParams.get("companyname");
         const companyid = urlParams.get("companyid");
 
-        if (!!jobId) {
+        // Validate ObjectId format (24-character hex string)
+        if (jobId && /^[a-f\d]{24}$/i.test(jobId)) {
             const params = {
                 key: "id",
                 value: jobId,
@@ -29,7 +30,8 @@ function Banners() {
             !!jobdata && jobdata?.data && setJobdetails(jobdata?.data);
         }
 
-        if (!!companyname || !!companyid) {
+        // Validate companyid ObjectId format if provided
+        if ((companyname || (companyid && /^[a-f\d]{24}$/i.test(companyid)))) {
             const companyData = await getCompanyDetailsHelper(companyname, companyid);
             !!companyData && Array.isArray(companyData) && setComapnyDetails(companyData[0]);
         }

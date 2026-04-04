@@ -24,11 +24,15 @@ const Signin = () => {
         signInWithEmailAndPassword(auth, email, password)
             .then(() => {
                 setShowLoader(false);
-                localStorage.setItem("loginTimestamp", Date.now().toString());
             })
             .catch((err) => {
                 setShowLoader(false);
-                showErrorToast(err.message);
+                // Map Firebase error codes to generic messages to prevent user enumeration
+                const errorMessage =
+                    err.code?.includes("wrong-password") || err.code?.includes("user-not-found")
+                        ? "Invalid email or password"
+                        : "Sign in failed. Please try again.";
+                showErrorToast(errorMessage);
             });
     };
 

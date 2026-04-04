@@ -1,10 +1,8 @@
 import { createContext, useState, useEffect } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut, browserSessionPersistence, setPersistence } from "firebase/auth";
 import { auth } from "../Config/firebase_config";
 
 export const UserContext = createContext();
-
-const SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -12,34 +10,29 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-            if (firebaseUser) {
-                const loginTimestamp = localStorage.getItem("loginTimestamp");
-                if (loginTimestamp && Date.now() - parseInt(loginTimestamp) > SESSION_DURATION_MS) {
-                    signOut(auth);
-                    localStorage.removeItem("loginTimestamp");
-                    setUser(null);
-                    setIsAdmin(false);
-                } else {
-                    setUser({ email: firebaseUser.email });
-                    setIsAdmin(firebaseUser.email === process.env.REACT_APP_ADMIN_EMAIL);
-                    if (!loginTimestamp) {
-                        localStorage.setItem("loginTimestamp", Date.now().toString());
+        // Set Firebase to use browser session persistence (clears on browser close)
+        setPersistence(auth, browserSessionPersistence)
+            .then(() => {
+                const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+                    if (firebaseUser) {
+                        setUser({ email: firebaseUser.email });
+                        setIsAdmin(firebaseUser.email === process.env.REACT_APP_ADMIN_EMAIL);
+                    } else {
+                        setUser(null);
+                        setIsAdmin(false);
                     }
-                }
-            } else {
-                setUser(null);
-                setIsAdmin(false);
-            }
-            setLoading(false);
-        });
-
-        return () => unsubscribe();
+                    setLoading(false);
+                });
+                return () => unsubscribe();
+            })
+            .catch((error) => {
+                console.error("Failed to set persistence:", error);
+                setLoading(false);
+            });
     }, []);
 
     const logout = async () => {
         await signOut(auth);
-        localStorage.removeItem("loginTimestamp");
         setUser(null);
         setIsAdmin(false);
     };

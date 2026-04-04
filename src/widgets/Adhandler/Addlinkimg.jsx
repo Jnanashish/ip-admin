@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { API } from "../../Backend";
 import { Button } from "Components/ui/button";
 import { Trash2, Send } from "lucide-react";
+import { safeUrl } from "../../Helpers/sanitize";
 
 const API_KEY = process.env.REACT_APP_API_KEY;
 
@@ -117,7 +118,7 @@ const AddLinkImg = () => {
                                     <Trash2 className="mr-2 h-4 w-4" />
                                     Delete
                                 </Button>
-                                <a href={item.link} target="_blank" rel="noopener noreferrer">
+                                <a href={safeUrl(item.link)} target="_blank" rel="noopener noreferrer">
                                     <Button>
                                         Visit Link
                                         <Send className="ml-2 h-4 w-4" />

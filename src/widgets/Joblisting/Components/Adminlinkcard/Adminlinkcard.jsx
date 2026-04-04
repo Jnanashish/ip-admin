@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 
 import EditData from "../Editdata/Editdata";
@@ -8,7 +9,9 @@ import Custombutton from "../../../../Components/Button/Custombutton";
 import { deleteData } from "../../../../Helpers/request";
 import { apiEndpoint } from "../../../../Helpers/apiEndpoints";
 import { generateDateFromISOString } from "../../../../Helpers/utility";
+import { safeUrl } from "../../../../Helpers/sanitize";
 const LinkCard = ({ item, isPreview = false }) => {
+    const navigate = useNavigate();
     const [selectedJobId, setSelectedJobId] = useState("");
     const [deletedId, setDeletedId] = useState("");
 
@@ -20,7 +23,7 @@ const LinkCard = ({ item, isPreview = false }) => {
     };
 
     const handleUpdateRedirectionClick = (id) => {
-        window.location.href = `/addjob?jobid=${id}`;
+        navigate(`/addjob?jobid=${encodeURIComponent(id)}`);
     };
 
     // when delete button is clicked delete a particular job
@@ -49,7 +52,7 @@ const LinkCard = ({ item, isPreview = false }) => {
                     />
                 )}
                 <div className="flex flex-row justify-between items-center w-full">
-                    <a href={item.link} target="_blank" rel="noopener noreferrer">
+                    <a href={safeUrl(item.link)} target="_blank" rel="noopener noreferrer">
                         <h2>{item.title}</h2>
                         <div className="flex flex-row items-center text-foreground mb-1">
                             <h5>Created At : </h5>

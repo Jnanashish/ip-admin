@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import { API } from "../../Backend";
+import { safeUrl } from "../../Helpers/sanitize";
 
 const API_KEY = process.env.REACT_APP_API_KEY;
 
@@ -42,6 +43,8 @@ const AddLink = () => {
             const data = await res.json();
             setData(data);
         } catch (error) {
+            console.error("getData failed:", error);
+            toast.error("Failed to load data");
         }
     };
 
@@ -94,7 +97,7 @@ const AddLink = () => {
                             <button onClick={() => deleteData(item._id)} className="p-2 w-[100px] text-lg rounded bg-[#5050ff] cursor-pointer border-none my-4 mx-2.5 text-white hover:bg-red-500 hover:text-black">
                                 Delete
                             </button>
-                            <a href={item.link} target="_blank" rel="noopener noreferrer">
+                            <a href={safeUrl(item.link)} target="_blank" rel="noopener noreferrer">
                                 <button className="p-2 w-[100px] text-lg rounded bg-[#5050ff] cursor-pointer border-none my-4 mx-2.5 text-white hover:bg-red-500 hover:text-black">Visit Link</button>
                             </a>
                         </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import DOMPurify from "dompurify";
 
 // import ck editor
 import { CKEditor } from "@ckeditor/ckeditor5-react";
@@ -13,6 +14,7 @@ import { updateJobDetails } from "../../../Addjobs/Helpers";
 import { Badge } from "Components/ui/badge";
 import { Input } from "Components/ui/input";
 import { categorytags } from "../../../Addjobs/Helpers/staticdata";
+import { safeUrl } from "../../../../Helpers/sanitize";
 
 const EditData = (props) => {
     ClassicEditor.defaultConfig = config;
@@ -114,6 +116,11 @@ const EditData = (props) => {
     };
 
     const handleJobdetailsChange = (key, value) => {
+        // Sanitize URLs to prevent javascript: and data: URIs
+        if (key === "link" && value) {
+            value = safeUrl(value);
+        }
+
         setJobDetails((prevState) => ({
             ...prevState,
             [key]: value,
@@ -167,7 +174,7 @@ const EditData = (props) => {
             <div className="w-3/4 ml-auto max-lg:w-full max-lg:ml-0 max-lg:mt-2 [&_.ck-editor__editable]:min-h-[150px]">
                 <CKEditor
                     editor={ClassicEditor}
-                    data={value}
+                    data={DOMPurify.sanitize(value)}
                     onChange={(event, editor) => {
                         const data = editor.getData();
                         handleJobdetailsChange(name, data);
