@@ -24,6 +24,7 @@ const routeLabels = {
   "/admin/scraper/staging": "Staging Queue",
   "/admin/scraper/logs": "Scrape Logs",
   "/admin/scraper/health": "Adapter Health",
+  "/analytics": "Analytics",
 };
 
 const getRouteLabel = (pathname) => {
@@ -38,7 +39,7 @@ const AppHeader = () => {
   const currentLabel = getRouteLabel(location.pathname);
 
   return (
-    <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 transition-[width,height] ease-linear">
+    <header className="flex h-16 shrink-0 items-center gap-2 border-b shadow-sm px-4 transition-[width,height] ease-linear">
       <div className="flex items-center gap-2 flex-1">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 h-4" />

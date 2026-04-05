@@ -7,6 +7,8 @@
     "@ckeditor/ckeditor5-react": "^6.3.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@fontsource/geist-mono": "^5.2.7",
+    "@fontsource/geist-sans": "^5.2.5",
     "@mui/icons-material": "^5.17.0",
     "@mui/material": "^5.17.0",
     "@radix-ui/react-avatar": "^1.1.11",
@@ -37,6 +39,7 @@
     "react-router-dom": "^6.30.0",
     "react-scripts": "5.0.1",
     "react-toastify": "^11.0.0",
+    "recharts": "^3.8.1",
     "sass": "1.77.6",
     "tailwind-merge": "^3.5.0",
     "tailwindcss-animate": "^1.0.7"

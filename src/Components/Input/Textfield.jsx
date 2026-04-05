@@ -12,7 +12,7 @@ const CustomTextField = (props) => {
 
     if (type === "select") {
         return (
-            <div className={cn("mt-4", fullWidth && "w-full")} style={widthStyle}>
+            <div className={cn(fullWidth && "w-full")} style={widthStyle}>
                 {label && <Label className="mb-1.5 block text-sm text-muted-foreground">{label}</Label>}
                 <Select value={value || ""} onValueChange={(val) => props.onChange(val)} disabled={disabled || false}>
                     <SelectTrigger className={cn(error && "border-destructive", className)}>
@@ -32,7 +32,7 @@ const CustomTextField = (props) => {
 
     if (multiline) {
         return (
-            <div className={cn("mt-4", fullWidth && "w-full")} style={widthStyle}>
+            <div className={cn(fullWidth && "w-full")} style={widthStyle}>
                 {label && <Label className="mb-1.5 block text-sm text-muted-foreground">{label}</Label>}
                 <Textarea
                     value={value || ""}
@@ -49,7 +49,7 @@ const CustomTextField = (props) => {
     }
 
     return (
-        <div className={cn("mt-4", fullWidth && "w-full")} style={widthStyle}>
+        <div className={cn(fullWidth && "w-full")} style={widthStyle}>
             {label && <Label className="mb-1.5 block text-sm text-muted-foreground">{label}</Label>}
             <Input
                 value={value || ""}

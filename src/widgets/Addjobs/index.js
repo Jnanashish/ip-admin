@@ -486,7 +486,7 @@ const AddjobsComponent = () => {
 
     return (
         <div className="max-w-full overflow-x-hidden">
-            <h2 className="text-2xl font-semibold mb-6">{jobAlreadyExist ? "Update" : "Add"} Job Details</h2>
+            <h2 className="text-2xl font-bold tracking-tight mb-6">{jobAlreadyExist ? "Update" : "Add"} Job Details</h2>
 
             {/* circular overlay loader */}
             {!!showLoader && (
@@ -496,7 +496,7 @@ const AddjobsComponent = () => {
             )}
 
             {/* JSON Paste Section */}
-            <Card className="mb-6">
+            <Card className="mb-6 border-dashed bg-muted/30">
                 <CardContent className="pt-6">
                     <textarea
                         className="w-full h-[120px] p-4 rounded-md border border-input bg-background text-sm resize-y outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground"
@@ -510,9 +510,9 @@ const AddjobsComponent = () => {
 
             {/* Main job details section */}
             <div className="flex justify-between gap-6 w-full max-xl:flex-col">
-                <div className="w-[70%] max-xl:w-full space-y-6">
+                <div className="w-[70%] max-xl:w-full space-y-8">
                     {/* Company & Role */}
-                    <Card>
+                    <Card className="shadow-md border-primary/20">
                         <CardHeader>
                             <CardTitle className="text-lg">Company & Role</CardTitle>
                         </CardHeader>
@@ -819,7 +819,7 @@ const AddjobsComponent = () => {
             {/* Submit Button */}
             <div className="w-[70%] mb-10 max-xl:w-full">
                 <Button
-                    className="w-full py-2 text-base capitalize"
+                    className="w-full py-3 text-base capitalize font-semibold shadow-lg hover:shadow-xl transition-all"
                     onClick={addJobDetails}
                     disabled={showLoader || jobdetails?.link?.length === 0 || jobdetails?.tags?.length === 0}
                     size="lg"

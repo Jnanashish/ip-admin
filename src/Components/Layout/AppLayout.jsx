@@ -12,6 +12,7 @@ import {
   Inbox,
   ScrollText,
   HeartPulse,
+  BarChart3,
 } from "lucide-react";
 import { UserContext } from "Context/userContext";
 import {
@@ -58,6 +59,7 @@ const navGroups = [
     label: "Tools",
     items: [
       { title: "Banners", url: "/canvas", icon: Image },
+      { title: "Analytics", url: "/analytics", icon: BarChart3 },
     ],
   },
   {
@@ -94,7 +96,7 @@ const AppLayout = () => {
             <SidebarMenuItem>
               <SidebarMenuButton size="lg" asChild>
                 <a href="/addjob">
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                  <div className="flex aspect-square size-8 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
                     <LayoutList className="size-4" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
@@ -148,7 +150,7 @@ const AppLayout = () => {
                     size="lg"
                     className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                   >
-                    <Avatar className="h-8 w-8 rounded-lg">
+                    <Avatar className="h-8 w-8 rounded-lg ring-1 ring-border">
                       <AvatarFallback className="rounded-lg text-xs">
                         {initials}
                       </AvatarFallback>

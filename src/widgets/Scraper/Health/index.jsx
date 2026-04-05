@@ -24,7 +24,7 @@ const AdapterCard = ({ adapter, onTest }) => {
     const Icon = config.icon;
 
     return (
-        <Card className={`border ${config.color}`}>
+        <Card className={`border transition-all duration-200 hover:shadow-md ${config.color}`}>
             <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-base">{adapter.name}</CardTitle>

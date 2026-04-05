@@ -28,7 +28,7 @@ import { usePolling } from "hooks/usePolling";
 import { showInfoToast } from "Helpers/toast";
 
 const StatsCard = ({ title, value, icon: Icon, description }) => (
-    <Card>
+    <Card className="hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{title}</CardTitle>
             <Icon className="h-4 w-4 text-muted-foreground" />
@@ -193,7 +193,7 @@ const ScraperDashboard = () => {
                 <h2 className="text-lg font-semibold mb-3">Adapter Status</h2>
                 <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                     {healthData.map((adapter) => (
-                        <Card key={adapter.name}>
+                        <Card key={adapter.name} className="transition-all hover:shadow-md">
                             <CardContent className="pt-4">
                                 <div className="flex items-center justify-between mb-2">
                                     <span className="font-medium">{adapter.name}</span>

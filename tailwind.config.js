@@ -71,11 +71,8 @@ module.exports = {
         xl: "1200px",
       },
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
-        inter: ["Inter", "sans-serif"],
-        poppins: ["Poppins", "sans-serif"],
-        ibm: ['"IBM Plex Sans"', "sans-serif"],
-        sora: ["Sora", "sans-serif"],
+        sans: ['"Geist Sans"', "sans-serif"],
+        mono: ['"Geist Mono"', "monospace"],
       },
     },
   },

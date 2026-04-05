@@ -10,6 +10,7 @@ import { deleteData } from "../../../../Helpers/request";
 import { apiEndpoint } from "../../../../Helpers/apiEndpoints";
 import { generateDateFromISOString } from "../../../../Helpers/utility";
 import { safeUrl } from "../../../../Helpers/sanitize";
+import { cn } from "lib/utils";
 const LinkCard = ({ item, isPreview = false }) => {
     const navigate = useNavigate();
     const [selectedJobId, setSelectedJobId] = useState("");
@@ -41,43 +42,41 @@ const LinkCard = ({ item, isPreview = false }) => {
     return (
         <div>
             <div
-                className="flex flex-row items-center bg-card text-card-foreground px-5 py-2.5 min-h-[90px] max-w-full mb-3 border rounded-md font-ibm"
-                style={{ opacity: item?.isActive ? "100%" : "40%" }}
+                className={cn(
+                    "flex flex-row items-center bg-card text-card-foreground px-5 py-3 min-h-[90px] max-w-full mb-3 border rounded-lg font-ibm transition-all duration-200 hover:shadow-md hover:border-primary/20 border-l-2",
+                    item?.isActive ? "border-l-primary" : "border-l-muted opacity-40"
+                )}
             >
                 {!isPreview && (
                     <img
-                        className="h-[50px] w-[50px] mr-5 max-lg:h-10 max-lg:w-10 object-contain"
+                        className="h-[50px] w-[50px] mr-5 max-lg:h-10 max-lg:w-10 object-contain rounded-md bg-muted/50 p-1"
                         src={item.imagePath}
                         alt={`${item.title} logo`}
                     />
                 )}
                 <div className="flex flex-row justify-between items-center w-full">
                     <a href={safeUrl(item.link)} target="_blank" rel="noopener noreferrer">
-                        <h2>{item.title}</h2>
-                        <div className="flex flex-row items-center text-foreground mb-1">
-                            <h5>Created At : </h5>
-                            <h5>{generateDateFromISOString(item.createdAt)}</h5>
+                        <h3 className="text-base font-semibold tracking-tight">{item.title}</h3>
+                        <div className="flex flex-row items-center mb-1">
+                            <span className="text-sm text-muted-foreground">Created At :&nbsp;</span>
+                            <span className="text-sm text-muted-foreground">{generateDateFromISOString(item.createdAt)}</span>
                         </div>
 
                         {item.lastdate !== "2022-11-00-" && !isPreview && (
-                            <div className="flex flex-row items-center text-foreground mb-1">
-                                <h5>Last date : </h5>
-                                <h5 style={{ color: "red" }}>
-                                    <b> {item.lastdate}</b>
-                                </h5>
+                            <div className="flex flex-row items-center mb-1">
+                                <span className="text-sm text-muted-foreground">Last date :&nbsp;</span>
+                                <span className="text-sm font-semibold text-destructive">{item.lastdate}</span>
                             </div>
                         )}
 
-                        <div className="flex flex-row items-center text-foreground mb-1">
-                            <h5>Total Click : </h5>
-                            <h5 className="text-red-500 mr-8">
-                                <b>{item.totalclick}</b>
-                            </h5>
+                        <div className="flex flex-row items-center mb-1">
+                            <span className="text-sm text-muted-foreground">Total Click :&nbsp;</span>
+                            <span className="text-sm font-semibold text-destructive mr-8">{item.totalclick}</span>
                         </div>
                         {!!item?.jobId && (
-                            <div className="flex flex-row items-center text-foreground mb-1">
-                                <h5>Job Id : </h5>
-                                <h5>{item?.jobId}</h5>
+                            <div className="flex flex-row items-center mb-1">
+                                <span className="text-sm text-muted-foreground">Job Id :&nbsp;</span>
+                                <span className="text-sm text-muted-foreground">{item?.jobId}</span>
                             </div>
                         )}
                     </a>

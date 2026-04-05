@@ -350,7 +350,7 @@ const StagingQueue = () => {
 
             {/* Bulk action bar */}
             {selectedIds.size > 0 && (
-                <div className="fixed bottom-0 left-0 right-0 bg-background border-t p-4 flex items-center justify-between z-50 shadow-lg">
+                <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t p-4 flex items-center justify-between z-50 shadow-lg">
                     <span className="text-sm font-medium">{selectedIds.size} jobs selected</span>
                     <div className="flex gap-2">
                         <Button variant="outline" size="sm" onClick={() => setSelectedIds(new Set())}>

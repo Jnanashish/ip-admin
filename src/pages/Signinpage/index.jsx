@@ -45,12 +45,12 @@ const Signin = () => {
     }
 
     return (
-        <div className="flex min-h-svh items-center justify-center bg-background p-4">
-            <Card className="w-full max-w-sm">
+        <div className="flex min-h-svh items-center justify-center bg-muted/40 p-4">
+            <Card className="w-full max-w-sm shadow-lg border-0">
                 <CardHeader className="text-center">
                     <div className="flex justify-center mb-2">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                            <LayoutList className="h-5 w-5" />
+                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-md">
+                            <LayoutList className="h-6 w-6" />
                         </div>
                     </div>
                     <CardTitle className="text-2xl">Sign in</CardTitle>
@@ -79,14 +79,14 @@ const Signin = () => {
                             />
                             <button
                                 type="button"
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                                 onClick={() => setIsPassword(!isPassword)}
                             >
                                 {isPassword ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                             </button>
                         </div>
                     </div>
-                    <Button className="w-full capitalize" onClick={handleSignin} variant="default">
+                    <Button className="w-full capitalize shadow-sm hover:shadow-md transition-all" onClick={handleSignin} variant="default">
                         {showLoader ? (
                             <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                         ) : (

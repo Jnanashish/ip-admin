@@ -13,7 +13,8 @@ export const fetchStagingJob = async (id) => {
 };
 
 export const approveJob = async (id, overrides = {}) => {
-    const body = Object.keys(overrides).length > 0 ? { overrides } : {};
+    const merged = { jdpage: true, ...overrides };
+    const body = { overrides: merged };
     return scraperPost(scraperEndpoints.stagingApprove(id), body, "Approve");
 };
 

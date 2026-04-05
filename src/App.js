@@ -7,6 +7,8 @@ import { UserContext, AuthProvider } from "./Context/userContext";
 import { ThemeProvider } from "./Context/themeContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import "@fontsource/geist-sans";
+import "@fontsource/geist-mono";
 import "./App.css";
 
 import Addjobs from "./pages/AddJobs";
@@ -20,6 +22,7 @@ import ScraperStaging from "./pages/Scraper/Staging";
 import ScraperStagingDetail from "./pages/Scraper/StagingDetail";
 import ScraperLogs from "./pages/Scraper/Logs";
 import ScraperHealth from "./pages/Scraper/Health";
+import Analytics from "./pages/Analytics";
 import Loader from "./Components/Loader";
 import AppLayout from "./Components/Layout/AppLayout";
 
@@ -54,6 +57,7 @@ function AppRoutes() {
                     <Route path="/admin/scraper/staging/:id" element={<ScraperStagingDetail />} />
                     <Route path="/admin/scraper/logs" element={<ScraperLogs />} />
                     <Route path="/admin/scraper/health" element={<ScraperHealth />} />
+                    <Route path="/analytics" element={<Analytics />} />
                 </Route>
                 <Route path="/" element={isAuthenticated ? <Navigate to="/addjob" /> : <Navigate to="/signin" />} />
                 <Route path="*" element={<Navigate to="/signin" />} />

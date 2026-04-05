@@ -10,6 +10,13 @@ export const apiEndpoint = {
     addJobData: "/jd/add",
     trackApplyClick: "/jd/update/count",
 
+    // analytics
+    analyticsSummary: "/analytics/summary",
+    analyticsJobsOverTime: "/analytics/jobs-over-time",
+    analyticsClicksOverTime: "/analytics/clicks-over-time",
+    analyticsTopJobs: "/analytics/top-jobs",
+    analyticsJobsByCategory: "/analytics/jobs-by-category",
+
     // company details
     addCompanyDetails: "/companydetails/add",
     get_company_details: "/companydetails/get",

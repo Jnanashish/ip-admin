@@ -64,12 +64,14 @@ function CompanyListing() {
 
     const renderCompanyCard = useCallback(
         (company, index) => (
-            <Card className="mb-4" key={company._id || index}>
+            <Card className="mb-4 transition-all duration-200 hover:shadow-md" key={company._id || index}>
                 <CardContent className="pt-6">
                     <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
                         <div className="flex items-center gap-4">
                             {company?.smallLogo && (
-                                <img src={company.smallLogo} alt="Logo" className="h-10 w-10 object-contain rounded" />
+                                <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-muted">
+                                    <img src={company.smallLogo} alt="Logo" className="h-10 w-10 object-contain rounded" />
+                                </div>
                             )}
                             <div>
                                 <h3 className="font-semibold text-base">{company?.companyName}</h3>
@@ -117,7 +119,7 @@ function CompanyListing() {
         <div>
             <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
                 <div>
-                    <h2 className="text-2xl font-semibold">Company List</h2>
+                    <h2 className="text-2xl font-bold tracking-tight">Company List</h2>
                     <p className="text-sm text-muted-foreground mt-1">
                         {filteredCompanies?.length || 0} companies available
                     </p>

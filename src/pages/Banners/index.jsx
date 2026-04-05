@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 
 import Canvas from "../../Components/Canvas";
-import Custombutton from "../../Components/Button/Custombutton";
 import Loader from "../../Components/Loader";
+import { Button } from "Components/ui/button";
+import { cn } from "lib/utils";
 
 import { getCompanyDetailsHelper } from "../../Apis/Company";
 import { getJobDetailsHelper } from "../../widgets/Addjobs/Helpers";
@@ -38,15 +39,30 @@ function Banners() {
         getQueryparam();
     }, []);
 
+    const bannerOptions = [
+        { key: "careersattech", label: "CareersAtTech" },
+        { key: "jobsattech", label: "JobsAtTech" },
+        { key: "linkedinbanner", label: "LinkedIn" },
+        { key: "carousel", label: "Carousel" },
+    ];
+
     return (
         <div>
-            <h2 className="text-2xl font-semibold mb-4">Banner Generator</h2>
+            <h2 className="text-2xl font-bold tracking-tight mb-2">Banner Generator</h2>
+            <p className="text-sm text-muted-foreground mb-6">Generate social media banners for job postings</p>
 
-            <div className="flex flex-wrap gap-3 mb-6">
-                <Custombutton variant={bannerType === "careersattech" ? "" : "outlined"} onClick={() => setBannerType("careersattech")} label="Careersattech banner" fullWidth={false} />
-                <Custombutton variant={bannerType === "jobsattech" ? "" : "outlined"} onClick={() => setBannerType("jobsattech")} label="Jobsattech" fullWidth={false} />
-                <Custombutton variant={bannerType === "linkedinbanner" ? "" : "outlined"} onClick={() => setBannerType("linkedinbanner")} label="Linkedin" fullWidth={false} />
-                <Custombutton variant={bannerType === "carousel" ? "" : "outlined"} onClick={() => setBannerType("carousel")} label="Carousel" fullWidth={false} />
+            <div className="flex flex-wrap gap-1 mb-8 p-1 bg-muted rounded-lg w-fit">
+                {bannerOptions.map((item) => (
+                    <Button
+                        key={item.key}
+                        variant={bannerType === item.key ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setBannerType(item.key)}
+                        className={cn("capitalize", bannerType === item.key && "shadow-sm")}
+                    >
+                        {item.label}
+                    </Button>
+                ))}
             </div>
 
             {!!jobdetails && !!comapnyDetails ? (

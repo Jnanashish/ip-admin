@@ -160,7 +160,7 @@ const JobListing = () => {
 
     // Memoized job card render function
     const renderJobCard = useCallback((item) => (
-        <Card key={item._id} className="mb-4">
+        <Card key={item._id} className="mb-4 transition-shadow hover:shadow-md">
             <CardContent className="pt-6">
                 <Adminlinkcard item={item} />
                 <div className="flex flex-row w-full justify-between flex-wrap gap-y-2.5 mt-3 max-lg:flex-col">
@@ -184,7 +184,7 @@ const JobListing = () => {
                     </div>
                     <div className="flex flex-row items-center gap-2.5 py-2.5 flex-wrap [&_button]:capitalize max-lg:flex-col max-lg:items-start max-lg:gap-2">
                         <Button
-                            variant="outline"
+                            variant="default"
                             size="sm"
                             disabled={!context.isAdmin}
                             onClick={() => handleTelegramSubmitHelper(item)}
@@ -216,9 +216,9 @@ const JobListing = () => {
                 </div>
             ) : (
                 <>
-                    <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
+                    <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
                         <div>
-                            <h2 className="text-2xl font-semibold">Job Dashboard</h2>
+                            <h2 className="text-2xl font-bold tracking-tight">Job Dashboard</h2>
                             <p className="text-sm text-muted-foreground mt-1">
                                 {jobCount} jobs available
                             </p>
@@ -230,7 +230,7 @@ const JobListing = () => {
                         )}
                     </div>
 
-                    <Card className="mb-6">
+                    <Card className="mb-8 border-dashed">
                         <CardContent className="pt-6 space-y-4">
                             <div className="relative">
                                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -274,7 +274,8 @@ const JobListing = () => {
                     </div>
 
                     <Button
-                        className="w-full mt-4"
+                        variant="outline"
+                        className="w-full mt-6"
                         size="lg"
                         onClick={() => setPageno(prev => prev + 1)}
                     >

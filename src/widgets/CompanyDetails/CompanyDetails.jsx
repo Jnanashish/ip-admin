@@ -138,9 +138,9 @@ const CompanyDetails = () => {
 
     return (
         <div className="max-w-3xl mx-auto">
-            <h2 className="text-2xl font-semibold mb-6">{isCompanydetailPresent ? "Update" : "Add"} Company Details</h2>
+            <h2 className="text-2xl font-bold tracking-tight mb-6">{isCompanydetailPresent ? "Update" : "Add"} Company Details</h2>
 
-            <Card>
+            <Card className="shadow-md">
                 <CardHeader>
                     <CardTitle className="text-lg">Company Information</CardTitle>
                 </CardHeader>
@@ -204,8 +204,8 @@ const CompanyDetails = () => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="flex items-center gap-6 flex-wrap">
-                        <div className="flex-1 min-w-[200px] space-y-2">
-                            <label className="text-sm font-medium">Small Logo</label>
+                        <div className="flex-1 min-w-[200px] border-2 border-dashed rounded-lg p-4 hover:border-primary/50 transition-colors">
+                            <label className="text-sm font-medium block mb-2">Small Logo</label>
                             <input
                                 accept=".jpeg, .jpg, .png, .webp, .heic, .svg"
                                 className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer"
@@ -220,8 +220,8 @@ const CompanyDetails = () => {
                     </div>
 
                     <div className="flex items-center gap-6 flex-wrap">
-                        <div className="flex-1 min-w-[200px] space-y-2">
-                            <label className="text-sm font-medium">Large Logo</label>
+                        <div className="flex-1 min-w-[200px] border-2 border-dashed rounded-lg p-4 hover:border-primary/50 transition-colors">
+                            <label className="text-sm font-medium block mb-2">Large Logo</label>
                             <input
                                 accept=".jpeg, .jpg, .png, .webp, .heic, .svg"
                                 className="block w-full text-sm text-muted-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer"
