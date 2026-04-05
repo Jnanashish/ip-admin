@@ -153,13 +153,14 @@ const StagingDetail = () => {
 
     const handleApprove = useCallback(async () => {
         setActionLoading(true);
-        const res = await approveJob(id, overrides);
+        const companyName = overrides.companyName || job?.jobData?.companyName || "";
+        const res = await approveJob(id, overrides, companyName);
         if (res) {
             showInfoToast("Job published!");
             navigate("/admin/scraper/staging");
         }
         setActionLoading(false);
-    }, [id, overrides, navigate]);
+    }, [id, overrides, navigate, job]);
 
     const handleReject = useCallback(async () => {
         setActionLoading(true);

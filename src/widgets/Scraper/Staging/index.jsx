@@ -101,7 +101,9 @@ const StagingQueue = () => {
 
     const handleQuickApprove = async (id) => {
         setActionLoading(id);
-        const res = await approveJob(id);
+        const job = jobs.find((j) => j._id === id);
+        const companyName = job?.jobData?.companyName || "";
+        const res = await approveJob(id, {}, companyName);
         if (res) {
             setJobs((prev) => prev.filter((j) => j._id !== id));
             setTotalCount((prev) => prev - 1);
@@ -131,7 +133,12 @@ const StagingQueue = () => {
 
     const handleBulkApprove = async () => {
         setBulkLoading(true);
-        const res = await bulkApproveJobs([...selectedIds]);
+        const jobsMap = {};
+        for (const id of selectedIds) {
+            const job = jobs.find((j) => j._id === id);
+            if (job?.jobData?.companyName) jobsMap[id] = job.jobData.companyName;
+        }
+        const res = await bulkApproveJobs([...selectedIds], jobsMap);
         if (res) {
             const msg = `${res.approved || 0} approved${res.failed ? `, ${res.failed} failed` : ""}`;
             showInfoToast(msg);
