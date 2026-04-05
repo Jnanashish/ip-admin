@@ -25,15 +25,23 @@ const CompanyDetails = () => {
     const [isCompanydetailPresent, setIsCompanydetailPresent] = useState(false);
     const [comapnyId, setCompanyId] = useState();
 
+    const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
     const handleCompanyLogoInput = async (e, compressImage = true) => {
-        const file = e.target.files;
-        const fileSize = file[0].size;
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+            showErrorToast("Only JPEG, PNG, and WebP images are allowed");
+            e.target.value = "";
+            return;
+        }
 
         if (compressImage) {
             const link = await generateLinkfromImage(e);
             handleCompanyDetailChange("smallLogo", link);
         } else {
-            if (fileSize < 1000000) {
+            if (file.size < 1000000) {
                 const link = await generateLinkfromImage(e, false);
                 handleCompanyDetailChange("largeLogo", link);
             } else {

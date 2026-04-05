@@ -73,6 +73,12 @@ const formatDate = (dateStr) => {
     return d.toLocaleDateString("en-IN", { month: "short", day: "numeric" });
 };
 
+const TOOLTIP_CONTENT_STYLE = {
+    backgroundColor: "hsl(var(--card))",
+    border: "1px solid hsl(var(--border))",
+    borderRadius: "8px",
+};
+
 const StatsCard = ({ title, value, icon: Icon, description, trend }) => (
     <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -123,8 +129,7 @@ const AnalyticsDashboard = () => {
             setJobsOverTime(summaryRes?.data ? (jobsRes?.data || []) : []);
             setClicksOverTime(summaryRes?.data ? (clicksRes?.data || []) : []);
             setTopJobs(topRes?.data || []);
-        } catch (err) {
-            console.error("Analytics fetch error:", err);
+        } catch {
         } finally {
             setLoading(false);
         }
@@ -134,8 +139,7 @@ const AnalyticsDashboard = () => {
         try {
             const res = await get(`${apiEndpoint.analyticsJobsByCategory}?groupBy=${category}`);
             setCategoryData(res?.data || []);
-        } catch (err) {
-            console.error("Category fetch error:", err);
+        } catch {
         }
     }, [category]);
 
@@ -278,11 +282,7 @@ const AnalyticsDashboard = () => {
                                     />
                                     <RechartsTooltip
                                         labelFormatter={formatDate}
-                                        contentStyle={{
-                                            backgroundColor: "hsl(var(--card))",
-                                            border: "1px solid hsl(var(--border))",
-                                            borderRadius: "8px",
-                                        }}
+                                        contentStyle={TOOLTIP_CONTENT_STYLE}
                                     />
                                     <Legend />
                                     <Bar dataKey="jobsAdded" name="Added" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
@@ -321,11 +321,7 @@ const AnalyticsDashboard = () => {
                                     />
                                     <RechartsTooltip
                                         labelFormatter={formatDate}
-                                        contentStyle={{
-                                            backgroundColor: "hsl(var(--card))",
-                                            border: "1px solid hsl(var(--border))",
-                                            borderRadius: "8px",
-                                        }}
+                                        contentStyle={TOOLTIP_CONTENT_STYLE}
                                     />
                                     <Area
                                         type="monotone"
@@ -447,11 +443,7 @@ const AnalyticsDashboard = () => {
                                         ))}
                                     </Pie>
                                     <RechartsTooltip
-                                        contentStyle={{
-                                            backgroundColor: "hsl(var(--card))",
-                                            border: "1px solid hsl(var(--border))",
-                                            borderRadius: "8px",
-                                        }}
+                                        contentStyle={TOOLTIP_CONTENT_STYLE}
                                     />
                                 </PieChart>
                             </ResponsiveContainer>

@@ -12,26 +12,34 @@ const API_KEY = process.env.REACT_APP_API_KEY;
 
 const AddBanner = () => {
     const [link, setLink] = useState("");
+    const [selectedFile, setSelectedFile] = useState(null);
 
-    const formData = new FormData();
     const handleimginp = (e) => {
-        const file = e.target.files;
-        formData.append("photo", file[0]);
+        setSelectedFile(e.target.files?.[0] || null);
     };
 
     const addData = async (e) => {
         e.preventDefault();
+        const formData = new FormData();
+        if (selectedFile) formData.append("photo", selectedFile);
         formData.append("link", link);
-        const res = await fetch(`${API}/sda/banner/add`, {
-            method: "POST",
-            headers: { "x-api-key": API_KEY },
-            body: formData,
-        });
 
-        if (res.status === 201) {
-            toast("Data Added Successfully");
-        } else {
-            toast.error("An error Occured");
+        try {
+            const res = await fetch(`${API}/sda/banner/add`, {
+                method: "POST",
+                headers: { "x-api-key": API_KEY },
+                body: formData,
+            });
+
+            if (res.status === 201) {
+                toast("Data Added Successfully");
+                setLink("");
+                setSelectedFile(null);
+            } else {
+                toast.error("An error Occured");
+            }
+        } catch {
+            toast.error("Network error. Please check your connection.");
         }
     };
 

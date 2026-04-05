@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useRef } from "react";
 import { onAuthStateChanged, signOut, browserSessionPersistence, setPersistence } from "firebase/auth";
 import { auth } from "../Config/firebase_config";
 
@@ -8,14 +8,15 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
     const [loading, setLoading] = useState(true);
+    const unsubscribeRef = useRef(null);
 
     useEffect(() => {
-        // Set Firebase to use browser session persistence (clears on browser close)
         setPersistence(auth, browserSessionPersistence)
             .then(() => {
-                const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+                unsubscribeRef.current = onAuthStateChanged(auth, (firebaseUser) => {
                     if (firebaseUser) {
                         setUser({ email: firebaseUser.email });
+                        // NOTE: Client-side admin check — backend should verify via Firebase Custom Claims
                         setIsAdmin(firebaseUser.email === process.env.REACT_APP_ADMIN_EMAIL);
                     } else {
                         setUser(null);
@@ -23,12 +24,14 @@ export const AuthProvider = ({ children }) => {
                     }
                     setLoading(false);
                 });
-                return () => unsubscribe();
             })
-            .catch((error) => {
-                console.error("Failed to set persistence:", error);
+            .catch(() => {
                 setLoading(false);
             });
+
+        return () => {
+            if (unsubscribeRef.current) unsubscribeRef.current();
+        };
     }, []);
 
     const logout = async () => {

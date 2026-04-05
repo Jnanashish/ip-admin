@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useContext, useEffect, useCallback, useRef } from "react";
 
 import Custombutton from "../../Components/Button/Custombutton";
 import CustomDivider from "../../Components/Divider/Divider";
@@ -42,11 +42,6 @@ const JobListing = () => {
 
     const context = useContext(UserContext);
 
-    // Memoized job filtering
-    const filteredJobs = useMemo(() => {
-        return filteredData;
-    }, [filteredData]);
-
     // fetch job details
     const getJobDetailsData = useCallback(async () => {
         if (isApiCalled) return;
@@ -70,13 +65,13 @@ const JobListing = () => {
 
     // open new tab with banners (can select banner of multiple format)
     const downloadBanner = async (item) => {
-        window.open(`/canvas?jobid=${item._id}&companyname=${item.companyName}`, "_blank");
+        window.open(`/canvas?jobid=${encodeURIComponent(item._id)}&companyname=${encodeURIComponent(item.companyName)}`, "_blank");
     };
 
     // when focus out in input field filter the job data list
     const handleInputBlur = (searchedText) => {
         const filteredJobData = jobData.filter((item) => {
-            return item.title.toLowerCase().includes(searchedText.toLowerCase());
+            return item?.title?.toLowerCase()?.includes(searchedText.toLowerCase());
         });
         setFilteredData(filteredJobData);
     };
@@ -103,9 +98,11 @@ const JobListing = () => {
         updateJobDetails(updatedJobData, updatedJobData?._id);
     }, []);
 
-    // Memoized company name search handler
-    const handleCompanyNameBlur = useCallback(
-        debounce(async (searchText) => {
+    // Debounced company name search handler
+    const debounceTimerRef = useRef(null);
+    const handleCompanyNameBlur = useCallback((searchText) => {
+        clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = setTimeout(async () => {
             if (searchText.trim() !== "") {
                 setIsApiCalled(true);
                 try {
@@ -139,24 +136,14 @@ const JobListing = () => {
                 setFilteredData([]);
                 setPageno(1);
                 setIsApiCalled(false);
-                getJobDetailsData();
             }
-        }, 500),
-        []
-    );
+        }, 500);
+    }, []);
 
     // fetch job details on mount and page change
     useEffect(() => {
         getJobDetailsData();
-    }, [pageno]); // Only depend on pageno changes
-
-    function debounce(func, delay) {
-        let timer;
-        return (...args) => {
-            clearTimeout(timer);
-            timer = setTimeout(() => func(...args), delay);
-        };
-    }
+    }, [pageno]);
 
     // Memoized job card render function
     const renderJobCard = useCallback((item) => (
@@ -270,7 +257,7 @@ const JobListing = () => {
                     </Card>
 
                     <div>
-                        {filteredJobs?.map(renderJobCard)}
+                        {filteredData?.map(renderJobCard)}
                     </div>
 
                     <Button

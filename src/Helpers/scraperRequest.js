@@ -18,46 +18,61 @@ const parseErrorResponse = async (res, fallbackMsg) => {
 };
 
 export const scraperGet = async (url) => {
-    const res = await fetch(`${SCRAPER_API}${url}`, {
-        method: "GET",
-        headers: getHeaders(false),
-    });
+    try {
+        const res = await fetch(`${SCRAPER_API}${url}`, {
+            method: "GET",
+            headers: getHeaders(false),
+        });
 
-    if (res.status === 200 || res.status === 201) {
-        return await res.json();
-    } else {
-        const error = await parseErrorResponse(res, "Error in scraper GET request.");
-        showErrorToast(error);
+        if (res.status === 200 || res.status === 201) {
+            return await res.json();
+        } else {
+            const error = await parseErrorResponse(res, "Error in scraper GET request.");
+            showErrorToast(error);
+        }
+    } catch {
+        showErrorToast("Network error. Please check your connection.");
+        return null;
     }
 };
 
 export const scraperPost = async (url, body, apiname) => {
-    const res = await fetch(`${SCRAPER_API}${url}`, {
-        method: "POST",
-        headers: getHeaders(),
-        body: body ? JSON.stringify(body) : undefined,
-    });
+    try {
+        const res = await fetch(`${SCRAPER_API}${url}`, {
+            method: "POST",
+            headers: getHeaders(),
+            body: body ? JSON.stringify(body) : undefined,
+        });
 
-    if (res.status === 200 || res.status === 201) {
-        if (apiname) showSuccessToast(`${apiname} succeeded`);
-        return await res.json();
-    } else {
-        const error = await parseErrorResponse(res, `Error in ${apiname || "scraper"} POST request.`);
-        showErrorToast(error);
+        if (res.status === 200 || res.status === 201) {
+            if (apiname) showSuccessToast(`${apiname} succeeded`);
+            return await res.json();
+        } else {
+            const error = await parseErrorResponse(res, `Error in ${apiname || "scraper"} POST request.`);
+            showErrorToast(error);
+        }
+    } catch {
+        showErrorToast("Network error. Please check your connection.");
+        return null;
     }
 };
 
 export const scraperDelete = async (url, apiname) => {
-    const res = await fetch(`${SCRAPER_API}${url}`, {
-        method: "DELETE",
-        headers: getHeaders(false),
-    });
+    try {
+        const res = await fetch(`${SCRAPER_API}${url}`, {
+            method: "DELETE",
+            headers: getHeaders(false),
+        });
 
-    if (res.status === 200 || res.status === 201) {
-        if (apiname) showSuccessToast(`${apiname} succeeded`);
-        return await res.json();
-    } else {
-        const error = await parseErrorResponse(res, `Error in ${apiname || "scraper"} DELETE request.`);
-        showErrorToast(error);
+        if (res.status === 200 || res.status === 201) {
+            if (apiname) showSuccessToast(`${apiname} succeeded`);
+            return await res.json();
+        } else {
+            const error = await parseErrorResponse(res, `Error in ${apiname || "scraper"} DELETE request.`);
+            showErrorToast(error);
+        }
+    } catch {
+        showErrorToast("Network error. Please check your connection.");
+        return null;
     }
 };

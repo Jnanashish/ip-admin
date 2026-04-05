@@ -9,44 +9,46 @@ const TOKEN = process.env.REACT_APP_TOKEN;
 // [BIT.LY]
 // short long job link with bitly
 export const shortenurl = async (link) => {
-    const res = await fetch("https://api-ssl.bitly.com/v4/shorten", {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${TOKEN}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ long_url: link, domain: "bit.ly" }),
-    });
-    const json = await res.json();
-    const data = await json.link;
-    if (data) return data;
-    return link;
+    try {
+        const res = await fetch("https://api-ssl.bitly.com/v4/shorten", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${TOKEN}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ long_url: link, domain: "bit.ly" }),
+        });
+        const json = await res.json();
+        const data = json.link;
+        if (data) return data;
+        return link;
+    } catch {
+        return link;
+    }
 };
 
 // send message to telegram
 export const sendMessage = (msg) => {
-    fetch(`https://api.telegram.org/bot${BOT_API_KEY}/sendMessage?chat_id=${MY_CHANNEL_NAME}&text=${msg}&disable_web_page_preview=true&disable_notification=true`, {
+    fetch(`https://api.telegram.org/bot${BOT_API_KEY}/sendMessage?chat_id=${encodeURIComponent(MY_CHANNEL_NAME)}&text=${encodeURIComponent(msg)}&disable_web_page_preview=true&disable_notification=true`, {
         method: "POST",
-    })
-        .then((res) => {
-            return res;
-        })
-        .catch((err) => {
-            return err;
-        });
+    }).catch(() => {});
 };
 
 // [BIT.LY]
 export const getLinkClickCount = async (link) => {
-    const linkWithoutHttps = link.replace(/^https:\/\//, "");
-    const res = await fetch(`https://api-ssl.bitly.com/v4/bitlinks/${linkWithoutHttps}/clicks?unit=month`, {
-        method: "GET",
-        headers: {
-            Authorization: `Bearer ${TOKEN}`,
-        },
-    });
-    const json = await res.json();
-    return json;
+    try {
+        const linkWithoutHttps = link.replace(/^https:\/\//, "");
+        const res = await fetch(`https://api-ssl.bitly.com/v4/bitlinks/${linkWithoutHttps}/clicks?unit=month`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${TOKEN}`,
+            },
+        });
+        const json = await res.json();
+        return json;
+    } catch {
+        return null;
+    }
 };
 
 // ---------------------------------------------------------

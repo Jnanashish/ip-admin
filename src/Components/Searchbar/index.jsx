@@ -66,7 +66,7 @@ function SearchBar(props) {
                         <ul className="p-2.5 list-none">
                             {filteredSuggestionList?.map((item) => {
                                 return (
-                                    <li key={item?.companyName} className="cursor-pointer mb-5 last:mb-0 hover:bg-accent rounded px-2 py-1" onClick={() => handleSearchSuggestionClick(item)}>
+                                    <li key={item?._id || item?.companyName} className="cursor-pointer mb-5 last:mb-0 hover:bg-accent rounded px-2 py-1" onClick={() => handleSearchSuggestionClick(item)}>
                                         {item?.companyName}
                                     </li>
                                 );
