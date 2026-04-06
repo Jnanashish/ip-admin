@@ -8,22 +8,22 @@ import {
     TrendingDown,
     Building2,
 } from "lucide-react";
+import { Bar, BarChart, Area, AreaChart, Pie, PieChart, XAxis, YAxis, CartesianGrid, Label } from "recharts";
 import {
-    BarChart,
-    Bar,
-    PieChart,
-    Pie,
-    Cell,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip as RechartsTooltip,
-    Legend,
-    ResponsiveContainer,
-    Area,
-    AreaChart,
-} from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "Components/ui/card";
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "Components/ui/card";
+import {
+    ChartContainer,
+    ChartTooltip,
+    ChartTooltipContent,
+    ChartLegend,
+    ChartLegendContent,
+} from "Components/ui/chart";
 import {
     Select,
     SelectContent,
@@ -57,26 +57,27 @@ const CATEGORY_OPTIONS = [
     { value: "tags", label: "Tags" },
 ];
 
-const PIE_COLORS = [
-    "hsl(var(--chart-1))",
-    "hsl(var(--chart-2))",
-    "hsl(var(--chart-3))",
-    "hsl(var(--chart-4))",
-    "hsl(var(--chart-5))",
-    "#8884d8",
-    "#ffc658",
-    "#ff7c43",
-];
+const jobsChartConfig = {
+    jobsAdded: {
+        label: "Added",
+        color: "hsl(var(--chart-1))",
+    },
+    jobsExpired: {
+        label: "Expired",
+        color: "hsl(var(--chart-2))",
+    },
+};
+
+const clicksChartConfig = {
+    clicks: {
+        label: "Clicks",
+        color: "hsl(var(--chart-1))",
+    },
+};
 
 const formatDate = (dateStr) => {
     const d = new Date(dateStr);
     return d.toLocaleDateString("en-IN", { month: "short", day: "numeric" });
-};
-
-const TOOLTIP_CONTENT_STYLE = {
-    backgroundColor: "hsl(var(--card))",
-    border: "1px solid hsl(var(--border))",
-    borderRadius: "8px",
 };
 
 const StatsCard = ({ title, value, icon: Icon, description, trend }) => (
@@ -151,6 +152,45 @@ const AnalyticsDashboard = () => {
         fetchCategory();
     }, [fetchCategory]);
 
+    // Build pie chart config dynamically from category data
+    const pieChartConfig = React.useMemo(() => {
+        const chartColors = [
+            "hsl(var(--chart-1))",
+            "hsl(var(--chart-2))",
+            "hsl(var(--chart-3))",
+            "hsl(var(--chart-4))",
+            "hsl(var(--chart-5))",
+        ];
+        const config = {};
+        categoryData.forEach((item, idx) => {
+            config[item.label] = {
+                label: item.label,
+                color: chartColors[idx % chartColors.length],
+            };
+        });
+        return config;
+    }, [categoryData]);
+
+    // Add fill color to category data for pie chart
+    const pieData = React.useMemo(() => {
+        const chartColors = [
+            "hsl(var(--chart-1))",
+            "hsl(var(--chart-2))",
+            "hsl(var(--chart-3))",
+            "hsl(var(--chart-4))",
+            "hsl(var(--chart-5))",
+        ];
+        return categoryData.map((item, idx) => ({
+            ...item,
+            fill: chartColors[idx % chartColors.length],
+        }));
+    }, [categoryData]);
+
+    // Compute total for pie chart center label
+    const totalCategoryCount = React.useMemo(() => {
+        return categoryData.reduce((sum, item) => sum + item.count, 0);
+    }, [categoryData]);
+
     if (loading) {
         return (
             <div className="space-y-6">
@@ -181,6 +221,7 @@ const AnalyticsDashboard = () => {
                         <Card key={i}>
                             <CardHeader>
                                 <div className="h-5 w-40 rounded-md bg-muted animate-pulse" />
+                                <div className="h-3 w-56 rounded-md bg-muted animate-pulse" />
                             </CardHeader>
                             <CardContent>
                                 <div className="h-[300px] w-full rounded-md bg-muted animate-pulse" />
@@ -194,6 +235,7 @@ const AnalyticsDashboard = () => {
                         <Card key={i}>
                             <CardHeader>
                                 <div className="h-5 w-40 rounded-md bg-muted animate-pulse" />
+                                <div className="h-3 w-56 rounded-md bg-muted animate-pulse" />
                             </CardHeader>
                             <CardContent>
                                 <div className="h-[300px] w-full rounded-md bg-muted animate-pulse" />
@@ -205,12 +247,15 @@ const AnalyticsDashboard = () => {
         );
     }
 
+    const periodLabel = PERIOD_OPTIONS.find((o) => o.value === period)?.label || period;
+
     return (
         <div className="space-y-6">
+            {/* Page Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-semibold tracking-tight">Analytics</h1>
-                    <p className="text-muted-foreground">Job portal performance overview</p>
+                    <p className="text-sm text-muted-foreground">Job portal performance overview</p>
                 </div>
                 <Select value={period} onValueChange={setPeriod}>
                     <SelectTrigger className="w-[160px]">
@@ -261,81 +306,136 @@ const AnalyticsDashboard = () => {
 
             {/* Charts Row 1: Jobs Over Time + Clicks Over Time */}
             <div className="grid gap-4 lg:grid-cols-2">
+                {/* Bar Chart - Jobs Added vs Expired */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold tracking-tight">Jobs Added vs Expired</CardTitle>
+                        <CardDescription>{periodLabel}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         {jobsOverTime.length > 0 ? (
-                            <ResponsiveContainer width="100%" height={300}>
-                                <BarChart data={jobsOverTime}>
-                                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                            <ChartContainer config={jobsChartConfig} className="aspect-auto h-[300px] w-full">
+                                <BarChart
+                                    accessibilityLayer
+                                    data={jobsOverTime}
+                                    margin={{ left: -20, right: 12 }}
+                                >
+                                    <CartesianGrid vertical={false} />
                                     <XAxis
                                         dataKey="date"
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tickMargin={8}
                                         tickFormatter={formatDate}
-                                        className="text-xs"
-                                        tick={{ fill: "hsl(var(--muted-foreground))" }}
                                     />
                                     <YAxis
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tickMargin={8}
                                         allowDecimals={false}
-                                        tick={{ fill: "hsl(var(--muted-foreground))" }}
                                     />
-                                    <RechartsTooltip
-                                        labelFormatter={formatDate}
-                                        contentStyle={TOOLTIP_CONTENT_STYLE}
+                                    <ChartTooltip
+                                        cursor={false}
+                                        content={<ChartTooltipContent labelFormatter={formatDate} />}
                                     />
-                                    <Legend />
-                                    <Bar dataKey="jobsAdded" name="Added" fill="hsl(var(--chart-1))" radius={[4, 4, 0, 0]} />
-                                    <Bar dataKey="jobsExpired" name="Expired" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+                                    <ChartLegend content={<ChartLegendContent />} />
+                                    <Bar
+                                        dataKey="jobsAdded"
+                                        fill="var(--color-jobsAdded)"
+                                        radius={[4, 4, 0, 0]}
+                                    />
+                                    <Bar
+                                        dataKey="jobsExpired"
+                                        fill="var(--color-jobsExpired)"
+                                        radius={[4, 4, 0, 0]}
+                                    />
                                 </BarChart>
-                            </ResponsiveContainer>
+                            </ChartContainer>
                         ) : (
-                            <p className="text-muted-foreground text-sm text-center py-12">No data available</p>
+                            <p className="text-sm text-muted-foreground text-center py-12">No data available</p>
                         )}
                     </CardContent>
+                    {jobsOverTime.length > 0 && summary && (
+                        <CardFooter className="flex-col items-start gap-2 text-sm">
+                            <div className="flex gap-2 font-medium leading-none">
+                                {summary.jobsAddedInPeriod > 0 ? (
+                                    <>
+                                        {summary.jobsAddedInPeriod} jobs added this period
+                                        <TrendingUp className="h-4 w-4" />
+                                    </>
+                                ) : (
+                                    "No new jobs added this period"
+                                )}
+                            </div>
+                            <div className="leading-none text-muted-foreground">
+                                Showing jobs added and expired over time
+                            </div>
+                        </CardFooter>
+                    )}
                 </Card>
 
+                {/* Area Chart - Click Trends */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold tracking-tight">Click Trends</CardTitle>
+                        <CardDescription>{periodLabel}</CardDescription>
                     </CardHeader>
                     <CardContent>
                         {clicksOverTime.length > 0 ? (
-                            <ResponsiveContainer width="100%" height={300}>
-                                <AreaChart data={clicksOverTime}>
+                            <ChartContainer config={clicksChartConfig} className="aspect-auto h-[300px] w-full">
+                                <AreaChart
+                                    accessibilityLayer
+                                    data={clicksOverTime}
+                                    margin={{ left: -20, right: 12 }}
+                                >
                                     <defs>
-                                        <linearGradient id="clickGradient" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.3} />
-                                            <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0} />
+                                        <linearGradient id="fillClicks" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="var(--color-clicks)" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="var(--color-clicks)" stopOpacity={0.05} />
                                         </linearGradient>
                                     </defs>
-                                    <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                                    <CartesianGrid vertical={false} />
                                     <XAxis
                                         dataKey="date"
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tickMargin={8}
                                         tickFormatter={formatDate}
-                                        tick={{ fill: "hsl(var(--muted-foreground))" }}
                                     />
                                     <YAxis
+                                        tickLine={false}
+                                        axisLine={false}
+                                        tickMargin={8}
                                         allowDecimals={false}
-                                        tick={{ fill: "hsl(var(--muted-foreground))" }}
                                     />
-                                    <RechartsTooltip
-                                        labelFormatter={formatDate}
-                                        contentStyle={TOOLTIP_CONTENT_STYLE}
+                                    <ChartTooltip
+                                        cursor={false}
+                                        content={<ChartTooltipContent indicator="line" labelFormatter={formatDate} />}
                                     />
                                     <Area
-                                        type="monotone"
                                         dataKey="clicks"
-                                        stroke="hsl(var(--chart-1))"
-                                        fill="url(#clickGradient)"
+                                        type="natural"
+                                        fill="url(#fillClicks)"
+                                        stroke="var(--color-clicks)"
                                         strokeWidth={2}
                                     />
                                 </AreaChart>
-                            </ResponsiveContainer>
+                            </ChartContainer>
                         ) : (
-                            <p className="text-muted-foreground text-sm text-center py-12">No click data yet</p>
+                            <p className="text-sm text-muted-foreground text-center py-12">No click data yet</p>
                         )}
                     </CardContent>
+                    {clicksOverTime.length > 0 && summary && (
+                        <CardFooter className="flex-col items-start gap-2 text-sm">
+                            <div className="flex gap-2 font-medium leading-none">
+                                {summary.clicksInPeriod?.toLocaleString()} clicks this period
+                                {summary.clicksInPeriod > 0 && <TrendingUp className="h-4 w-4" />}
+                            </div>
+                            <div className="leading-none text-muted-foreground">
+                                {summary.totalClicks?.toLocaleString()} total clicks all time
+                            </div>
+                        </CardFooter>
+                    )}
                 </Card>
             </div>
 
@@ -343,10 +443,11 @@ const AnalyticsDashboard = () => {
 
             {/* Charts Row 2: Top Jobs + Category Distribution */}
             <div className="grid gap-4 lg:grid-cols-2">
-                {/* Top Jobs Table */}
+                {/* Top Performing Jobs */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold tracking-tight">Top Performing Jobs</CardTitle>
+                        <CardDescription>Top 10 jobs by click count</CardDescription>
                     </CardHeader>
                     <CardContent>
                         {topJobs.length > 0 ? (
@@ -396,15 +497,27 @@ const AnalyticsDashboard = () => {
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-muted-foreground text-sm text-center py-12">No click data yet</p>
+                            <p className="text-sm text-muted-foreground text-center py-12">No click data yet</p>
                         )}
                     </CardContent>
+                    {topJobs.length > 0 && (
+                        <CardFooter className="flex-col items-start gap-2 text-sm">
+                            <div className="leading-none text-muted-foreground">
+                                Ranked by total click count
+                            </div>
+                        </CardFooter>
+                    )}
                 </Card>
 
-                {/* Category Distribution */}
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                        <CardTitle className="text-lg font-semibold tracking-tight">Job Distribution</CardTitle>
+                {/* Pie Chart - Category Distribution */}
+                <Card className="flex flex-col">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
+                        <div className="space-y-1.5">
+                            <CardTitle className="text-lg font-semibold tracking-tight">Job Distribution</CardTitle>
+                            <CardDescription>
+                                By {CATEGORY_OPTIONS.find((o) => o.value === category)?.label || category}
+                            </CardDescription>
+                        </div>
                         <Select value={category} onValueChange={setCategory}>
                             <SelectTrigger className="w-[140px] h-8">
                                 <SelectValue />
@@ -418,39 +531,70 @@ const AnalyticsDashboard = () => {
                             </SelectContent>
                         </Select>
                     </CardHeader>
-                    <CardContent>
-                        {categoryData.length > 0 ? (
-                            <ResponsiveContainer width="100%" height={300}>
+                    <CardContent className="flex-1 pb-0">
+                        {pieData.length > 0 ? (
+                            <ChartContainer
+                                config={pieChartConfig}
+                                className="mx-auto aspect-square max-h-[300px]"
+                            >
                                 <PieChart>
+                                    <ChartTooltip
+                                        cursor={false}
+                                        content={<ChartTooltipContent hideLabel />}
+                                    />
                                     <Pie
-                                        data={categoryData}
+                                        data={pieData}
                                         dataKey="count"
                                         nameKey="label"
-                                        cx="50%"
-                                        cy="50%"
-                                        outerRadius={100}
-                                        innerRadius={50}
-                                        paddingAngle={2}
-                                        label={({ label, percent }) =>
-                                            `${label} (${(percent * 100).toFixed(0)}%)`
-                                        }
+                                        innerRadius={60}
+                                        strokeWidth={5}
                                     >
-                                        {categoryData.map((_, idx) => (
-                                            <Cell
-                                                key={idx}
-                                                fill={PIE_COLORS[idx % PIE_COLORS.length]}
-                                            />
-                                        ))}
+                                        <Label
+                                            content={({ viewBox }) => {
+                                                if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                                                    return (
+                                                        <text
+                                                            x={viewBox.cx}
+                                                            y={viewBox.cy}
+                                                            textAnchor="middle"
+                                                            dominantBaseline="middle"
+                                                        >
+                                                            <tspan
+                                                                x={viewBox.cx}
+                                                                y={viewBox.cy}
+                                                                className="fill-foreground text-3xl font-bold"
+                                                            >
+                                                                {totalCategoryCount.toLocaleString()}
+                                                            </tspan>
+                                                            <tspan
+                                                                x={viewBox.cx}
+                                                                y={(viewBox.cy || 0) + 24}
+                                                                className="fill-muted-foreground"
+                                                            >
+                                                                Jobs
+                                                            </tspan>
+                                                        </text>
+                                                    );
+                                                }
+                                            }}
+                                        />
                                     </Pie>
-                                    <RechartsTooltip
-                                        contentStyle={TOOLTIP_CONTENT_STYLE}
-                                    />
                                 </PieChart>
-                            </ResponsiveContainer>
+                            </ChartContainer>
                         ) : (
-                            <p className="text-muted-foreground text-sm text-center py-12">No data available</p>
+                            <p className="text-sm text-muted-foreground text-center py-12">No data available</p>
                         )}
                     </CardContent>
+                    {pieData.length > 0 && (
+                        <CardFooter className="flex-col gap-2 text-sm">
+                            <div className="flex items-center gap-2 font-medium leading-none">
+                                {totalCategoryCount.toLocaleString()} total jobs across {pieData.length} categories
+                            </div>
+                            <div className="leading-none text-muted-foreground">
+                                Distribution by {CATEGORY_OPTIONS.find((o) => o.value === category)?.label?.toLowerCase() || category}
+                            </div>
+                        </CardFooter>
+                    )}
                 </Card>
             </div>
         </div>
