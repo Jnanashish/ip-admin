@@ -10,6 +10,7 @@ import {
     CheckCircle2,
     XCircle,
     AlertTriangle,
+    Square,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "Components/ui/card";
 import { Button } from "Components/ui/button";
@@ -25,7 +26,7 @@ import {
 import { scraperGet, scraperPost } from "Helpers/scraperRequest";
 import { scraperEndpoints } from "Helpers/scraperApiEndpoints";
 import { usePolling } from "hooks/usePolling";
-import { showInfoToast } from "Helpers/toast";
+import { showInfoToast, showSuccessToast } from "Helpers/toast";
 
 const StatsCard = ({ title, value, icon: Icon, description }) => (
     <Card className="hover:shadow-md transition-shadow">
@@ -78,6 +79,8 @@ const ScraperDashboard = () => {
     const [loading, setLoading] = useState(true);
     const [showConfirm, setShowConfirm] = useState(false);
     const [scrapePolling, setScrapePolling] = useState(false);
+    const [stopConfirm, setStopConfirm] = useState(null);
+    const [stoppingAdapters, setStoppingAdapters] = useState({});
 
     const fetchData = useCallback(async () => {
         try {
@@ -128,6 +131,21 @@ const ScraperDashboard = () => {
             showInfoToast("Scrape run started. New jobs will appear in the staging queue shortly.");
             setScrapePolling(true);
             setTimeout(() => setScrapePolling(false), 5 * 60 * 1000);
+        }
+    };
+
+    const handleStopScraping = async (adapterName) => {
+        setStopConfirm(null);
+        setStoppingAdapters((prev) => ({ ...prev, [adapterName]: true }));
+        const res = await scraperPost(
+            scraperEndpoints.scrapeStop(adapterName),
+            {},
+            `Stop ${adapterName}`
+        );
+        setStoppingAdapters((prev) => ({ ...prev, [adapterName]: false }));
+        if (res) {
+            showSuccessToast(`Scraping stopped for ${adapterName}`);
+            fetchData();
         }
     };
 
@@ -221,6 +239,25 @@ const ScraperDashboard = () => {
                                         <div>Last run: {new Date(adapter.lastRun).toLocaleString()}</div>
                                     )}
                                 </div>
+                                <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    className="w-full mt-3"
+                                    disabled={stoppingAdapters[adapter.name]}
+                                    onClick={() => setStopConfirm(adapter.name)}
+                                >
+                                    {stoppingAdapters[adapter.name] ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                                            Stopping...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Square className="mr-2 h-3 w-3" />
+                                            Stop Scraping
+                                        </>
+                                    )}
+                                </Button>
                             </CardContent>
                         </Card>
                     ))}
@@ -254,6 +291,25 @@ const ScraperDashboard = () => {
                             Cancel
                         </Button>
                         <Button onClick={handleScrapeNow}>Start Scraping</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={!!stopConfirm} onOpenChange={() => setStopConfirm(null)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Stop Scraping</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to stop scraping from <span className="font-medium">{stopConfirm}</span>? Any in-progress scrape for this provider will be halted.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setStopConfirm(null)}>
+                            Cancel
+                        </Button>
+                        <Button variant="destructive" onClick={() => handleStopScraping(stopConfirm)}>
+                            Stop Scraping
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

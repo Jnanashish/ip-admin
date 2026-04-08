@@ -6,12 +6,22 @@ import {
     AlertTriangle,
     Play,
     HeartPulse,
+    Square,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "Components/ui/card";
 import { Button } from "Components/ui/button";
 import { Badge } from "Components/ui/badge";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+    DialogFooter,
+} from "Components/ui/dialog";
 import { scraperGet, scraperPost } from "Helpers/scraperRequest";
 import { scraperEndpoints } from "Helpers/scraperApiEndpoints";
+import { showSuccessToast } from "Helpers/toast";
 
 const statusConfig = {
     success: { color: "border-green-200 bg-green-50 dark:bg-green-950/20 dark:border-green-900", icon: CheckCircle2, iconColor: "text-green-500", label: "Healthy" },
@@ -19,7 +29,7 @@ const statusConfig = {
     partial: { color: "border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20 dark:border-yellow-900", icon: AlertTriangle, iconColor: "text-yellow-500", label: "Partial" },
 };
 
-const AdapterCard = ({ adapter, onTest }) => {
+const AdapterCard = ({ adapter, onTest, onStop, isStopping }) => {
     const config = statusConfig[adapter.status] || statusConfig.partial;
     const Icon = config.icon;
 
@@ -52,15 +62,36 @@ const AdapterCard = ({ adapter, onTest }) => {
                         Last run: {new Date(adapter.lastRun).toLocaleString()}
                     </p>
                 )}
-                <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    onClick={() => onTest(adapter.name)}
-                >
-                    <Play className="mr-2 h-3 w-3" />
-                    Test Adapter
-                </Button>
+                <div className="flex gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1"
+                        onClick={() => onTest(adapter.name)}
+                    >
+                        <Play className="mr-2 h-3 w-3" />
+                        Test Adapter
+                    </Button>
+                    <Button
+                        variant="destructive"
+                        size="sm"
+                        className="flex-1"
+                        disabled={isStopping}
+                        onClick={() => onStop(adapter.name)}
+                    >
+                        {isStopping ? (
+                            <>
+                                <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                                Stopping...
+                            </>
+                        ) : (
+                            <>
+                                <Square className="mr-2 h-3 w-3" />
+                                Stop Scraping
+                            </>
+                        )}
+                    </Button>
+                </div>
             </CardContent>
         </Card>
     );
@@ -70,18 +101,36 @@ const AdapterHealth = () => {
     const [adapters, setAdapters] = useState([]);
     const [loading, setLoading] = useState(true);
     const [testResults, setTestResults] = useState({});
+    const [stopConfirm, setStopConfirm] = useState(null);
+    const [stoppingAdapters, setStoppingAdapters] = useState({});
+
+    const fetchHealth = async () => {
+        setLoading(true);
+        const res = await scraperGet(scraperEndpoints.scrapeHealth);
+        if (res?.data) {
+            setAdapters(res.data);
+        }
+        setLoading(false);
+    };
 
     useEffect(() => {
-        const fetchHealth = async () => {
-            setLoading(true);
-            const res = await scraperGet(scraperEndpoints.scrapeHealth);
-            if (res?.data) {
-                setAdapters(res.data);
-            }
-            setLoading(false);
-        };
         fetchHealth();
     }, []);
+
+    const handleStopScraping = async (adapterName) => {
+        setStopConfirm(null);
+        setStoppingAdapters((prev) => ({ ...prev, [adapterName]: true }));
+        const res = await scraperPost(
+            scraperEndpoints.scrapeStop(adapterName),
+            {},
+            `Stop ${adapterName}`
+        );
+        setStoppingAdapters((prev) => ({ ...prev, [adapterName]: false }));
+        if (res) {
+            showSuccessToast(`Scraping stopped for ${adapterName}`);
+            fetchHealth();
+        }
+    };
 
     const handleTest = async (name) => {
         setTestResults((prev) => ({ ...prev, [name]: { loading: true } }));
@@ -120,6 +169,8 @@ const AdapterHealth = () => {
                             key={adapter.name}
                             adapter={adapter}
                             onTest={handleTest}
+                            onStop={setStopConfirm}
+                            isStopping={stoppingAdapters[adapter.name]}
                         />
                     ))}
                 </div>
@@ -147,6 +198,25 @@ const AdapterHealth = () => {
                     )}
                 </Card>
             ))}
+
+            <Dialog open={!!stopConfirm} onOpenChange={() => setStopConfirm(null)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Stop Scraping</DialogTitle>
+                        <DialogDescription>
+                            Are you sure you want to stop scraping from <span className="font-medium">{stopConfirm}</span>? Any in-progress scrape for this provider will be halted.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setStopConfirm(null)}>
+                            Cancel
+                        </Button>
+                        <Button variant="destructive" onClick={() => handleStopScraping(stopConfirm)}>
+                            Stop Scraping
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };
