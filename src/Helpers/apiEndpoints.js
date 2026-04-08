@@ -23,4 +23,15 @@ export const apiEndpoint = {
     get_company_logo: "/companydetails/logo",
     update_company_details: "/companydetails/update",
     delete_company_details: "/companydetails/delete",
+
+    // Blog
+    getBlogList: "/blogs/get",
+    getBlogById: "/blogs/get",
+    addBlog: "/blogs/add",
+    updateBlog: "/blogs/update",
+    deleteBlog: "/blogs/delete",
+    archiveBlogs: "/blogs/archive",
+    uploadBlogImage: "/blogs/upload-image",
+    getBlogCategories: "/blogs/categories",
+    getBlogTags: "/blogs/tags",
 };

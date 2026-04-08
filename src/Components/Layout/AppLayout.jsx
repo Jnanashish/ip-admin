@@ -13,6 +13,7 @@ import {
   ScrollText,
   HeartPulse,
   BarChart3,
+  FileText,
 } from "lucide-react";
 import { UserContext } from "Context/userContext";
 import {
@@ -53,6 +54,12 @@ const navGroups = [
     items: [
       { title: "Add Company", url: "/addcompany", icon: Building2 },
       { title: "Company List", url: "/companys", icon: List },
+    ],
+  },
+  {
+    label: "Content",
+    items: [
+      { title: "Blog Posts", url: "/blogs", icon: FileText },
     ],
   },
   {
