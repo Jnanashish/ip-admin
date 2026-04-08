@@ -9,4 +9,5 @@ export const scraperEndpoints = {
     scrapeLogs: "/admin/scrape/logs",
     scrapeHealth: "/admin/scrape/health",
     testAdapter: (name) => `/admin/scrape/test-adapter/${name}`,
+    scrapeStop: (name) => `/admin/scrape/stop/${name}`,
 };
