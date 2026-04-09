@@ -216,19 +216,25 @@ const AnalyticsDashboard = () => {
                     ))}
                 </div>
                 <Separator />
-                <div className="grid gap-4 lg:grid-cols-2">
-                    {Array.from({ length: 2 }).map((_, i) => (
-                        <Card key={i}>
-                            <CardHeader>
-                                <div className="h-5 w-40 rounded-md bg-muted animate-pulse" />
-                                <div className="h-3 w-56 rounded-md bg-muted animate-pulse" />
-                            </CardHeader>
-                            <CardContent>
-                                <div className="h-[300px] w-full rounded-md bg-muted animate-pulse" />
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+                <Card>
+                    <CardHeader>
+                        <div className="h-5 w-48 rounded-md bg-muted animate-pulse" />
+                        <div className="h-3 w-56 rounded-md bg-muted animate-pulse" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="h-[400px] w-full rounded-md bg-muted animate-pulse" />
+                    </CardContent>
+                </Card>
+                <Separator />
+                <Card>
+                    <CardHeader>
+                        <div className="h-5 w-40 rounded-md bg-muted animate-pulse" />
+                        <div className="h-3 w-56 rounded-md bg-muted animate-pulse" />
+                    </CardHeader>
+                    <CardContent>
+                        <div className="h-[300px] w-full rounded-md bg-muted animate-pulse" />
+                    </CardContent>
+                </Card>
                 <Separator />
                 <div className="grid gap-4 lg:grid-cols-2">
                     {Array.from({ length: 2 }).map((_, i) => (
@@ -304,140 +310,139 @@ const AnalyticsDashboard = () => {
 
             <Separator />
 
-            {/* Charts Row 1: Jobs Over Time + Clicks Over Time */}
-            <div className="grid gap-4 lg:grid-cols-2">
-                {/* Bar Chart - Jobs Added vs Expired */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg font-semibold tracking-tight">Jobs Added vs Expired</CardTitle>
-                        <CardDescription>{periodLabel}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {jobsOverTime.length > 0 ? (
-                            <ChartContainer config={jobsChartConfig} className="aspect-auto h-[300px] w-full">
-                                <BarChart
-                                    accessibilityLayer
-                                    data={jobsOverTime}
-                                    margin={{ left: -20, right: 12 }}
-                                >
-                                    <CartesianGrid vertical={false} />
-                                    <XAxis
-                                        dataKey="date"
-                                        tickLine={false}
-                                        axisLine={false}
-                                        tickMargin={8}
-                                        tickFormatter={formatDate}
-                                    />
-                                    <YAxis
-                                        tickLine={false}
-                                        axisLine={false}
-                                        tickMargin={8}
-                                        allowDecimals={false}
-                                    />
-                                    <ChartTooltip
-                                        cursor={false}
-                                        content={<ChartTooltipContent labelFormatter={formatDate} />}
-                                    />
-                                    <ChartLegend content={<ChartLegendContent />} />
-                                    <Bar
-                                        dataKey="jobsAdded"
-                                        fill="var(--color-jobsAdded)"
-                                        radius={[4, 4, 0, 0]}
-                                    />
-                                    <Bar
-                                        dataKey="jobsExpired"
-                                        fill="var(--color-jobsExpired)"
-                                        radius={[4, 4, 0, 0]}
-                                    />
-                                </BarChart>
-                            </ChartContainer>
-                        ) : (
-                            <p className="text-sm text-muted-foreground text-center py-12">No data available</p>
-                        )}
-                    </CardContent>
-                    {jobsOverTime.length > 0 && summary && (
-                        <CardFooter className="flex-col items-start gap-2 text-sm">
-                            <div className="flex gap-2 font-medium leading-none">
-                                {summary.jobsAddedInPeriod > 0 ? (
-                                    <>
-                                        {summary.jobsAddedInPeriod} jobs added this period
-                                        <TrendingUp className="h-4 w-4" />
-                                    </>
-                                ) : (
-                                    "No new jobs added this period"
-                                )}
-                            </div>
-                            <div className="leading-none text-muted-foreground">
-                                Showing jobs added and expired over time
-                            </div>
-                        </CardFooter>
+            {/* Full-width Daily Click Trends */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg font-semibold tracking-tight">Daily Click Trends</CardTitle>
+                    <CardDescription>Click count per day — {periodLabel}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {clicksOverTime.length > 0 ? (
+                        <ChartContainer config={clicksChartConfig} className="aspect-auto h-[400px] w-full">
+                            <AreaChart
+                                accessibilityLayer
+                                data={clicksOverTime}
+                                margin={{ left: -20, right: 12 }}
+                            >
+                                <defs>
+                                    <linearGradient id="fillDailyClicks" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="var(--color-clicks)" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="var(--color-clicks)" stopOpacity={0.05} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid vertical={false} />
+                                <XAxis
+                                    dataKey="date"
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickMargin={8}
+                                    tickFormatter={formatDate}
+                                />
+                                <YAxis
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickMargin={8}
+                                    allowDecimals={false}
+                                />
+                                <ChartTooltip
+                                    cursor={false}
+                                    content={<ChartTooltipContent indicator="line" labelFormatter={formatDate} />}
+                                />
+                                <Area
+                                    dataKey="clicks"
+                                    type="natural"
+                                    fill="url(#fillDailyClicks)"
+                                    stroke="var(--color-clicks)"
+                                    strokeWidth={2}
+                                />
+                            </AreaChart>
+                        </ChartContainer>
+                    ) : (
+                        <p className="text-sm text-muted-foreground text-center py-12">No click data yet</p>
                     )}
-                </Card>
+                </CardContent>
+                {clicksOverTime.length > 0 && summary && (
+                    <CardFooter className="flex-col items-start gap-2 text-sm">
+                        <div className="flex gap-2 font-medium leading-none">
+                            {summary.clicksInPeriod?.toLocaleString()} clicks this period
+                            {summary.clicksInPeriod > 0 && <TrendingUp className="h-4 w-4" />}
+                        </div>
+                        <div className="leading-none text-muted-foreground">
+                            Day-by-day click count — {summary.totalClicks?.toLocaleString()} total all time
+                        </div>
+                    </CardFooter>
+                )}
+            </Card>
 
-                {/* Area Chart - Click Trends */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-lg font-semibold tracking-tight">Click Trends</CardTitle>
-                        <CardDescription>{periodLabel}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        {clicksOverTime.length > 0 ? (
-                            <ChartContainer config={clicksChartConfig} className="aspect-auto h-[300px] w-full">
-                                <AreaChart
-                                    accessibilityLayer
-                                    data={clicksOverTime}
-                                    margin={{ left: -20, right: 12 }}
-                                >
-                                    <defs>
-                                        <linearGradient id="fillClicks" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="var(--color-clicks)" stopOpacity={0.3} />
-                                            <stop offset="95%" stopColor="var(--color-clicks)" stopOpacity={0.05} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid vertical={false} />
-                                    <XAxis
-                                        dataKey="date"
-                                        tickLine={false}
-                                        axisLine={false}
-                                        tickMargin={8}
-                                        tickFormatter={formatDate}
-                                    />
-                                    <YAxis
-                                        tickLine={false}
-                                        axisLine={false}
-                                        tickMargin={8}
-                                        allowDecimals={false}
-                                    />
-                                    <ChartTooltip
-                                        cursor={false}
-                                        content={<ChartTooltipContent indicator="line" labelFormatter={formatDate} />}
-                                    />
-                                    <Area
-                                        dataKey="clicks"
-                                        type="natural"
-                                        fill="url(#fillClicks)"
-                                        stroke="var(--color-clicks)"
-                                        strokeWidth={2}
-                                    />
-                                </AreaChart>
-                            </ChartContainer>
-                        ) : (
-                            <p className="text-sm text-muted-foreground text-center py-12">No click data yet</p>
-                        )}
-                    </CardContent>
-                    {clicksOverTime.length > 0 && summary && (
-                        <CardFooter className="flex-col items-start gap-2 text-sm">
-                            <div className="flex gap-2 font-medium leading-none">
-                                {summary.clicksInPeriod?.toLocaleString()} clicks this period
-                                {summary.clicksInPeriod > 0 && <TrendingUp className="h-4 w-4" />}
-                            </div>
-                            <div className="leading-none text-muted-foreground">
-                                {summary.totalClicks?.toLocaleString()} total clicks all time
-                            </div>
-                        </CardFooter>
+            <Separator />
+
+            {/* Jobs Added vs Expired - Full Width */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="text-lg font-semibold tracking-tight">Jobs Added vs Expired</CardTitle>
+                    <CardDescription>{periodLabel}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {jobsOverTime.length > 0 ? (
+                        <ChartContainer config={jobsChartConfig} className="aspect-auto h-[300px] w-full">
+                            <BarChart
+                                accessibilityLayer
+                                data={jobsOverTime}
+                                margin={{ left: -20, right: 12 }}
+                            >
+                                <CartesianGrid vertical={false} />
+                                <XAxis
+                                    dataKey="date"
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickMargin={8}
+                                    tickFormatter={formatDate}
+                                />
+                                <YAxis
+                                    tickLine={false}
+                                    axisLine={false}
+                                    tickMargin={8}
+                                    allowDecimals={false}
+                                />
+                                <ChartTooltip
+                                    cursor={false}
+                                    content={<ChartTooltipContent labelFormatter={formatDate} />}
+                                />
+                                <ChartLegend content={<ChartLegendContent />} />
+                                <Bar
+                                    dataKey="jobsAdded"
+                                    fill="var(--color-jobsAdded)"
+                                    radius={[4, 4, 0, 0]}
+                                />
+                                <Bar
+                                    dataKey="jobsExpired"
+                                    fill="var(--color-jobsExpired)"
+                                    radius={[4, 4, 0, 0]}
+                                />
+                            </BarChart>
+                        </ChartContainer>
+                    ) : (
+                        <p className="text-sm text-muted-foreground text-center py-12">No data available</p>
                     )}
-                </Card>
-            </div>
+                </CardContent>
+                {jobsOverTime.length > 0 && summary && (
+                    <CardFooter className="flex-col items-start gap-2 text-sm">
+                        <div className="flex gap-2 font-medium leading-none">
+                            {summary.jobsAddedInPeriod > 0 ? (
+                                <>
+                                    {summary.jobsAddedInPeriod} jobs added this period
+                                    <TrendingUp className="h-4 w-4" />
+                                </>
+                            ) : (
+                                "No new jobs added this period"
+                            )}
+                        </div>
+                        <div className="leading-none text-muted-foreground">
+                            Showing jobs added and expired over time
+                        </div>
+                    </CardFooter>
+                )}
+            </Card>
 
             <Separator />
 
