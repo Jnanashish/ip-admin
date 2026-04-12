@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
     Search,
     Check,
+    CheckCheck,
     X,
     Trash2,
     Loader2,
@@ -31,7 +32,7 @@ import {
     DialogDescription,
     DialogFooter,
 } from "Components/ui/dialog";
-import { fetchStagingJobs, approveJob, rejectJob, bulkApproveJobs, deleteStagingJob } from "./Helpers";
+import { fetchStagingJobs, approveJob, rejectJob, bulkApproveJobs, deleteStagingJob, fetchAllPendingJobs } from "./Helpers";
 import { showInfoToast, showErrorToast } from "Helpers/toast";
 
 const timeAgo = (dateStr) => {
@@ -57,6 +58,8 @@ const StagingQueue = () => {
     const [showBulkConfirm, setShowBulkConfirm] = useState(false);
     const [bulkLoading, setBulkLoading] = useState(false);
     const [actionLoading, setActionLoading] = useState(null);
+    const [showApproveAllConfirm, setShowApproveAllConfirm] = useState(false);
+    const [approveAllLoading, setApproveAllLoading] = useState(false);
 
     const totalPages = Math.ceil(totalCount / filters.size);
 
@@ -152,6 +155,39 @@ const StagingQueue = () => {
         setShowBulkConfirm(false);
     };
 
+    const handleApproveAll = async () => {
+        setApproveAllLoading(true);
+        try {
+            const allPendingJobs = await fetchAllPendingJobs();
+            if (!allPendingJobs.length) {
+                showInfoToast("No pending jobs to approve.");
+                return;
+            }
+            const ids = allPendingJobs.map((j) => j._id);
+            const jobsMap = {};
+            for (const job of allPendingJobs) {
+                if (job.jobData?.companyName) {
+                    jobsMap[job._id] = job.jobData.companyName;
+                }
+            }
+            const res = await bulkApproveJobs(ids, jobsMap);
+            if (res) {
+                const msg = `${res.approved || 0} approved${res.failed ? `, ${res.failed} failed` : ""}`;
+                showInfoToast(msg);
+                if (res.errors?.length) {
+                    res.errors.forEach((e) => showErrorToast(`Failed: ${e.id} — ${e.error}`));
+                }
+                setSelectedIds(new Set());
+                fetchJobs();
+            }
+        } catch {
+            showErrorToast("Failed to approve all jobs. Please try again.");
+        } finally {
+            setApproveAllLoading(false);
+            setShowApproveAllConfirm(false);
+        }
+    };
+
     const filteredJobs = searchQuery
         ? jobs.filter(
               (j) =>
@@ -172,7 +208,23 @@ const StagingQueue = () => {
         <div className="space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <h1 className="text-2xl font-bold tracking-tight">Staging Queue</h1>
-                <Badge variant="secondary">{totalCount} total</Badge>
+                <div className="flex items-center gap-2">
+                    <Badge variant="secondary">{totalCount} total</Badge>
+                    {totalCount > 0 && filters.status === "pending" && (
+                        <Button
+                            size="sm"
+                            onClick={() => setShowApproveAllConfirm(true)}
+                            disabled={approveAllLoading || bulkLoading}
+                        >
+                            {approveAllLoading ? (
+                                <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                            ) : (
+                                <CheckCheck className="mr-1 h-4 w-4" />
+                            )}
+                            Approve All
+                        </Button>
+                    )}
+                </div>
             </div>
 
             {/* Filters */}
@@ -383,11 +435,33 @@ const StagingQueue = () => {
                         <Button variant="outline" onClick={() => setShowBulkConfirm(false)}>
                             Cancel
                         </Button>
-                        <Button onClick={handleBulkApprove} disabled={bulkLoading}>
+                        <Button onClick={handleBulkApprove} disabled={bulkLoading || approveAllLoading}>
                             {bulkLoading ? (
                                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
                             ) : null}
-                            Approve All
+                            Approve Selected
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={showApproveAllConfirm} onOpenChange={(open) => { if (!approveAllLoading) setShowApproveAllConfirm(open); }}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Approve All Pending Jobs</DialogTitle>
+                        <DialogDescription>
+                            This will approve and publish all {totalCount} pending jobs across all pages to the site. This action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowApproveAllConfirm(false)} disabled={approveAllLoading}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleApproveAll} disabled={approveAllLoading}>
+                            {approveAllLoading ? (
+                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                            ) : null}
+                            Approve {totalCount} Jobs
                         </Button>
                     </DialogFooter>
                 </DialogContent>
