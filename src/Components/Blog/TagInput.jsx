@@ -75,10 +75,10 @@ const TagInput = ({ tags = [], onChange, suggestions = [], placeholder = "Add ta
                             <button
                                 type="button"
                                 onClick={() => removeTag(tag)}
-                                className="rounded-full p-0.5 hover:bg-muted-foreground/20 min-h-0 min-w-0"
+                                className="rounded-full p-0.5 hover:bg-muted-foreground/20 min-h-0 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                                 aria-label={`Remove ${tag}`}
                             >
-                                <X className="h-3 w-3" />
+                                <X className="h-4 w-4" />
                             </button>
                         </Badge>
                     ))}
@@ -104,7 +104,7 @@ const TagInput = ({ tags = [], onChange, suggestions = [], placeholder = "Add ta
                                 key={suggestion}
                                 type="button"
                                 onClick={() => addTag(suggestion)}
-                                className="w-full px-3 py-2 text-left text-sm hover:bg-accent min-h-[44px] flex items-center"
+                                className="w-full px-3 py-2 text-left text-sm hover:bg-accent min-h-[44px] flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                             >
                                 {suggestion}
                             </button>

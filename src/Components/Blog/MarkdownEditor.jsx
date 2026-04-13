@@ -14,6 +14,7 @@ import {
 import { Button } from "../ui/button";
 import { uploadBlogImage } from "../../Apis/Blog";
 import { cleanSeoContent, wordCount, readingTime } from "../../widgets/Blog/BlogEditor/helpers";
+import { showWarnToast } from "../../Helpers/toast";
 
 const toolbarActions = [
     { icon: Bold, label: "Bold", before: "**", after: "**", placeholder: "bold text" },
@@ -111,7 +112,7 @@ const MarkdownEditor = ({ value, onChange }) => {
                 current.substring(0, start) + cleaned + current.substring(end);
             onChange(newText);
         } catch {
-            // Clipboard access denied — user needs to paste manually
+            showWarnToast("Clipboard access denied — paste into the editor manually");
         }
     }, [value, onChange]);
 
@@ -172,7 +173,7 @@ const MarkdownEditor = ({ value, onChange }) => {
                 value={value || ""}
                 onChange={(e) => onChange(e.target.value)}
                 placeholder="Write your blog post in markdown..."
-                className="w-full resize-y font-mono text-sm bg-transparent p-3 min-h-[300px] lg:min-h-[500px] outline-none placeholder:text-muted-foreground"
+                className="w-full resize-y font-mono text-sm bg-transparent p-3 min-h-[300px] lg:min-h-[500px] outline-none focus-visible:ring-1 focus-visible:ring-ring placeholder:text-muted-foreground"
             />
 
             {/* Footer */}

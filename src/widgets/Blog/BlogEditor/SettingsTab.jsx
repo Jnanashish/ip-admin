@@ -6,6 +6,29 @@ import TagInput from "../../../Components/Blog/TagInput";
 import { UserContext } from "../../../Context/userContext";
 import { Plus } from "lucide-react";
 
+const toLocalDatetime = (isoString) => {
+    if (!isoString) return "";
+    try {
+        const date = new Date(isoString);
+        if (isNaN(date.getTime())) return isoString;
+        const pad = (n) => String(n).padStart(2, "0");
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+    } catch {
+        return isoString;
+    }
+};
+
+const toISOFromLocal = (localStr) => {
+    if (!localStr) return null;
+    try {
+        const date = new Date(localStr);
+        if (isNaN(date.getTime())) return localStr;
+        return date.toISOString();
+    } catch {
+        return localStr;
+    }
+};
+
 const STATUS_OPTIONS = [
     { value: "draft", label: "Draft" },
     { value: "published", label: "Publish Now" },
@@ -70,7 +93,7 @@ const SettingsTab = ({ blogData, onChange, categories = [], existingTags = [] })
 
     const handleScheduleChange = useCallback(
         (e) => {
-            onChange({ scheduledAt: e.target.value || null });
+            onChange({ scheduledAt: toISOFromLocal(e.target.value) });
         },
         [onChange]
     );
@@ -113,6 +136,7 @@ const SettingsTab = ({ blogData, onChange, categories = [], existingTags = [] })
                             size="sm"
                             onClick={handleAddCategory}
                             className="min-h-[44px]"
+                            aria-label="Add new category"
                         >
                             <Plus className="h-4 w-4" />
                         </Button>
@@ -171,7 +195,7 @@ const SettingsTab = ({ blogData, onChange, categories = [], existingTags = [] })
                     <Label className="text-sm font-medium">Publish Date & Time</Label>
                     <Input
                         type="datetime-local"
-                        value={blogData.scheduledAt || ""}
+                        value={toLocalDatetime(blogData.scheduledAt)}
                         onChange={handleScheduleChange}
                         className="min-h-[44px]"
                     />

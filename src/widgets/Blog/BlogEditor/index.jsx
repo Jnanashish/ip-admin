@@ -43,11 +43,13 @@ const BlogEditorWidget = () => {
     const [blogId, setBlogId] = useState(id || null);
     const [categories, setCategories] = useState([]);
     const [existingTags, setExistingTags] = useState([]);
+    const [loadError, setLoadError] = useState(false);
 
     const autoSaveRef = useRef(null);
     const isDirtyRef = useRef(false);
     const blogDataRef = useRef(blogData);
     const blogIdRef = useRef(blogId);
+    const saveInFlightRef = useRef(false);
 
     // Keep refs in sync
     useEffect(() => {
@@ -73,9 +75,13 @@ const BlogEditorWidget = () => {
                         ...data,
                         seo: { ...getInitialBlogData().seo, ...(data.seo || {}) },
                     });
+                } else {
+                    showErrorToast("Failed to load blog post");
+                    setLoadError(true);
                 }
             } catch {
                 showErrorToast("Failed to load blog post");
+                setLoadError(true);
             } finally {
                 setIsLoading(false);
             }
@@ -112,6 +118,8 @@ const BlogEditorWidget = () => {
     // Save logic
     const saveBlog = useCallback(
         async (publishAction = false) => {
+            if (saveInFlightRef.current) return;
+            saveInFlightRef.current = true;
             setIsSaving(true);
             try {
                 const payload = { ...blogDataRef.current };
@@ -149,6 +157,7 @@ const BlogEditorWidget = () => {
             } catch {
                 showErrorToast("Failed to save blog post");
             } finally {
+                saveInFlightRef.current = false;
                 setIsSaving(false);
             }
         },
@@ -164,7 +173,7 @@ const BlogEditorWidget = () => {
     // Auto-save
     useEffect(() => {
         autoSaveRef.current = setInterval(() => {
-            if (isDirtyRef.current) {
+            if (isDirtyRef.current && !saveInFlightRef.current) {
                 saveBlog(false);
             }
         }, AUTO_SAVE_INTERVAL);
@@ -172,6 +181,16 @@ const BlogEditorWidget = () => {
     }, [saveBlog]);
 
     if (isLoading) return <Loader />;
+    if (loadError) {
+        return (
+            <div className="flex flex-col items-center justify-center gap-4 py-12">
+                <p className="text-sm text-muted-foreground">Failed to load blog post.</p>
+                <Button variant="outline" onClick={() => navigate("/blogs")} className="min-h-[44px]">
+                    Back to Blog List
+                </Button>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col min-h-0">

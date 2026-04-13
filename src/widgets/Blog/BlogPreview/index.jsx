@@ -21,7 +21,7 @@ const BlogPreviewWidget = () => {
             try {
                 const data = await getBlogById(id);
                 if (data) setBlog(data);
-                else showErrorToast("Blog post not found");
+                else showErrorToast("Failed to load blog post");
             } catch {
                 showErrorToast("Failed to load blog post");
             } finally {

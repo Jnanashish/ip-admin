@@ -18,12 +18,16 @@ const EditTab = ({ blogData, onChange }) => {
     const handleTitleChange = useCallback(
         (e) => {
             const title = e.target.value;
+            const currentAutoSlug = slugify(blogData.title || "");
+            const nextSlug = slugify(title);
             onChange({
                 title,
-                slug: slugify(title),
+                ...(!blogData.slug || blogData.slug === currentAutoSlug
+                    ? { slug: nextSlug }
+                    : {}),
             });
         },
-        [onChange]
+        [blogData.slug, blogData.title, onChange]
     );
 
     const handleSlugChange = useCallback(

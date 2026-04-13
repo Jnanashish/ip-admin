@@ -40,6 +40,10 @@ const BlogListingWidget = () => {
             setIsLoading(true);
             setError(null);
             const data = await getBlogList();
+            if (!data) {
+                setError("Failed to load blog posts.");
+                return;
+            }
             setBlogList(Array.isArray(data) ? data : []);
         } catch {
             setError("Failed to load blog posts.");
@@ -115,13 +119,17 @@ const BlogListingWidget = () => {
         );
     }, []);
 
+    const filteredIds = useMemo(() => filteredBlogs.map((b) => b._id), [filteredBlogs]);
+    const allFilteredSelected =
+        filteredIds.length > 0 && filteredIds.every((id) => selectedBlogs.includes(id));
+
     const toggleSelectAll = useCallback(() => {
-        if (selectedBlogs.length === filteredBlogs.length) {
-            setSelectedBlogs([]);
+        if (allFilteredSelected) {
+            setSelectedBlogs((prev) => prev.filter((id) => !filteredIds.includes(id)));
         } else {
-            setSelectedBlogs(filteredBlogs.map((b) => b._id));
+            setSelectedBlogs((prev) => Array.from(new Set([...prev, ...filteredIds])));
         }
-    }, [selectedBlogs, filteredBlogs]);
+    }, [allFilteredSelected, filteredIds]);
 
     const formatDate = (dateStr) => {
         if (!dateStr) return "—";
@@ -236,10 +244,7 @@ const BlogListingWidget = () => {
                             <tr className="border-b border-border bg-muted/30">
                                 <th className="p-3 text-left w-10">
                                     <Checkbox
-                                        checked={
-                                            selectedBlogs.length > 0 &&
-                                            selectedBlogs.length === filteredBlogs.length
-                                        }
+                                        checked={allFilteredSelected}
                                         onCheckedChange={toggleSelectAll}
                                     />
                                 </th>
