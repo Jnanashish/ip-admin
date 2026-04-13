@@ -2,7 +2,7 @@ import React, { useState, useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { showErrorToast } from "../../Helpers/toast";
 
-import { UserContext } from "../../Context/userContext";
+import { UserContext, AUTH_LOGIN_TS_KEY } from "../../Context/userContext";
 import { Button } from "Components/ui/button";
 import CustomTextField from "../../Components/Input/Textfield";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "Components/ui/card";
@@ -21,12 +21,14 @@ const Signin = () => {
 
     const handleSignin = () => {
         setShowLoader(true);
+        localStorage.setItem(AUTH_LOGIN_TS_KEY, String(Date.now()));
 
         signInWithEmailAndPassword(auth, email, password)
             .then(() => {
                 setShowLoader(false);
             })
             .catch((err) => {
+                localStorage.removeItem(AUTH_LOGIN_TS_KEY);
                 setShowLoader(false);
                 const errorMessage =
                     err.code?.includes("wrong-password") || err.code?.includes("user-not-found")

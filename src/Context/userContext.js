@@ -1,6 +1,15 @@
 import { createContext, useState, useEffect, useRef } from "react";
-import { onAuthStateChanged, signOut, browserSessionPersistence, setPersistence } from "firebase/auth";
+import { onAuthStateChanged, signOut, browserLocalPersistence, setPersistence } from "firebase/auth";
 import { auth } from "../Config/firebase_config";
+
+export const AUTH_LOGIN_TS_KEY = "auth_login_ts";
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
+const isSessionExpired = () => {
+    const loginTs = localStorage.getItem(AUTH_LOGIN_TS_KEY);
+    if (!loginTs) return true;
+    return Date.now() - Number(loginTs) > THIRTY_DAYS_MS;
+};
 
 export const UserContext = createContext();
 
@@ -11,10 +20,15 @@ export const AuthProvider = ({ children }) => {
     const unsubscribeRef = useRef(null);
 
     useEffect(() => {
-        setPersistence(auth, browserSessionPersistence)
+        setPersistence(auth, browserLocalPersistence)
             .then(() => {
                 unsubscribeRef.current = onAuthStateChanged(auth, (firebaseUser) => {
                     if (firebaseUser) {
+                        if (isSessionExpired()) {
+                            localStorage.removeItem(AUTH_LOGIN_TS_KEY);
+                            signOut(auth);
+                            return;
+                        }
                         setUser({ email: firebaseUser.email });
                         // NOTE: Client-side admin check — backend should verify via Firebase Custom Claims
                         setIsAdmin(firebaseUser.email === process.env.REACT_APP_ADMIN_EMAIL);
@@ -35,6 +49,7 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     const logout = async () => {
+        localStorage.removeItem(AUTH_LOGIN_TS_KEY);
         await signOut(auth);
         setUser(null);
         setIsAdmin(false);
