@@ -21,13 +21,14 @@ const Signin = () => {
 
     const handleSignin = () => {
         setShowLoader(true);
+        localStorage.setItem(AUTH_LOGIN_TS_KEY, String(Date.now()));
 
         signInWithEmailAndPassword(auth, email, password)
             .then(() => {
-                localStorage.setItem(AUTH_LOGIN_TS_KEY, String(Date.now()));
                 setShowLoader(false);
             })
             .catch((err) => {
+                localStorage.removeItem(AUTH_LOGIN_TS_KEY);
                 setShowLoader(false);
                 const errorMessage =
                     err.code?.includes("wrong-password") || err.code?.includes("user-not-found")
