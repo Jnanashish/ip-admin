@@ -180,7 +180,8 @@ const StagingQueue = () => {
                 setSelectedIds(new Set());
                 fetchJobs();
             }
-        } catch {
+        } catch (err) {
+            console.error("Approve all failed:", err);
             showErrorToast("Failed to approve all jobs. Please try again.");
         } finally {
             setApproveAllLoading(false);

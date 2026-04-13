@@ -69,9 +69,10 @@ export const fetchAllPendingJobs = async () => {
     const size = 100;
     while (true) {
         const res = await fetchStagingJobs({ status: "pending", source: "", page, size });
-        if (!res?.data?.length) break;
-        allJobs.push(...res.data);
-        if (allJobs.length >= (res.totalCount || 0)) break;
+        const pageJobs = res?.data || [];
+        if (!pageJobs.length) break;
+        allJobs.push(...pageJobs);
+        if (pageJobs.length < size) break;
         page++;
     }
     return allJobs;
