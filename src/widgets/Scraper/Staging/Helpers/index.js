@@ -62,3 +62,18 @@ export const bulkApproveJobs = async (ids, jobsMap = {}) => {
 export const deleteStagingJob = async (id) => {
     return scraperDelete(scraperEndpoints.stagingDelete(id), "Delete");
 };
+
+export const fetchAllPendingJobs = async () => {
+    const allJobs = [];
+    let page = 1;
+    const size = 100;
+    while (true) {
+        const res = await fetchStagingJobs({ status: "pending", source: "", page, size });
+        const pageJobs = res?.data || [];
+        if (!pageJobs.length) break;
+        allJobs.push(...pageJobs);
+        if (pageJobs.length < size) break;
+        page++;
+    }
+    return allJobs;
+};
