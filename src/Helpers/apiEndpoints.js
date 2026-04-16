@@ -4,7 +4,6 @@ export const apiEndpoint = {
 
     // job description
     getAllJobDetails: "/jd/get",
-    all_job_details: "/jd/get",
     deleteJob: "/jd/delete",
     updateJobDetails: "/jd/update/",
     addJobData: "/jd/add",
@@ -19,10 +18,21 @@ export const apiEndpoint = {
 
     // company details
     addCompanyDetails: "/companydetails/add",
-    get_company_details: "/companydetails/get",
-    get_company_logo: "/companydetails/logo",
-    update_company_details: "/companydetails/update",
-    delete_company_details: "/companydetails/delete",
+    getCompanyDetails: "/companydetails/get",
+    updateCompanyDetails: "/companydetails/update",
+    deleteCompanyDetails: "/companydetails/delete",
+
+    // Ad manager (banner ads, link ads, image-link ads)
+    addAdBanner: "/sda/banner/add",
+    getAdBanners: "/sda/banner/get",
+    deleteAdBanner: "/sda/banner/delete",
+    addAdLink: "/sda/link/add",
+    getAdLinks: "/sda/link/get",
+    deleteAdLink: "/sda/link/delete",
+    addAdLinkImage: "/sda/linkimg/add",
+    getAdLinkImages: "/sda/linkimg/get",
+    deleteAdLinkImage: "/sda/linkimg/delete",
+    updateAdPopupType: "/showadpop/update",
 
     // Blog
     getBlogList: "/blogs/get",

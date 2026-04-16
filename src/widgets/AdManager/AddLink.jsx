@@ -1,63 +1,44 @@
 import React, { useEffect, useState } from "react";
 
-import { toast } from "react-toastify";
-
-import { API } from "../../Backend";
+import { post, get, deleteData } from "../../Helpers/request";
+import { apiEndpoint } from "../../Helpers/apiEndpoints";
 import { safeUrl } from "../../Helpers/sanitize";
-
-const API_KEY = process.env.REACT_APP_API_KEY;
 
 const AddLink = () => {
     const [link, setLink] = useState("");
     const [title, setTitle] = useState("");
     const [para, setPara] = useState("");
+    const [data, setData] = useState([]);
 
-    const formData = new FormData();
     const addData = async (e) => {
         e.preventDefault();
-
+        const formData = new FormData();
         formData.append("link", link);
         formData.append("title", title);
         formData.append("para", para);
-        const res = await fetch(`${API}/sda/link/add`, {
-            method: "POST",
-            headers: { "x-api-key": API_KEY },
-            body: formData,
-        });
 
-        if (res.status === 201) {
-            toast("Data Added Successfully");
-        } else {
-            toast.error("An error Occured");
+        const res = await post(apiEndpoint.addAdLink, formData, "Add ad link");
+        if (res) {
+            setLink("");
+            setTitle("");
+            setPara("");
+            getData();
         }
+    };
+
+    const getData = async () => {
+        const res = await get(apiEndpoint.getAdLinks);
+        if (res) setData(res);
+    };
+
+    const deleteLink = async (id) => {
+        const res = await deleteData(`${apiEndpoint.deleteAdLink}/${id}`, "Delete ad link");
+        if (res) getData();
     };
 
     useEffect(() => {
         getData();
     }, []);
-
-    const [data, setData] = useState([]);
-    const getData = async () => {
-        try {
-            const res = await fetch(`${API}/sda/link/get`, { method: "GET" });
-            const data = await res.json();
-            setData(data);
-        } catch (error) {
-            console.error("getData failed:", error);
-            toast.error("Failed to load data");
-        }
-    };
-
-    const deleteData = (id) => {
-        fetch(`${API}/sda/link/delete/${id}`, {
-            method: "DELETE",
-            headers: { "x-api-key": API_KEY },
-        })
-            .then((res) => { toast("Deleted Successfully"); getData(); })
-            .catch((err) => {
-                toast.error("An error Occured");
-            });
-    };
 
     return (
         <div className="admin">
@@ -94,7 +75,7 @@ const AddLink = () => {
                             <h2>{item.title}</h2>
                             <h4>Total Click : {item.totalclick}</h4>
 
-                            <button onClick={() => deleteData(item._id)} className="p-2 w-[100px] text-lg rounded bg-[#5050ff] cursor-pointer border-none my-4 mx-2.5 text-white hover:bg-red-500 hover:text-black">
+                            <button onClick={() => deleteLink(item._id)} className="p-2 w-[100px] text-lg rounded bg-[#5050ff] cursor-pointer border-none my-4 mx-2.5 text-white hover:bg-red-500 hover:text-black">
                                 Delete
                             </button>
                             <a href={safeUrl(item.link)} target="_blank" rel="noopener noreferrer">

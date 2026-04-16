@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import styles from "./canvas.module.scss";
 
-const JobsattechBanner = (props) => {
-    const { canvasCss, comapnyDetails, igbannertitle, jobinfo, jobdetails } = props;
+const JobsAtTechBanner = (props) => {
+    const { canvasCss, companyDetails, igbannertitle, jobinfo, jobdetails } = props;
     const { companyName, degree, batch, experience, salary, location, role } = jobdetails;
-    const { largeLogo } = comapnyDetails;
+    const { largeLogo } = companyDetails;
 
     const [bannerTitle, setBannerTitle] = useState(null);
 
@@ -93,4 +93,4 @@ const JobsattechBanner = (props) => {
     );
 };
 
-export default JobsattechBanner;
+export default JobsAtTechBanner;

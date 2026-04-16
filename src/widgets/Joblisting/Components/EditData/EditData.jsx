@@ -6,7 +6,7 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { config } from "../../../../Config/editorConfig";
 
-import Custombutton from "../../../../Components/Button/Custombutton";
+import CustomButton from "../../../../Components/Button/CustomButton";
 import { addJobDataHelper } from "../../../Addjobs/Helpers";
 import { showErrorToast, showInfoToast, showSuccessToast } from "../../../../Helpers/toast";
 import CustomDivider from "../../../../Components/Divider/Divider";
@@ -315,14 +315,14 @@ const EditData = (props) => {
                 />
 
                 <div className="flex gap-5 my-6 justify-center max-sm:flex-col max-sm:items-center [&>*]:min-w-[200px] [&>*]:max-w-[260px] max-sm:[&>*]:w-full">
-                    <Custombutton
+                    <CustomButton
                         type="button"
                         onClick={updateJobData}
                         label={isSubmitting ? "Updating..." : "Update"}
                         disabled={isSubmitting}
                         startIcon={isSubmitting && <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />}
                     />
-                    <Custombutton
+                    <CustomButton
                         type="button"
                         onClick={repostJob}
                         label={isSubmitting ? "Reposting..." : "Repost"}

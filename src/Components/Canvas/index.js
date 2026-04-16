@@ -4,8 +4,8 @@ import styles from "./canvas.module.scss";
 import { downloadImagefromCanvasHelper } from "../../Helpers/imageHelpers";
 
 import LinkedinBanner from "./LinkedinBanner";
-import CareersattechBanner from "../../Components/Canvas/careersattechBanner";
-import JobsattechBanner from "../../Components/Canvas/jobsattechBanner";
+import CareersAtTechBanner from "./CareersAtTechBanner";
+import JobsAtTechBanner from "./JobsAtTechBanner";
 import CustomTextField from "../../Components/Input/Textfield";
 import CustomDivider from "../Divider/Divider";
 import Carousel from "./Carousel";
@@ -257,8 +257,8 @@ function Canvas(props) {
             <br />
 
             {/* Render appropriate banner based on canvas type */}
-            {canvas === "careersattech" && <CareersattechBanner {...bannerProps} />}
-            {canvas === "jobsattech" && <JobsattechBanner {...bannerProps} />}
+            {canvas === "careersattech" && <CareersAtTechBanner {...bannerProps} />}
+            {canvas === "jobsattech" && <JobsAtTechBanner {...bannerProps} />}
             {canvas === "linkedinbanner" && <LinkedinBanner {...bannerProps} />}
             {canvas === "carousel" && <Carousel {...bannerProps} />}
 

@@ -5,7 +5,7 @@ import { Button } from "Components/ui/button";
 import { Input } from "Components/ui/input";
 import { Card, CardContent } from "Components/ui/card";
 import { Badge } from "Components/ui/badge";
-import Adminlinkcard from "../Joblisting/Components/Adminlinkcard/Adminlinkcard";
+import AdminLinkCard from "../Joblisting/Components/AdminLinkCard/AdminLinkCard";
 import Loader from "../../Components/Loader/index";
 import { getCompanyList, deleteCompany } from "../../Apis/Company";
 import { showErrorToast } from "../../Helpers/toast";
@@ -105,7 +105,7 @@ function CompanyListing() {
                         <div className="border-t pt-4 space-y-2">
                             <p className="text-sm text-muted-foreground font-medium">Listed Jobs:</p>
                             {company.listedJobs.map((item, idx) => (
-                                <Adminlinkcard key={item._id || idx} item={item} isPreview={true} />
+                                <AdminLinkCard key={item._id || idx} item={item} isPreview={true} />
                             ))}
                         </div>
                     )}

@@ -7,9 +7,9 @@ import instagram from "../../Static/Image/instagram.png";
 import telegram from "../../Static/Image/telegram.png";
 
 function Carousel(props) {
-    const { jobdetails, ctaDetails, canvasCss, comapnyDetails, igbannertitle } = props;
+    const { jobdetails, ctaDetails, canvasCss, companyDetails, igbannertitle } = props;
     const { companyName, degree, batch, experience, salary, location, role } = jobdetails;
-    const { largeLogo } = comapnyDetails;
+    const { largeLogo } = companyDetails;
     const [bannerTitle, setBannerTitle] = useState(null);
 
     const customStyle = {

@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-function Backtodashboard() {
+function BackToDashboard() {
     const navigate = useNavigate();
 
     const handleBack = () => {
@@ -23,4 +23,4 @@ function Backtodashboard() {
     );
 }
 
-export default Backtodashboard;
+export default BackToDashboard;

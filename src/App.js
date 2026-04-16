@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, lazy, Suspense } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Navigate } from "react-router-dom";
@@ -11,23 +11,25 @@ import "@fontsource/geist-sans";
 import "@fontsource/geist-mono";
 import "./App.css";
 
-import Addjobs from "./pages/AddJobs";
-import Signin from "./pages/Signinpage";
-import Banners from "./pages/Banners/index";
-import JobList from "./pages/JobList";
-import AddCompanyDetails from "./pages/AddCompanyDetails";
-import CompanyList from "./pages/CompanyList";
-import ScraperDashboard from "./pages/Scraper/Dashboard";
-import ScraperStaging from "./pages/Scraper/Staging";
-import ScraperStagingDetail from "./pages/Scraper/StagingDetail";
-import ScraperLogs from "./pages/Scraper/Logs";
-import ScraperHealth from "./pages/Scraper/Health";
-import Analytics from "./pages/Analytics";
-import BlogList from "./pages/Blogs/BlogList";
-import BlogEditor from "./pages/Blogs/BlogEditor";
-import BlogPreview from "./pages/Blogs/BlogPreview";
 import Loader from "./Components/Loader";
 import AppLayout from "./Components/Layout/AppLayout";
+
+// Route-level code splitting — pages load on demand, shrinking the initial bundle.
+const Addjobs = lazy(() => import("./pages/AddJobs"));
+const Signin = lazy(() => import("./pages/SignIn"));
+const Banners = lazy(() => import("./pages/Banners/index"));
+const JobList = lazy(() => import("./pages/JobList"));
+const AddCompanyDetails = lazy(() => import("./pages/AddCompanyDetails"));
+const CompanyList = lazy(() => import("./pages/CompanyList"));
+const ScraperDashboard = lazy(() => import("./pages/Scraper/Dashboard"));
+const ScraperStaging = lazy(() => import("./pages/Scraper/Staging"));
+const ScraperStagingDetail = lazy(() => import("./pages/Scraper/StagingDetail"));
+const ScraperLogs = lazy(() => import("./pages/Scraper/Logs"));
+const ScraperHealth = lazy(() => import("./pages/Scraper/Health"));
+const Analytics = lazy(() => import("./pages/Analytics"));
+const BlogList = lazy(() => import("./pages/Blogs/BlogList"));
+const BlogEditor = lazy(() => import("./pages/Blogs/BlogEditor"));
+const BlogPreview = lazy(() => import("./pages/Blogs/BlogPreview"));
 
 function ProtectedRoute({ children }) {
     const { user, loading } = useContext(UserContext);
@@ -47,28 +49,30 @@ function AppRoutes() {
     return (
         <>
             <ToastContainer autoClose={2000} />
-            <Routes>
-                <Route path="/signin" element={isAuthenticated ? <Navigate to="/addjob" /> : <Signin />} />
-                <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-                    <Route path="/addjob" element={<Addjobs />} />
-                    <Route path="/canvas" element={<Banners />} />
-                    <Route path="/addcompany" element={<AddCompanyDetails />} />
-                    <Route path="/companys" element={<CompanyList />} />
-                    <Route path="/jobs" element={<JobList />} />
-                    <Route path="/admin/scraper" element={<ScraperDashboard />} />
-                    <Route path="/admin/scraper/staging" element={<ScraperStaging />} />
-                    <Route path="/admin/scraper/staging/:id" element={<ScraperStagingDetail />} />
-                    <Route path="/admin/scraper/logs" element={<ScraperLogs />} />
-                    <Route path="/admin/scraper/health" element={<ScraperHealth />} />
-                    <Route path="/analytics" element={<Analytics />} />
-                    <Route path="/blogs" element={<BlogList />} />
-                    <Route path="/blogs/new" element={<BlogEditor />} />
-                    <Route path="/blogs/:id/edit" element={<BlogEditor />} />
-                    <Route path="/blogs/:id/preview" element={<BlogPreview />} />
-                </Route>
-                <Route path="/" element={isAuthenticated ? <Navigate to="/addjob" /> : <Navigate to="/signin" />} />
-                <Route path="*" element={<Navigate to="/signin" />} />
-            </Routes>
+            <Suspense fallback={<Loader />}>
+                <Routes>
+                    <Route path="/signin" element={isAuthenticated ? <Navigate to="/addjob" /> : <Signin />} />
+                    <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+                        <Route path="/addjob" element={<Addjobs />} />
+                        <Route path="/canvas" element={<Banners />} />
+                        <Route path="/addcompany" element={<AddCompanyDetails />} />
+                        <Route path="/companys" element={<CompanyList />} />
+                        <Route path="/jobs" element={<JobList />} />
+                        <Route path="/admin/scraper" element={<ScraperDashboard />} />
+                        <Route path="/admin/scraper/staging" element={<ScraperStaging />} />
+                        <Route path="/admin/scraper/staging/:id" element={<ScraperStagingDetail />} />
+                        <Route path="/admin/scraper/logs" element={<ScraperLogs />} />
+                        <Route path="/admin/scraper/health" element={<ScraperHealth />} />
+                        <Route path="/analytics" element={<Analytics />} />
+                        <Route path="/blogs" element={<BlogList />} />
+                        <Route path="/blogs/new" element={<BlogEditor />} />
+                        <Route path="/blogs/:id/edit" element={<BlogEditor />} />
+                        <Route path="/blogs/:id/preview" element={<BlogPreview />} />
+                    </Route>
+                    <Route path="/" element={isAuthenticated ? <Navigate to="/addjob" /> : <Navigate to="/signin" />} />
+                    <Route path="*" element={<Navigate to="/signin" />} />
+                </Routes>
+            </Suspense>
         </>
     );
 }

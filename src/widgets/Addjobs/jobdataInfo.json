@@ -97,7 +97,7 @@ const categorytags = ["software", "frontend", "backend", "fullstack", "web3", "d
 
 const workmodeOptions = ["onsite", "hybrid", "remote"]
 const platformOptions = ["careerspage", "linkedin", "instahyre", "cuvette", "naukri", "upraised", "foundit", "wellfound", "unstop", "others"];
-const comapnyTypeOption = ["Product based", "Service based", "Agency", "Promotion", "Others"]
+const companyTypeOption = ["Product based", "Service based", "Agency", "Promotion", "Others"]
 const jobdataInfo = {
     degree: "", // expected values from degreeOptions
     batch: "",   // expected values from batchOptions
@@ -126,5 +126,5 @@ const jobdataInfo = {
     companyInfo: "", // about the company from the given job description
     linkedinPageLink: "", // linkedin page link from the given job description
     careerPageLink: "", // career page link from the given job description
-    companyType: "", // expected values from comapnyTypeOption
+    companyType: "", // expected values from companyTypeOption
 }   

@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { UserContext } from "../../Context/userContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "Components/ui/button";
-import Custombutton from "../../Components/Button/Custombutton";
+import CustomButton from "../../Components/Button/CustomButton";
 
 const Header = () => {
     const navigate = useNavigate();
@@ -40,10 +40,10 @@ const Header = () => {
             </div>
             {isAuthenticated && (
                 <div className="flex flex-wrap gap-5 px-10 py-[30px] border-b border-foreground max-lg:px-5 max-lg:gap-3 max-lg:py-4">
-                    <Custombutton variant={currentUrl === "/addjob" ? "" : "outlined"} onClick={() => handleRedirection("/addjob")} label="Add job" fullWidth={false} />
-                    <Custombutton variant={currentUrl === "/jobs" ? "" : "outlined"} onClick={() => handleRedirection("/jobs")} label="Job dashboard" fullWidth={false} />
-                    <Custombutton variant={currentUrl === "/addcompany" ? "" : "outlined"} onClick={() => handleRedirection("/addcompany")} label="Add company details" fullWidth={false} />
-                    <Custombutton variant={currentUrl === "/companys" ? "" : "outlined"} onClick={() => handleRedirection("/companys")} label="Company list" fullWidth={false} />
+                    <CustomButton variant={currentUrl === "/addjob" ? "" : "outlined"} onClick={() => handleRedirection("/addjob")} label="Add job" fullWidth={false} />
+                    <CustomButton variant={currentUrl === "/jobs" ? "" : "outlined"} onClick={() => handleRedirection("/jobs")} label="Job dashboard" fullWidth={false} />
+                    <CustomButton variant={currentUrl === "/addcompany" ? "" : "outlined"} onClick={() => handleRedirection("/addcompany")} label="Add company details" fullWidth={false} />
+                    <CustomButton variant={currentUrl === "/companys" ? "" : "outlined"} onClick={() => handleRedirection("/companys")} label="Company list" fullWidth={false} />
                 </div>
             )}
         </div>

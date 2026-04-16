@@ -1,5 +1,6 @@
 import { copyToClipBoard } from "../utility";
 import { showSuccessToast } from "../toast";
+import { translate } from "../textTransform";
 
 import { hashtags, linkedinHashtags } from "./staticdata";
 
@@ -17,52 +18,42 @@ export const messageTemplate = (item, platform, useWebsiteLink = false) => {
             return title +
                 "\nBatch : " + item.batch +
                 "\nDegree : " + item.degree +
-                "\n\nApply Here 👉 " + applyLink
-                // "\n\nFor more Jobs visit " +
-                // "https://bit.ly/careersattechWA";
-            
+                "\n\nApply Here 👉 " + applyLink;
+
         case "instagram":
-            const commentLink = "Comment 👉 Link to get the apply link in your DM \n"
+            const commentLink = "Comment 👉 Link to get the apply link in your DM \n";
             const igTitle = item?.companyName + " is hiring freshers for " + item?.role + " role.";
-            return commentLink + igTitle + 
-                "\n\nBatch : " + item.batch + 
-                "\nDegree : " + item.degree + 
-                "\n\n👉 Visit link given in Bio to apply. " + 
-                "\n\n" + "Follow @careersattech to get regular Job updates." + 
+            return commentLink + igTitle +
+                "\n\nBatch : " + item.batch +
+                "\nDegree : " + item.degree +
+                "\n\n👉 Visit link given in Bio to apply. " +
+                "\n\n" + "Follow @careersattech to get regular Job updates." +
                 "\n\n\n" + instagramHashtags;
-            
+
         case "linkedin":
-            return item.title + 
-                "\n\nBatch :- " + item.batch + 
-                "\nDegree :- " + item.degree + 
-                "\n\nApply Link in comment\n\n" + 
-                item.link + "\n\n" + 
+            return item.title +
+                "\n\nBatch :- " + item.batch +
+                "\nDegree :- " + item.degree +
+                "\n\nApply Link in comment\n\n" +
+                item.link + "\n\n" +
                 "\n.\n.\n.\n" + linkedinHashtag;
-            
+
         case "applyLink":
             return item?.companyName + " apply link : " + item?.link;
-            
+
         default:
             return "";
     }
 };
 
-const translate = (char) => {
-    let diff;
-    if (/[A-Z]/.test(char)) diff = "𝗔".codePointAt(0) - "A".codePointAt(0);
-    else diff = "𝗮".codePointAt(0) - "a".codePointAt(0);
-    return String.fromCodePoint(char.codePointAt(0) + diff);
-};
-
-
-// Instagram generate instagram post caption
-export const genererateInstagramCaption = (res) => {
+// Instagram: generate Instagram post caption
+export const generateInstagramCaption = (res) => {
     const temp = messageTemplate(res, "instagram");
     navigator.clipboard.writeText(temp);
     showSuccessToast("Copied");
 };
 
-// Linkedin Generate linkedin post caption
+// LinkedIn: generate LinkedIn post caption
 export const generateLinkedinCaption = (res) => {
     const temp = messageTemplate(res, "linkedin");
     navigator.clipboard.writeText(temp);
@@ -89,12 +80,12 @@ export const copyWhatsAppMessage = (item) => {
 export const slugifyRole = (role) => {
     if (!!role) {
         return role
-            .toString() // Convert to string
-            .toLowerCase() // Convert to lowercase
-            .trim() // Remove whitespace from both ends
-            .replace(/\s+/g, "-") // Replace spaces with hyphens
-            .replace(/[^\w\-]+/g, "") // Remove all non-word characters
-            .replace(/\-\-+/g, "-"); // Replace multiple hyphens with a single hyphen
+            .toString()
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "-")        // Replace spaces with hyphens
+            .replace(/[^\w\-]+/g, "")    // Remove all non-word characters
+            .replace(/\-\-+/g, "-");     // Collapse multiple hyphens
     }
     return role;
 };
@@ -105,19 +96,17 @@ const generateLinkFromRole = (role, jobId) => {
     return `https://careersat.tech/${slugifiedRole}/${jobId}`;
 };
 
-// [HELPER] formet the message for whatsapp
-const HELPER_generateWhatsAppMessage = (item, index, useWebsiteLink) => {
-    const msg = index + ". " + messageTemplate(item, "whatsapp", useWebsiteLink) + "\n\n";
-    return msg;
+// [HELPER] format the message for whatsapp
+const formatWhatsAppMessage = (item, index, useWebsiteLink) => {
+    return index + ". " + messageTemplate(item, "whatsapp", useWebsiteLink) + "\n\n";
 };
 
-// generate whatsapp message from selected job
+// generate whatsapp message from selected job list
 // if useWebsiteLink is true, then the website link will be used instead of the link in the job data
 export const generateWhatsAppMessage = (selectedJobList, useWebsiteLink = false) => {
     let message = "";
-    selectedJobList.map((item, index) => {
-        let msg = HELPER_generateWhatsAppMessage(item, index + 1, useWebsiteLink);
-        message = message + msg;
+    selectedJobList.forEach((item, index) => {
+        message += formatWhatsAppMessage(item, index + 1, useWebsiteLink);
     });
 
     navigator.clipboard.writeText(message);
