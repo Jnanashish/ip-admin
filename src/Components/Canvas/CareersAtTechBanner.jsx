@@ -6,10 +6,10 @@ import linkedin from "../../Static/Image/linkedin.png";
 import instagram from "../../Static/Image/instagram.png";
 import telegram from "../../Static/Image/telegram.png";
 
-const CareersattechBanner = (props) => {
-    const { ctaDetails, canvasCss, comapnyDetails, igbannertitle, jobinfo } = props;
+const CareersAtTechBanner = (props) => {
+    const { ctaDetails, canvasCss, companyDetails, igbannertitle, jobinfo } = props;
     const { companyName, degree, batch, experience, salary, location, role } = jobinfo;
-    const { largeLogo } = comapnyDetails;
+    const { largeLogo } = companyDetails;
     const [bannerTitle, setBannerTitle] = useState(null);
 
     const customStyle = {
@@ -103,4 +103,4 @@ const CareersattechBanner = (props) => {
     );
 };
 
-export default CareersattechBanner;
+export default CareersAtTechBanner;

@@ -15,7 +15,7 @@ const sizeMap = {
     large: "lg",
 };
 
-function Custombutton(props) {
+function CustomButton(props) {
     const { size, fullWidth, label, variant, endIcon, disabled, style, startIcon, className } = props;
     return (
         <div>
@@ -35,4 +35,4 @@ function Custombutton(props) {
     );
 }
 
-export default Custombutton;
+export default CustomButton;

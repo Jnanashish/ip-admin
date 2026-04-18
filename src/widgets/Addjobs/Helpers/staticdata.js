@@ -103,4 +103,4 @@ export const workmodeOptions = ["onsite", "hybrid", "remote"]
 
 export const platformOptions = ["careerspage", "linkedin", "instahyre", "cuvette", "naukri", "upraised", "foundit", "wellfound", "unstop", "others"];
 
-export const comapnyTypeOption = ["Product based", "Service based", "Agency", "Promotion", "Others"]
+export const companyTypeOption = ["Product based", "Service based", "Agency", "Promotion", "Others"]

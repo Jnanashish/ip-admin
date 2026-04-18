@@ -35,13 +35,13 @@ src/
 │   ├── CompanyList.jsx
 │   ├── AddCompanyDetails.jsx
 │   ├── JobList.jsx
-│   └── Signinpage/
+│   └── SignIn/
 └── widgets/           # Feature widgets (complex UI sections)
     ├── Addjobs/       # Job creation/editing form (main feature)
-    ├── Adhandler/     # Ad/banner management
+    ├── AdManager/     # Ad banner/link management
+    ├── AdPopupType/   # Ad popup type toggle
     ├── CompanyDetails/
     ├── CompanyListing/
-    ├── Dapoptype/
     └── Joblisting/    # Job listing with edit/delete
 ```
 
@@ -143,7 +143,7 @@ src/
 
 ### Existing Component Wrappers
 
-**Custombutton** (`src/Components/Button/Custombutton.jsx`): wraps shadcn Button. Variant map: `contained→default`, `outlined→outline`, `text→ghost`, `destructive→destructive`. Size map: `small→sm`, `medium→default`, `large→lg`.
+**CustomButton** (`src/Components/Button/CustomButton.jsx`): wraps shadcn Button. Variant map: `contained→default`, `outlined→outline`, `text→ghost`, `destructive→destructive`. Size map: `small→sm`, `medium→default`, `large→lg`.
 
 **CustomTextField** (`src/Components/Input/Textfield.jsx`): unified input/textarea/select via `type` prop. Full width default, optional label, error state `border-destructive`, select accepts `optionData` array.
 

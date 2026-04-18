@@ -1,71 +1,54 @@
 import React, { useState, useEffect } from "react";
 
-import { toast } from "react-toastify";
-
-import { API } from "../../Backend";
 import { Button } from "Components/ui/button";
 import { Trash2, Send } from "lucide-react";
+
+import { post, get, deleteData } from "../../Helpers/request";
+import { apiEndpoint } from "../../Helpers/apiEndpoints";
 import { safeUrl } from "../../Helpers/sanitize";
 
-const API_KEY = process.env.REACT_APP_API_KEY;
-
-const AddLinkImg = () => {
+const AddLinkImage = () => {
     const [link, setLink] = useState("");
     const [title, setTitle] = useState("");
     const [para, setPara] = useState("");
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [data, setData] = useState([]);
 
-    const formData = new FormData();
-    const handleimginp = (e) => {
-        const file = e.target.files;
-        formData.append("photo", file[0]);
+    const handleImageInput = (e) => {
+        setSelectedFile(e.target.files?.[0] || null);
     };
+
     const addData = async (e) => {
         e.preventDefault();
+        const formData = new FormData();
+        if (selectedFile) formData.append("photo", selectedFile);
         formData.append("link", link);
         formData.append("title", title);
         formData.append("para", para);
 
-        const res = await fetch(`${API}/sda/linkimg/add`, {
-            method: "POST",
-            headers: { "x-api-key": API_KEY },
-            body: formData,
-        });
-        if (res.status === 201) {
+        const res = await post(apiEndpoint.addAdLinkImage, formData, "Add ad link image");
+        if (res) {
+            setLink("");
+            setTitle("");
+            setPara("");
+            setSelectedFile(null);
             getData();
-            toast("Data Added Successfully");
-        } else {
-            toast.error("An error Occured");
         }
+    };
+
+    const getData = async () => {
+        const res = await get(apiEndpoint.getAdLinkImages);
+        if (res) setData(res);
+    };
+
+    const deleteLinkImage = async (id) => {
+        const res = await deleteData(`${apiEndpoint.deleteAdLinkImage}/${id}`, "Delete ad link image");
+        if (res) getData();
     };
 
     useEffect(() => {
         getData();
     }, []);
-
-    const [data, setData] = useState([]);
-    const getData = async () => {
-        try {
-            const res = await fetch(`${API}/sda/linkimg/get`, { method: "GET" });
-            const data = await res.json();
-            setData(data);
-        } catch (error) {
-            toast.error("An error Occured");
-        }
-    };
-
-    const deleteData = (id) => {
-        fetch(`${API}/sda/linkimg/delete/${id}`, {
-            method: "DELETE",
-            headers: { "x-api-key": API_KEY },
-        })
-            .then((res) => {
-                getData();
-                toast("Data Deleted Successfully");
-            })
-            .catch((err) => {
-                toast.error("An error Occured");
-            });
-    };
 
     return (
         <div className="admin">
@@ -88,7 +71,7 @@ const AddLinkImg = () => {
                     </div>
                     <div className="grid grid-cols-[25%_75%] max-lg:flex max-lg:flex-col max-lg:mx-5">
                         <h3 className="justify-self-end text-base mt-2 text-foreground">Image for ad : </h3>
-                        <input className="p-3 text-base w-[85%] mx-4 mb-[18px] rounded border-none max-lg:mx-0 max-lg:w-full" onChange={handleimginp} name="image" type="file" />
+                        <input className="p-3 text-base w-[85%] mx-4 mb-[18px] rounded border-none max-lg:mx-0 max-lg:w-full" onChange={handleImageInput} name="image" type="file" />
                     </div>
                     <div className="grid grid-cols-[25%_75%] max-lg:flex max-lg:flex-col max-lg:mx-5">
                         <div></div>
@@ -111,10 +94,10 @@ const AddLinkImg = () => {
                         <div key={item._id}>
                             <h3>{item.title}</h3>
                             <div className="border border-foreground w-full p-2.5 flex flex-row justify-around items-center my-5 [&_img]:w-[100px]">
-                                <img className="w-[300px]" src={item.imagePath} alt="" />
+                                <img className="w-[300px]" src={item.imagePath} alt="" loading="lazy" />
                                 <br />
 
-                                <Button onClick={() => deleteData(item._id)} variant="destructive">
+                                <Button onClick={() => deleteLinkImage(item._id)} variant="destructive">
                                     <Trash2 className="mr-2 h-4 w-4" />
                                     Delete
                                 </Button>
@@ -136,4 +119,4 @@ const AddLinkImg = () => {
     );
 };
 
-export default AddLinkImg;
+export default AddLinkImage;

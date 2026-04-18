@@ -23,9 +23,10 @@ import { UserContext } from "../../Context/userContext";
 import { apiEndpoint } from "../../Helpers/apiEndpoints";
 import { get } from "../../Helpers/request";
 
-import { degreeOptions, batchOptions, expOptions, locOptions, jobTypeOptions, companyTypeOptions, categorytags, workmodeOptions, platformOptions, comapnyTypeOption } from "./Helpers/staticdata";
+import { degreeOptions, batchOptions, expOptions, locOptions, jobTypeOptions, companyTypeOptions, categorytags, workmodeOptions, platformOptions, companyTypeOption } from "./Helpers/staticdata";
 import { downloadImagefromCanvasHelper, generateLinkfromImageHelper, handleImageInputHelper } from "../../Helpers/imageHelpers";
-import { generateLastDatetoApplyHelper, getCompanyDetailsHelper, addJobDataHelper, updateJobDetails, mapExperiencetoBatch, generateTagsfromRole } from "./Helpers";
+import { generateLastDatetoApplyHelper, addJobDataHelper, updateJobDetails, mapExperiencetoBatch, generateTagsfromRole } from "./Helpers";
+import { getCompanyDetailsHelper } from "../../Apis/Company";
 
 import { copyToClipBoard } from "../../Helpers/utility";
 import { generateLinkfromImage } from "../../Helpers/imageHelpers";
@@ -38,14 +39,14 @@ const AddjobsComponent = () => {
     const [igbannertitle, setIgbannertitle] = useState("");
     const [showLoader, setShowLoader] = useState(false);
     const [companyLogoSize, setCompanyLogoSize] = useState(0);
-    const [comapnyListData, setCompanyListData] = useState(null);
+    const [companyListData, setCompanyListData] = useState(null);
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [jobAlreadyExist, setJobAlreadyExist] = useState(false);
     const [savedJobId, setSavedJobId] = useState(null);
 
     const [jobdataInfo, setJobdataInfo] = useState(null);
 
-    const [comapnyDetails, setComapnyDetails] = useState({
+    const [companyDetails, setCompanyDetails] = useState({
         companyName: "",
         companyInfo: "N",
         linkedinPageLink: "",
@@ -230,13 +231,13 @@ const AddjobsComponent = () => {
 
     // [COMPANY DATA] get details of entered company on company input change
     const getCompanyDetails = async (jobdetails) => {
-        handleInputChange(setComapnyDetails, { smallLogo: "", largeLogo: "" });
+        handleInputChange(setCompanyDetails, { smallLogo: "", largeLogo: "" });
         handleInputChange(setJobdetails, "imagePath", "");
 
         const data = await getCompanyDetailsHelper(null, jobdetails._id);
         if (!!data && !!data[0]) {
             handleInputChange(setJobdetails, data[0]);
-            handleInputChange(setComapnyDetails, data[0]);
+            handleInputChange(setCompanyDetails, data[0]);
             handleInputChange(setJobdetails, "imagePath", data[0]?.smallLogo);
         }
     };
@@ -256,13 +257,13 @@ const AddjobsComponent = () => {
             }
 
             if (!!link) {
-                handleInputChange(setComapnyDetails, "smallLogo", link);
+                handleInputChange(setCompanyDetails, "smallLogo", link);
                 handleInputChange(setJobdetails, "imagePath", link);
             }
         } else {
             if (fileSize < 500000) {
                 link = await generateLinkfromImage(e, false);
-                handleInputChange(setComapnyDetails, "largeLogo", link);
+                handleInputChange(setCompanyDetails, "largeLogo", link);
             } else {
                 showErrorToast("Image size should be less than 500kb");
             }
@@ -276,10 +277,10 @@ const AddjobsComponent = () => {
         let jobDetailsforAPI = {};
 
         if (!!selectedCompany && !!selectedCompany?._id) {
-            updateCompanyDetailsHelper(comapnyDetails, selectedCompany?._id);
+            updateCompanyDetailsHelper(companyDetails, selectedCompany?._id);
             jobDetailsforAPI = { ...jobdetails, companyId: selectedCompany?._id };
         } else {
-            let companyId = await submitCompanyDetailsHelper(comapnyDetails);
+            let companyId = await submitCompanyDetailsHelper(companyDetails);
             jobDetailsforAPI = { ...jobdetails, companyId: companyId?.id };
         }
 
@@ -310,7 +311,7 @@ const AddjobsComponent = () => {
     // handle company name input change
     const handleCompanyNameChange = (companyName) => {
         const jobTitle = generateJobTitle(companyName);
-        handleInputChange(setComapnyDetails, "companyName", companyName);
+        handleInputChange(setCompanyDetails, "companyName", companyName);
         handleInputChange(setJobdetails, { companyName, title: jobTitle });
     };
 
@@ -340,18 +341,18 @@ const AddjobsComponent = () => {
 
         if (!!jobData && !!jobData?.companyName) {
             companyName = jobData?.companyName;
-            filterJobBasedonName(comapnyListData, companyName);
+            filterJobBasedonName(companyListData, companyName);
             setSavedJobId(jobData?._id);
             setJobAlreadyExist(true);
             handleInputChange(setJobdetails, jobData);
-            handleInputChange(setComapnyDetails, jobData);
+            handleInputChange(setCompanyDetails, jobData);
         }
     };
 
     // update both company and job details when companyinfo change
     const handleCompanyInfoChange = (val) => {
         handleInputChange(setJobdetails, "aboutCompany", val);
-        handleInputChange(setComapnyDetails, "companyInfo", val);
+        handleInputChange(setCompanyDetails, "companyInfo", val);
     };
 
     const filterJobBasedonName = (companyList, companyNameToFind) => {
@@ -359,7 +360,7 @@ const AddjobsComponent = () => {
             return;
         }
 
-        const nameToFind = companyNameToFind || comapnyDetails?.companyName || companyName;
+        const nameToFind = companyNameToFind || companyDetails?.companyName || companyName;
         if (!nameToFind) return;
 
         const normalizedNameToFind = nameToFind.toLowerCase().trim();
@@ -376,7 +377,7 @@ const AddjobsComponent = () => {
 
     // fetch list of available companies
     const getCompanyList = async () => {
-        const data = await get(`${apiEndpoint.get_company_details}`);
+        const data = await get(`${apiEndpoint.getCompanyDetails}`);
         filterJobBasedonName(data);
         setCompanyListData(data);
     };
@@ -421,8 +422,8 @@ const AddjobsComponent = () => {
                         jobDetailsUpdates[key] = parsedData[key];
                     }
                 }
-                if (key in comapnyDetails) {
-                    if (typeof comapnyDetails[key] === "string" && parsedData[key]?.length > 10000) {
+                if (key in companyDetails) {
+                    if (typeof companyDetails[key] === "string" && parsedData[key]?.length > 10000) {
                         return;
                     }
                     companyDetailsUpdates[key] = parsedData[key];
@@ -434,13 +435,13 @@ const AddjobsComponent = () => {
             }
 
             if (Object.keys(companyDetailsUpdates).length > 0) {
-                handleInputChange(setComapnyDetails, companyDetailsUpdates);
+                handleInputChange(setCompanyDetails, companyDetailsUpdates);
             }
 
             if (parsedData.companyName) {
                 handleCompanyNameChange(parsedData.companyName);
-                if (comapnyListData && comapnyListData.length > 0) {
-                    filterJobBasedonName(comapnyListData, parsedData.companyName);
+                if (companyListData && companyListData.length > 0) {
+                    filterJobBasedonName(companyListData, parsedData.companyName);
                 }
             }
 
@@ -521,7 +522,7 @@ const AddjobsComponent = () => {
                                 <SearchBar
                                     handleCompanyNameChange={handleCompanyNameChange}
                                     width="400px"
-                                    searchSuggestionList={comapnyListData}
+                                    searchSuggestionList={companyListData}
                                     selectedCompany={selectedCompany}
                                     setSelectedCompany={setSelectedCompany}
                                 />
@@ -730,7 +731,7 @@ const AddjobsComponent = () => {
                             <input type="file" className="text-sm text-muted-foreground file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-secondary file:text-secondary-foreground cursor-pointer" onChange={(e) => handleCompanyLogoInput(e)} />
                         </div>
                         <p className="text-sm text-muted-foreground">Size: {companyLogoSize}kb</p>
-                        {comapnyDetails.smallLogo && <img src={comapnyDetails.smallLogo} width="50" height="50" alt="logo" className="rounded" />}
+                        {companyDetails.smallLogo && <img src={companyDetails.smallLogo} width="50" height="50" alt="logo" className="rounded" />}
                     </div>
                     {companyLogoSize > 10 && <p className="text-destructive text-sm">Image size should be less than 10kb after compression</p>}
 
@@ -739,7 +740,7 @@ const AddjobsComponent = () => {
                             <p className="text-sm font-medium">Banner Logo</p>
                             <input accept="image/*" type="file" className="text-sm text-muted-foreground file:mr-4 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-sm file:bg-secondary file:text-secondary-foreground cursor-pointer" onChange={(e) => handleCompanyLogoInput(e, false)} />
                         </div>
-                        {comapnyDetails.largeLogo && <img src={comapnyDetails.largeLogo} width="200" height="60" alt="logo" className="rounded" />}
+                        {companyDetails.largeLogo && <img src={companyDetails.largeLogo} width="200" height="60" alt="logo" className="rounded" />}
                     </div>
                 </CardContent>
             </Card>
@@ -750,17 +751,17 @@ const AddjobsComponent = () => {
                     <CardTitle className="text-lg">Company Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <CustomTextField fullWidth label="Company careers page" value={comapnyDetails.careerPageLink} onChange={(val) => handleInputChange(setComapnyDetails, "careerPageLink", val)} />
-                    <CustomTextField fullWidth label="LinkedIn page link" value={comapnyDetails.linkedinPageLink} onChange={(val) => handleInputChange(setComapnyDetails, "linkedinPageLink", val)} />
+                    <CustomTextField fullWidth label="Company careers page" value={companyDetails.careerPageLink} onChange={(val) => handleInputChange(setCompanyDetails, "careerPageLink", val)} />
+                    <CustomTextField fullWidth label="LinkedIn page link" value={companyDetails.linkedinPageLink} onChange={(val) => handleInputChange(setCompanyDetails, "linkedinPageLink", val)} />
                     <CustomTextField
                         fullWidth
                         label="Type of the company"
-                        value={comapnyDetails.companyType}
-                        onChange={(val) => handleInputChange(setComapnyDetails, "companyType", val)}
+                        value={companyDetails.companyType}
+                        onChange={(val) => handleInputChange(setCompanyDetails, "companyType", val)}
                         type="select"
-                        optionData={comapnyTypeOption}
+                        optionData={companyTypeOption}
                     />
-                    <CustomCKEditor label="About the company" value={comapnyDetails.companyInfo} onChange={(val) => handleCompanyInfoChange(val)} />
+                    <CustomCKEditor label="About the company" value={companyDetails.companyInfo} onChange={(val) => handleCompanyInfoChange(val)} />
                 </CardContent>
             </Card>
 
@@ -835,7 +836,7 @@ const AddjobsComponent = () => {
             <CustomDivider />
 
             {/* Canvas - DO NOT MODIFY */}
-            <Canvas jobdetails={jobdetails} comapnyDetails={comapnyDetails} igbannertitle={igbannertitle} />
+            <Canvas jobdetails={jobdetails} companyDetails={companyDetails} igbannertitle={igbannertitle} />
         </div>
     );
 };

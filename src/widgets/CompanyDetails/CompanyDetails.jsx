@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 
 import { companyTypeOptions } from "../Addjobs/Helpers/staticdata";
 import { generateLinkfromImage } from "../../Helpers/imageHelpers";
-import { showErrorToast, showSuccessToast } from "../../Helpers/toast";
+import { showErrorToast } from "../../Helpers/toast";
 import { submitCompanyDetailsHelper, updateCompanyDetailsHelper } from "./helper";
-import Custombutton from "../../Components/Button/Custombutton";
+import CustomButton from "../../Components/Button/CustomButton";
 import CustomTextField from "../../Components/Input/Textfield";
 import { Card, CardContent, CardHeader, CardTitle } from "Components/ui/card";
 
@@ -13,7 +13,7 @@ import { apiEndpoint } from "../../Helpers/apiEndpoints";
 import { safeUrl } from "../../Helpers/sanitize";
 
 const CompanyDetails = () => {
-    const [comapnyDetails, setComapnyDetails] = useState({
+    const [companyDetails, setCompanyDetails] = useState({
         companyName: "",
         companyInfo: "",
         linkedinPageLink: "",
@@ -23,7 +23,7 @@ const CompanyDetails = () => {
         largeLogo: "",
     });
     const [isCompanydetailPresent, setIsCompanydetailPresent] = useState(false);
-    const [comapnyId, setCompanyId] = useState();
+    const [companyId, setCompanyId] = useState();
 
     const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
@@ -51,9 +51,9 @@ const CompanyDetails = () => {
     };
 
     const submitCompanyDetails = async () => {
-        const res = await submitCompanyDetailsHelper(comapnyDetails);
+        const res = await submitCompanyDetailsHelper(companyDetails);
         if (!!res) {
-            setComapnyDetails({
+            setCompanyDetails({
                 companyName: "",
                 companyInfo: "",
                 linkedinPageLink: "",
@@ -67,12 +67,12 @@ const CompanyDetails = () => {
 
     const updateCompanyDetails = async () => {
         const urlParams = new URLSearchParams(window.location.search);
-        const companyid = urlParams.get("companyid") || comapnyId;
-        const res = await updateCompanyDetailsHelper(comapnyDetails, companyid);
+        const companyid = urlParams.get("companyid") || companyId;
+        const res = await updateCompanyDetailsHelper(companyDetails, companyid);
 
         if (!!res) {
             window.location.href = "/companys";
-            setComapnyDetails({
+            setCompanyDetails({
                 companyName: "",
                 companyInfo: "",
                 linkedinPageLink: "",
@@ -93,17 +93,17 @@ const CompanyDetails = () => {
     };
 
     const handleCompanyDetailChange = (key, value) => {
-        setComapnyDetails({ ...comapnyDetails, [key]: value });
+        setCompanyDetails({ ...companyDetails, [key]: value });
     };
 
     const handleCompanynameChange = async (value) => {
         if (!!value) {
-            const res = await get(`${apiEndpoint.get_company_details}?companyname=${value}`);
+            const res = await get(`${apiEndpoint.getCompanyDetails}?companyname=${value}`);
             const data = res[0];
             setCompanyId(data?._id);
             if (!!data?.companyName && !!data?.smallLogo) {
                 setIsCompanydetailPresent(true);
-                setComapnyDetails({
+                setCompanyDetails({
                     companyName: data?.companyName || "",
                     companyInfo: data?.companyInfo || "",
                     linkedinPageLink: data?.linkedinPageLink || "",
@@ -123,11 +123,11 @@ const CompanyDetails = () => {
         if (companyid && /^[a-f\d]{24}$/i.test(companyid)) {
             setCompanyId(companyid);
 
-            const res = await get(`${apiEndpoint.get_company_details}?id=${companyid}`);
+            const res = await get(`${apiEndpoint.getCompanyDetails}?id=${companyid}`);
             const data = res[0];
             if (!!data) {
                 setIsCompanydetailPresent(true);
-                setComapnyDetails({
+                setCompanyDetails({
                     companyName: data?.companyName,
                     companyInfo: data?.companyInfo,
                     linkedinPageLink: safeUrl(data?.linkedinPageLink || "#"),
@@ -158,7 +158,7 @@ const CompanyDetails = () => {
                         <CustomTextField
                             label="Company name"
                             onBlur={(val) => handleCompanynameChange(val)}
-                            value={comapnyDetails.companyName}
+                            value={companyDetails.companyName}
                             onChange={(val) => handleCompanyDetailChange("companyName", val)}
                             fullWidth
                         />
@@ -169,7 +169,7 @@ const CompanyDetails = () => {
                             multiline={true}
                             rows={4}
                             label="Company info"
-                            value={comapnyDetails.companyInfo}
+                            value={companyDetails.companyInfo}
                             onChange={(val) => handleCompanyDetailChange("companyInfo", val)}
                             fullWidth
                         />
@@ -178,7 +178,7 @@ const CompanyDetails = () => {
                         <label className="text-sm font-medium">Company Type</label>
                         <CustomTextField
                             label="Company type"
-                            value={comapnyDetails.companyType}
+                            value={companyDetails.companyType}
                             onChange={(val) => handleCompanyDetailChange("companyType", val)}
                             fullWidth
                             type="select"
@@ -189,7 +189,7 @@ const CompanyDetails = () => {
                         <label className="text-sm font-medium">Career Page Link</label>
                         <CustomTextField
                             label="Careers page"
-                            value={comapnyDetails.careersPageLink}
+                            value={companyDetails.careersPageLink}
                             onChange={(val) => handleCompanyDetailChange("careersPageLink", val)}
                             fullWidth
                         />
@@ -198,7 +198,7 @@ const CompanyDetails = () => {
                         <label className="text-sm font-medium">LinkedIn Link</label>
                         <CustomTextField
                             label="Linkedin link"
-                            value={comapnyDetails.linkedinPageLink}
+                            value={companyDetails.linkedinPageLink}
                             onChange={(val) => handleCompanyDetailChange("linkedinPageLink", val)}
                             fullWidth
                         />
@@ -222,8 +222,8 @@ const CompanyDetails = () => {
                                 type="file"
                             />
                         </div>
-                        {comapnyDetails.smallLogo && (
-                            <img src={comapnyDetails.smallLogo} className="h-20 w-auto object-contain rounded border p-1" alt="Small logo" />
+                        {companyDetails.smallLogo && (
+                            <img src={companyDetails.smallLogo} className="h-20 w-auto object-contain rounded border p-1" alt="Small logo" />
                         )}
                     </div>
 
@@ -238,16 +238,16 @@ const CompanyDetails = () => {
                                 type="file"
                             />
                         </div>
-                        {comapnyDetails.largeLogo && (
-                            <img src={comapnyDetails.largeLogo} className="h-20 w-auto object-contain rounded border p-1" alt="Large logo" />
+                        {companyDetails.largeLogo && (
+                            <img src={companyDetails.largeLogo} className="h-20 w-auto object-contain rounded border p-1" alt="Large logo" />
                         )}
                     </div>
                 </CardContent>
             </Card>
 
             <div className="mt-6 mb-10">
-                <Custombutton
-                    disabled={!comapnyDetails.companyName || !comapnyDetails.largeLogo || !comapnyDetails.smallLogo}
+                <CustomButton
+                    disabled={!companyDetails.companyName || !companyDetails.largeLogo || !companyDetails.smallLogo}
                     onClick={handleButtonClick}
                     label={isCompanydetailPresent ? "Update company details" : "Submit company details"}
                 />

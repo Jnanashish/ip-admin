@@ -1,8 +1,8 @@
-import { post, get } from "../../../Helpers/request";
+import { post, get, updateData } from "../../../Helpers/request";
 import { apiEndpoint } from "../../../Helpers/apiEndpoints";
 import { showErrorToast, showSuccessToast, showInfoToast, showWarnToast } from "../../../Helpers/toast";
-import { updateData } from "../../../Helpers/request";
 import { categorytags } from "./staticdata";
+
 //---------------------------------------------------------
 // add 30days to current date to generate last data of a job
 export const generateLastDatetoApplyHelper = () => {
@@ -15,19 +15,6 @@ export const generateLastDatetoApplyHelper = () => {
     const formattedDate = `${year}-${month}-${day}`;
 
     return formattedDate;
-};
-
-// ---------------------------------------------------------
-// get company details if there is any based on company name
-export const getCompanyDetailsHelper = async (companyName, companyId) => {
-    const url = companyName ? `${apiEndpoint.get_company_details}?companyname=${companyName}` : `${apiEndpoint.get_company_details}?id=${companyId}`;
-    const data = await get(url);
-    if (!!data[0]?.largeLogo || !!data[0]?.smallLogo) {
-        showInfoToast(`Logo found in database`);
-    } else {
-        showWarnToast(`Logo not found, upload manually`);
-    }
-    return data;
 };
 
 export const getJobDetailsHelper = async (params, page, size = 10) => {
@@ -43,7 +30,7 @@ export const getJobDetailsHelper = async (params, page, size = 10) => {
         if (!!data) {
             showInfoToast(`Company details found in database`);
         } else {
-            showWarnToast(`Compant details not found`);
+            showWarnToast(`Company details not found`);
         }
         return data;
     }
@@ -120,7 +107,7 @@ export const addJobDataHelper = async (jobdetails) => {
         showSuccessToast("Job data added successfully");
         return { status: 200 };
     } else {
-        showErrorToast("An error occured while adding Job");
+        showErrorToast("An error occurred while adding Job");
         return { status: 404 };
     }
 };
@@ -136,7 +123,7 @@ export const updateJobDetails = async (jobdetails, id) => {
             showSuccessToast("Job data updated successfully");
             return { status: 200 };
         } else {
-            showErrorToast("An error occured while adding Job");
+            showErrorToast("An error occurred while adding Job");
             return { status: 404 };
         }
     }

@@ -10,7 +10,7 @@ import { getJobDetailsHelper } from "../../widgets/Addjobs/Helpers";
 
 function Banners() {
     const [jobdetails, setJobdetails] = useState();
-    const [comapnyDetails, setComapnyDetails] = useState();
+    const [companyDetails, setCompanyDetails] = useState();
     const [bannerType, setBannerType] = useState("careersattech");
 
     const getQueryparam = async () => {
@@ -31,7 +31,7 @@ function Banners() {
 
         if ((companyname || (companyid && /^[a-f\d]{24}$/i.test(companyid)))) {
             const companyData = await getCompanyDetailsHelper(companyname, companyid);
-            !!companyData && Array.isArray(companyData) && setComapnyDetails(companyData[0]);
+            !!companyData && Array.isArray(companyData) && setCompanyDetails(companyData[0]);
         }
     };
 
@@ -65,8 +65,8 @@ function Banners() {
                 ))}
             </div>
 
-            {!!jobdetails && !!comapnyDetails ? (
-                <Canvas bannerType={bannerType} jobdetails={jobdetails} comapnyDetails={comapnyDetails} />
+            {!!jobdetails && !!companyDetails ? (
+                <Canvas bannerType={bannerType} jobdetails={jobdetails} companyDetails={companyDetails} />
             ) : (
                 <div className="flex items-center justify-center h-[60vh]">
                     <Loader />

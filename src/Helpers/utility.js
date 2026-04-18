@@ -1,19 +1,13 @@
-import { showErrorToast, showSuccessToast } from "./toast";
-import { post, get } from "./request";
-import { apiEndpoint } from "./apiEndpoints";
-
-const BOT_API_KEY = process.env.REACT_APP_BOT_API_KEY;
-const MY_CHANNEL_NAME = process.env.REACT_APP_MY_CHANNEL_NAME;
-const TOKEN = process.env.REACT_APP_TOKEN;
+const BITLY_TOKEN = process.env.REACT_APP_TOKEN;
 
 // [BIT.LY]
-// short long job link with bitly
+// shorten a long job link with bitly
 export const shortenurl = async (link) => {
     try {
         const res = await fetch("https://api-ssl.bitly.com/v4/shorten", {
             method: "POST",
             headers: {
-                Authorization: `Bearer ${TOKEN}`,
+                Authorization: `Bearer ${BITLY_TOKEN}`,
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({ long_url: link, domain: "bit.ly" }),
@@ -27,13 +21,6 @@ export const shortenurl = async (link) => {
     }
 };
 
-// send message to telegram
-export const sendMessage = (msg) => {
-    fetch(`https://api.telegram.org/bot${BOT_API_KEY}/sendMessage?chat_id=${encodeURIComponent(MY_CHANNEL_NAME)}&text=${encodeURIComponent(msg)}&disable_web_page_preview=true&disable_notification=true`, {
-        method: "POST",
-    }).catch(() => {});
-};
-
 // [BIT.LY]
 export const getLinkClickCount = async (link) => {
     try {
@@ -41,7 +28,7 @@ export const getLinkClickCount = async (link) => {
         const res = await fetch(`https://api-ssl.bitly.com/v4/bitlinks/${linkWithoutHttps}/clicks?unit=month`, {
             method: "GET",
             headers: {
-                Authorization: `Bearer ${TOKEN}`,
+                Authorization: `Bearer ${BITLY_TOKEN}`,
             },
         });
         const json = await res.json();
@@ -51,29 +38,9 @@ export const getLinkClickCount = async (link) => {
     }
 };
 
-// ---------------------------------------------------------
-// copy any texy to clipboard
+// copy any text to clipboard
 export const copyToClipBoard = (text) => {
     navigator.clipboard.writeText(text);
-};
-
-// ---------------------------------------------------------
-// upload company logo - take company logo cdn url and name
-export const uploadCompanyLogoHelper = async (companyName, companyBigLogoUrl, companySmallLogoUrl) => {
-    const formData = new FormData();
-    formData.append("companyName", companyName);
-    formData.append("largeLogo", companyBigLogoUrl);
-    formData.append("smallLogo", companySmallLogoUrl);
-
-    const res = await post(apiEndpoint.addCompanyLogo, formData);
-
-    if (res) {
-        showSuccessToast("Company logo added Successfully");
-    } else {
-        showErrorToast("An error Occured");
-    }
-
-    return res;
 };
 
 // generate date from ISO date string
@@ -81,4 +48,3 @@ export const generateDateFromISOString = (isoDate) => {
     const date = new Date(isoDate);
     return date.toISOString().substring(0, 10);
 };
-

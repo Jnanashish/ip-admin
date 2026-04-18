@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect, useCallback, useRef } from "react";
 
-import Custombutton from "../../Components/Button/Custombutton";
+import CustomButton from "../../Components/Button/CustomButton";
 import CustomDivider from "../../Components/Divider/Divider";
 
 // icons
@@ -15,13 +15,13 @@ import { Badge } from "Components/ui/badge";
 import { Button } from "Components/ui/button";
 
 // import components
-import Adminlinkcard from "./Components/Adminlinkcard/Adminlinkcard";
+import AdminLinkCard from "./Components/AdminLinkCard/AdminLinkCard";
 import { UserContext } from "../../Context/userContext";
 import CustomTextField from "../../Components/Input/Textfield";
 
 // helpers
 import { handleTelegramSubmitHelper } from "../../Helpers/Telegram/telegramMessage";
-import { copyWhatsAppMessage, genererateInstagramCaption, generateLinkedinCaption, generateWhatsAppMessage, copyApplyLink } from "../../Helpers/JobListHelper";
+import { copyWhatsAppMessage, generateInstagramCaption, generateLinkedinCaption, generateWhatsAppMessage, copyApplyLink } from "../../Helpers/JobListHelper";
 import { showErrorToast } from "../../Helpers/toast";
 import { updateJobDetails } from "../Addjobs/Helpers";
 import { getJobDetailsHelper } from "../Addjobs/Helpers";
@@ -59,7 +59,7 @@ const JobListing = () => {
             setIsApiCalled(false);
         } catch (error) {
             setIsApiCalled(false);
-            showErrorToast("An error occured in fetching job details");
+            showErrorToast("An error occurred in fetching job details");
         }
     }, [pageno, isApiCalled]);
 
@@ -149,7 +149,7 @@ const JobListing = () => {
     const renderJobCard = useCallback((item) => (
         <Card key={item._id} className="mb-4 transition-shadow hover:shadow-md">
             <CardContent className="pt-6">
-                <Adminlinkcard item={item} />
+                <AdminLinkCard item={item} />
                 <div className="flex flex-row w-full justify-between flex-wrap gap-y-2.5 mt-3 max-lg:flex-col">
                     <div className="flex flex-row items-center gap-2.5 py-2.5 flex-wrap [&_button]:capitalize">
                         <Checkbox onCheckedChange={() => handleSelectJob(item)} />
@@ -179,7 +179,7 @@ const JobListing = () => {
                             <Send className="h-3.5 w-3.5 mr-1.5" />
                             Telegram
                         </Button>
-                        <Button variant="outline" size="sm" onClick={() => genererateInstagramCaption(item)}>
+                        <Button variant="outline" size="sm" onClick={() => generateInstagramCaption(item)}>
                             Caption (IG)
                         </Button>
                         <Button variant="outline" size="sm" onClick={() => generateLinkedinCaption(item)}>

@@ -17,7 +17,7 @@ export const fetchStagingJob = async (id) => {
 const fetchCompanyLogo = async (companyName) => {
     if (!companyName) return null;
     try {
-        const res = await get(`${apiEndpoint.get_company_details}?companyname=${companyName}`);
+        const res = await get(`${apiEndpoint.getCompanyDetails}?companyname=${companyName}`);
         return res?.[0]?.smallLogo || null;
     } catch {
         return null;

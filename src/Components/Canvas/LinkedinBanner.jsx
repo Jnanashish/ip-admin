@@ -7,9 +7,9 @@ import instagram from "../../Static/Image/instagram.png";
 import telegram from "../../Static/Image/telegram.png";
 
 function LinkedinBanner(props) {
-    const { jobdetails, canvasCss, comapnyDetails } = props;
+    const { jobdetails, canvasCss, companyDetails } = props;
     const { batch, location, role } = jobdetails;
-    const { largeLogo } = comapnyDetails;
+    const { largeLogo } = companyDetails;
 
     const customStyle = {
         imgstyle: {

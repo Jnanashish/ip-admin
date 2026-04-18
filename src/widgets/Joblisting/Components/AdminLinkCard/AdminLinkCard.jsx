@@ -2,10 +2,10 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 
-import EditData from "../Editdata/Editdata";
+import EditData from "../EditData/EditData";
 
 import { UserContext } from "../../../../Context/userContext";
-import Custombutton from "../../../../Components/Button/Custombutton";
+import CustomButton from "../../../../Components/Button/CustomButton";
 import { deleteData } from "../../../../Helpers/request";
 import { apiEndpoint } from "../../../../Helpers/apiEndpoints";
 import { generateDateFromISOString } from "../../../../Helpers/utility";
@@ -84,7 +84,7 @@ const LinkCard = ({ item, isPreview = false }) => {
                     {/* button section */}
                     <div className="flex flex-col justify-evenly items-start">
                         {!isPreview && (
-                            <Custombutton
+                            <CustomButton
                                 startIcon={<Trash2 size={16} />}
                                 disableElevation
                                 size="small"
@@ -96,8 +96,8 @@ const LinkCard = ({ item, isPreview = false }) => {
                         )}
 
                         <div className="flex flex-row gap-2.5 mt-2.5">
-                            <Custombutton disabled={!isUserLoggedIn} disableElevation size="small" onClick={() => handleUpdateClick(item._id)} label="Update" />
-                            <Custombutton disabled={!isUserLoggedIn} disableElevation size="small" onClick={() => handleUpdateRedirectionClick(item._id)} label="Update New" />
+                            <CustomButton disabled={!isUserLoggedIn} disableElevation size="small" onClick={() => handleUpdateClick(item._id)} label="Update" />
+                            <CustomButton disabled={!isUserLoggedIn} disableElevation size="small" onClick={() => handleUpdateRedirectionClick(item._id)} label="Update New" />
                         </div>
                     </div>
                 </div>
