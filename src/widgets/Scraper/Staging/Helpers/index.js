@@ -26,7 +26,7 @@ const fetchCompanyLogo = async (companyName) => {
 
 export const approveJob = async (id, overrides = {}, companyName = "") => {
     const logo = overrides.imagePath ? null : await fetchCompanyLogo(companyName);
-    const merged = { jdpage: true, ...overrides, ...(logo ? { imagePath: logo } : {}) };
+    const merged = { ...overrides, ...(logo ? { imagePath: logo } : {}), jdpage: true };
     const body = { overrides: merged };
     return scraperPost(scraperEndpoints.stagingApprove(id), body, "Approve");
 };
@@ -49,7 +49,7 @@ export const bulkApproveJobs = async (ids, jobsMap = {}) => {
             logoCache[companyName] = await fetchCompanyLogo(companyName);
         }
         const logo = logoCache[companyName];
-        perJobOverrides[id] = { jdpage: true, ...(logo ? { imagePath: logo } : {}) };
+        perJobOverrides[id] = { ...(logo ? { imagePath: logo } : {}), jdpage: true };
     }
 
     return scraperPost(

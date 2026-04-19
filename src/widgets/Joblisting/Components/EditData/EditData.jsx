@@ -37,7 +37,7 @@ const EditData = (props) => {
         aboutCompany: props.data.aboutCompany || "",
         location: props.data.location || "",
         imagePath: props.data.imagePath || "",
-        jdpage: props?.data?.jdpage || "",
+        jdpage: true,
         companytype: props?.data?.companytype || "",
         companyName: props?.data?.companyName || "",
         jdbanner: props?.data?.jdbanner || "",
