@@ -11,6 +11,7 @@ import {
     ChevronRight,
     Inbox,
     ExternalLink,
+    ImageDown,
 } from "lucide-react";
 import { Card, CardContent } from "Components/ui/card";
 import { Button } from "Components/ui/button";
@@ -32,7 +33,7 @@ import {
     DialogDescription,
     DialogFooter,
 } from "Components/ui/dialog";
-import { fetchStagingJobs, approveJob, rejectJob, bulkApproveJobs, deleteStagingJob, fetchAllPendingJobs } from "./Helpers";
+import { fetchStagingJobs, approveJob, rejectJob, bulkApproveJobs, deleteStagingJob, fetchAllPendingJobs, backfillLatestJobs } from "./Helpers";
 import { showInfoToast, showErrorToast } from "Helpers/toast";
 
 const timeAgo = (dateStr) => {
@@ -60,6 +61,10 @@ const StagingQueue = () => {
     const [actionLoading, setActionLoading] = useState(null);
     const [showApproveAllConfirm, setShowApproveAllConfirm] = useState(false);
     const [approveAllLoading, setApproveAllLoading] = useState(false);
+    const [showBackfillConfirm, setShowBackfillConfirm] = useState(false);
+    const [backfillLoading, setBackfillLoading] = useState(false);
+    const [backfillProgress, setBackfillProgress] = useState(null);
+    const [backfillLimit, setBackfillLimit] = useState(80);
 
     const totalPages = Math.ceil(totalCount / filters.size);
 
@@ -155,6 +160,28 @@ const StagingQueue = () => {
         setShowBulkConfirm(false);
     };
 
+    const handleBackfill = async () => {
+        setBackfillLoading(true);
+        setBackfillProgress({ current: 0, total: backfillLimit });
+        try {
+            const summary = await backfillLatestJobs(backfillLimit, setBackfillProgress);
+            const msg = `Backfill: ${summary.updated} updated, ${summary.skipped} skipped, ${summary.failed} failed (of ${summary.total})`;
+            showInfoToast(msg);
+            if (summary.errors?.length) {
+                summary.errors.slice(0, 5).forEach((e) =>
+                    showErrorToast(`Failed: ${e.companyName || e.id}${e.error ? ` — ${e.error}` : ""}`)
+                );
+            }
+        } catch (err) {
+            console.error("Backfill failed:", err);
+            showErrorToast("Backfill failed. See console for details.");
+        } finally {
+            setBackfillLoading(false);
+            setBackfillProgress(null);
+            setShowBackfillConfirm(false);
+        }
+    };
+
     const handleApproveAll = async () => {
         setApproveAllLoading(true);
         try {
@@ -211,11 +238,24 @@ const StagingQueue = () => {
                 <h1 className="text-2xl font-bold tracking-tight">Staging Queue</h1>
                 <div className="flex items-center gap-2">
                     <Badge variant="secondary">{totalCount} total</Badge>
+                    <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setShowBackfillConfirm(true)}
+                        disabled={backfillLoading || approveAllLoading || bulkLoading}
+                    >
+                        {backfillLoading ? (
+                            <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                        ) : (
+                            <ImageDown className="mr-1 h-4 w-4" />
+                        )}
+                        Backfill Logos
+                    </Button>
                     {totalCount > 0 && filters.status === "pending" && (
                         <Button
                             size="sm"
                             onClick={() => setShowApproveAllConfirm(true)}
-                            disabled={approveAllLoading || bulkLoading}
+                            disabled={approveAllLoading || bulkLoading || backfillLoading}
                         >
                             {approveAllLoading ? (
                                 <Loader2 className="mr-1 h-4 w-4 animate-spin" />
@@ -441,6 +481,43 @@ const StagingQueue = () => {
                                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
                             ) : null}
                             Approve Selected
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={showBackfillConfirm} onOpenChange={(open) => { if (!backfillLoading) setShowBackfillConfirm(open); }}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Backfill Company Logos</DialogTitle>
+                        <DialogDescription>
+                            Scan the latest N published jobs and, for each one missing a logo, look up the company and set <code className="font-mono text-xs">imagePath</code>, <code className="font-mono text-xs">companyId</code>, and <code className="font-mono text-xs">jdpage="true"</code>. Safe to re-run — already-complete jobs are skipped.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-2">
+                        <label className="text-sm font-medium">Jobs to scan (latest)</label>
+                        <Input
+                            type="number"
+                            min={1}
+                            max={500}
+                            value={backfillLimit}
+                            onChange={(e) => setBackfillLimit(Math.max(1, Math.min(500, Number(e.target.value) || 1)))}
+                            disabled={backfillLoading}
+                        />
+                        {backfillLoading && backfillProgress && (
+                            <p className="text-sm text-muted-foreground">
+                                Processing {backfillProgress.current} / {backfillProgress.total}
+                                {backfillProgress.companyName ? ` — ${backfillProgress.companyName}` : ""}
+                            </p>
+                        )}
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowBackfillConfirm(false)} disabled={backfillLoading}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleBackfill} disabled={backfillLoading}>
+                            {backfillLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                            Start Backfill
                         </Button>
                     </DialogFooter>
                 </DialogContent>
