@@ -4,7 +4,7 @@ import CustomButton from "../../Components/Button/CustomButton";
 import CustomDivider from "../../Components/Divider/Divider";
 
 // icons
-import { Send, MessageCircle, Search, Loader2, RefreshCw } from "lucide-react";
+import { Send, MessageCircle, Search } from "lucide-react";
 
 // shadcn
 import { Checkbox } from "Components/ui/checkbox";
@@ -13,14 +13,6 @@ import { Input } from "Components/ui/input";
 import { Card, CardContent } from "Components/ui/card";
 import { Badge } from "Components/ui/badge";
 import { Button } from "Components/ui/button";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogDescription,
-    DialogFooter,
-} from "Components/ui/dialog";
 
 // import components
 import AdminLinkCard from "./Components/AdminLinkCard/AdminLinkCard";
@@ -30,7 +22,7 @@ import CustomTextField from "../../Components/Input/Textfield";
 // helpers
 import { handleTelegramSubmitHelper } from "../../Helpers/Telegram/telegramMessage";
 import { copyWhatsAppMessage, generateInstagramCaption, generateLinkedinCaption, generateWhatsAppMessage, copyApplyLink } from "../../Helpers/JobListHelper";
-import { showErrorToast, showSuccessToast } from "../../Helpers/toast";
+import { showErrorToast } from "../../Helpers/toast";
 import { updateJobDetails } from "../Addjobs/Helpers";
 import { getJobDetailsHelper } from "../Addjobs/Helpers";
 
@@ -47,11 +39,6 @@ const JobListing = () => {
 
     // Selection state
     const [selectedJob, setSelectedJob] = useState([]);
-
-    // Backfill jdpage state
-    const [showBackfillConfirm, setShowBackfillConfirm] = useState(false);
-    const [backfillLoading, setBackfillLoading] = useState(false);
-    const [backfillProgress, setBackfillProgress] = useState({ done: 0, total: 0, failed: 0 });
 
     const context = useContext(UserContext);
 
@@ -96,36 +83,6 @@ const JobListing = () => {
                 ? prev.filter(job => job._id !== item._id)
                 : [...prev, item]
         );
-    }, []);
-
-    // Backfill jdpage="true" on the latest 80 jobs
-    const handleBackfillJdpage = useCallback(async () => {
-        setBackfillLoading(true);
-        setBackfillProgress({ done: 0, total: 0, failed: 0 });
-        try {
-            const res = await getJobDetailsHelper({ key: "filterData", value: "false" }, 1, 80);
-            const jobs = res?.data || [];
-            if (!jobs.length) {
-                showErrorToast("No jobs found to backfill");
-                return;
-            }
-            setBackfillProgress({ done: 0, total: jobs.length, failed: 0 });
-            let done = 0;
-            let failed = 0;
-            for (const job of jobs) {
-                const result = await updateJobDetails({ jdpage: true }, job._id);
-                if (result?.status === 200) done += 1;
-                else failed += 1;
-                setBackfillProgress({ done, total: jobs.length, failed });
-            }
-            showSuccessToast(`Backfill complete: ${done} updated${failed ? `, ${failed} failed` : ""}`);
-        } catch (err) {
-            showErrorToast("Backfill failed. Check console for details.");
-            console.error("Backfill jdpage failed:", err);
-        } finally {
-            setBackfillLoading(false);
-            setShowBackfillConfirm(false);
-        }
     }, []);
 
     // Memoized job expiration handler
@@ -253,26 +210,11 @@ const JobListing = () => {
                                 {jobCount} jobs available
                             </p>
                         </div>
-                        <div className="flex items-center gap-3">
-                            {selectedJob.length > 0 && (
-                                <Badge variant="secondary" className="text-sm">
-                                    {selectedJob.length} selected
-                                </Badge>
-                            )}
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => setShowBackfillConfirm(true)}
-                                disabled={backfillLoading}
-                            >
-                                {backfillLoading ? (
-                                    <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
-                                ) : (
-                                    <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
-                                )}
-                                Backfill jdpage (last 80)
-                            </Button>
-                        </div>
+                        {selectedJob.length > 0 && (
+                            <Badge variant="secondary" className="text-sm">
+                                {selectedJob.length} selected
+                            </Badge>
+                        )}
                     </div>
 
                     <Card className="mb-8 border-dashed">
@@ -328,32 +270,6 @@ const JobListing = () => {
                     </Button>
                 </>
             )}
-
-            <Dialog open={showBackfillConfirm} onOpenChange={(open) => { if (!backfillLoading) setShowBackfillConfirm(open); }}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Backfill jdpage</DialogTitle>
-                        <DialogDescription>
-                            This will set <span className="font-mono">jdpage="true"</span> on the 80 most recent jobs, fixing the JD page redirect for scraped jobs that were saved with a null/false value.
-                        </DialogDescription>
-                    </DialogHeader>
-                    {backfillLoading && backfillProgress.total > 0 && (
-                        <div className="text-sm text-muted-foreground">
-                            Updated {backfillProgress.done}/{backfillProgress.total}
-                            {backfillProgress.failed > 0 && ` — ${backfillProgress.failed} failed`}
-                        </div>
-                    )}
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setShowBackfillConfirm(false)} disabled={backfillLoading}>
-                            Cancel
-                        </Button>
-                        <Button onClick={handleBackfillJdpage} disabled={backfillLoading}>
-                            {backfillLoading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-                            Run Backfill
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
         </div>
     );
 };
