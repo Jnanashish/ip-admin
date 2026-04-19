@@ -90,6 +90,12 @@ const generateFormData = (jobdetails) => {
         "skilltags"
     ];
     fields.forEach((field) => {
+        if (field === "jdpage") {
+            const raw = jobdetails.jdpage;
+            const enabled = raw === true || raw === "true" || raw === undefined || raw === null;
+            formData.append("jdpage", enabled ? "true" : "false");
+            return;
+        }
         if (jobdetails[field] !== undefined && jobdetails[field] !== null) {
             formData.append(field, jobdetails[field]);
         }

@@ -344,7 +344,8 @@ const AddjobsComponent = () => {
             filterJobBasedonName(companyListData, companyName);
             setSavedJobId(jobData?._id);
             setJobAlreadyExist(true);
-            handleInputChange(setJobdetails, jobData);
+            const normalizedJob = { ...jobData, jdpage: jobData?.jdpage === true || jobData?.jdpage === "true" };
+            handleInputChange(setJobdetails, normalizedJob);
             handleInputChange(setCompanyDetails, jobData);
         }
     };
