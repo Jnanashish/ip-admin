@@ -12,6 +12,7 @@ function Banners() {
     const [jobdetails, setJobdetails] = useState();
     const [companyDetails, setCompanyDetails] = useState();
     const [bannerType, setBannerType] = useState("careersattech");
+    const [loading, setLoading] = useState(true);
 
     const getQueryparam = async () => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -19,19 +20,26 @@ function Banners() {
         const companyname = urlParams.get("companyname");
         const companyid = urlParams.get("companyid");
 
-        if (jobId && /^[a-f\d]{24}$/i.test(jobId)) {
-            const params = {
-                key: "id",
-                value: jobId,
-            };
+        const hasJobParam = jobId && /^[a-f\d]{24}$/i.test(jobId);
+        const hasCompanyParam = companyname || (companyid && /^[a-f\d]{24}$/i.test(companyid));
 
-            const jobdata = await getJobDetailsHelper(params);
-            !!jobdata && jobdata?.data && setJobdetails(jobdata?.data);
+        if (!hasJobParam && !hasCompanyParam) {
+            setLoading(false);
+            return;
         }
 
-        if ((companyname || (companyid && /^[a-f\d]{24}$/i.test(companyid)))) {
-            const companyData = await getCompanyDetailsHelper(companyname, companyid);
-            !!companyData && Array.isArray(companyData) && setCompanyDetails(companyData[0]);
+        try {
+            if (hasJobParam) {
+                const jobdata = await getJobDetailsHelper({ key: "id", value: jobId });
+                !!jobdata && jobdata?.data && setJobdetails(jobdata?.data);
+            }
+
+            if (hasCompanyParam) {
+                const companyData = await getCompanyDetailsHelper(companyname, companyid);
+                !!companyData && Array.isArray(companyData) && companyData[0] && setCompanyDetails(companyData[0]);
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -65,11 +73,20 @@ function Banners() {
                 ))}
             </div>
 
-            {!!jobdetails && !!companyDetails ? (
+            {loading ? (
+                <div className="flex items-center justify-center h-[60vh]">
+                    <Loader />
+                </div>
+            ) : !!jobdetails && !!companyDetails ? (
                 <Canvas bannerType={bannerType} jobdetails={jobdetails} companyDetails={companyDetails} />
             ) : (
                 <div className="flex items-center justify-center h-[60vh]">
-                    <Loader />
+                    <div className="max-w-md text-center border border-border rounded-lg p-6">
+                        <h3 className="text-lg font-semibold tracking-tight mb-2">No job selected</h3>
+                        <p className="text-sm text-muted-foreground">
+                            Open this page from a job listing, or append <span className="font-mono text-xs">?jobid=&lt;id&gt;&amp;companyname=&lt;name&gt;</span> to the URL to generate a banner.
+                        </p>
+                    </div>
                 </div>
             )}
         </div>
