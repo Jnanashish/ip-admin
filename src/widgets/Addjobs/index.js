@@ -39,7 +39,7 @@ const AddjobsComponent = () => {
     const [igbannertitle, setIgbannertitle] = useState("");
     const [showLoader, setShowLoader] = useState(false);
     const [companyLogoSize, setCompanyLogoSize] = useState(0);
-    const [companyListData, setCompanyListData] = useState(null);
+    const [companyListData, setCompanyListData] = useState([]);
     const [selectedCompany, setSelectedCompany] = useState(null);
     const [jobAlreadyExist, setJobAlreadyExist] = useState(false);
     const [savedJobId, setSavedJobId] = useState(null);
@@ -379,8 +379,9 @@ const AddjobsComponent = () => {
     // fetch list of available companies
     const getCompanyList = async () => {
         const data = await get(`${apiEndpoint.getCompanyDetails}`);
-        filterJobBasedonName(data);
-        setCompanyListData(data);
+        const list = Array.isArray(data) ? data : [];
+        filterJobBasedonName(list);
+        setCompanyListData(list);
     };
 
     // check query param for job id
