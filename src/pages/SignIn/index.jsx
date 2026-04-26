@@ -43,7 +43,7 @@ const Signin = () => {
     };
 
     if (user?.email) {
-        return <Navigate to="/addjob" />;
+        return <Navigate to="/admin/jobs" />;
     }
 
     return (

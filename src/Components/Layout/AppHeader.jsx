@@ -15,10 +15,10 @@ import {
 } from "Components/ui/breadcrumb";
 
 const routeLabels = {
-  "/addjob": "Add Job",
-  "/jobs": "Job Dashboard",
-  "/addcompany": "Add Company",
-  "/companys": "Company List",
+  "/admin/jobs": "Job Dashboard",
+  "/admin/jobs/new": "Add Job",
+  "/admin/companies": "Company List",
+  "/admin/companies/new": "Add Company",
   "/canvas": "Banners",
   "/admin/scraper": "Scraper Dashboard",
   "/admin/scraper/staging": "Staging Queue",
@@ -30,6 +30,8 @@ const routeLabels = {
 const getRouteLabel = (pathname) => {
   if (routeLabels[pathname]) return routeLabels[pathname];
   if (pathname.startsWith("/admin/scraper/staging/")) return "Job Review";
+  if (/^\/admin\/jobs\/[^/]+\/edit$/.test(pathname)) return "Edit Job";
+  if (/^\/admin\/companies\/[^/]+\/edit$/.test(pathname)) return "Edit Company";
   return "Dashboard";
 };
 
@@ -47,7 +49,7 @@ const AppHeader = () => {
           <BreadcrumbList>
             <BreadcrumbItem className="hidden md:block">
               <BreadcrumbLink asChild>
-                <Link to="/addjob">Home</Link>
+                <Link to="/admin/jobs">Home</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="hidden md:block" />

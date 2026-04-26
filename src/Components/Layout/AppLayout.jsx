@@ -45,15 +45,15 @@ const navGroups = [
   {
     label: "Jobs",
     items: [
-      { title: "Add Job", url: "/addjob", icon: PlusCircle },
-      { title: "Job Dashboard", url: "/jobs", icon: LayoutList },
+      { title: "Add Job", url: "/admin/jobs/new", icon: PlusCircle },
+      { title: "Job Dashboard", url: "/admin/jobs", icon: LayoutList },
     ],
   },
   {
     label: "Company",
     items: [
-      { title: "Add Company", url: "/addcompany", icon: Building2 },
-      { title: "Company List", url: "/companys", icon: List },
+      { title: "Add Company", url: "/admin/companies/new", icon: Building2 },
+      { title: "Company List", url: "/admin/companies", icon: List },
     ],
   },
   {
@@ -102,7 +102,7 @@ const AppLayout = () => {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton size="lg" asChild>
-                <a href="/addjob">
+                <a href="/admin/jobs">
                   <div className="flex aspect-square size-8 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
                     <LayoutList className="size-4" />
                   </div>

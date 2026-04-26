@@ -1,13 +1,8 @@
 export const apiEndpoint = {
-    // handling image
-    getImagecdnUrl: "/jd/getposterlink",
-
-    // job description
+    // job description (kept for non-admin readers + Scraper writeback; v2 owns admin writes)
     getAllJobDetails: "/jd/get",
-    deleteJob: "/jd/delete",
     updateJobDetails: "/jd/update/",
-    addJobData: "/jd/add",
-    trackApplyClick: "/jd/update/count",
+    getImagecdnUrl: "/jd/getposterlink",
 
     // analytics
     analyticsSummary: "/analytics/summary",
@@ -16,11 +11,8 @@ export const apiEndpoint = {
     analyticsTopJobs: "/analytics/top-jobs",
     analyticsJobsByCategory: "/analytics/jobs-by-category",
 
-    // company details
-    addCompanyDetails: "/companydetails/add",
+    // company details (read-only — kept for Banners; v2 owns writes)
     getCompanyDetails: "/companydetails/get",
-    updateCompanyDetails: "/companydetails/update",
-    deleteCompanyDetails: "/companydetails/delete",
 
     // Ad manager (banner ads, link ads, image-link ads)
     addAdBanner: "/sda/banner/add",
