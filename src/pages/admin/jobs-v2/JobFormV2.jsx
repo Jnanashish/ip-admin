@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-import { Trash2, ExternalLink } from "lucide-react";
+import { Trash2, ExternalLink, Image as ImageIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "Components/ui/card";
 import { Button } from "Components/ui/button";
@@ -260,6 +260,11 @@ const JobFormV2 = ({ mode = "create", jobId, initialValues }) => {
         window.open(previewUrl, "_blank", "noopener");
     };
 
+    const openBannerCreator = () => {
+        if (!jobId) return;
+        navigate(`/canvas?jobid=${encodeURIComponent(jobId)}`);
+    };
+
     const onDeleteConfirm = async () => {
         if (!jobId) return;
         setDeleting(true);
@@ -294,6 +299,16 @@ const JobFormV2 = ({ mode = "create", jobId, initialValues }) => {
                 <div className="flex flex-col items-end gap-2">
                     {mode === "edit" && (
                         <div className="flex items-center gap-2">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={openBannerCreator}
+                                title="Open the banner generator pre-filled with this job"
+                            >
+                                <ImageIcon className="h-4 w-4 mr-2" />
+                                Create banner
+                            </Button>
                             <Button
                                 type="button"
                                 variant="outline"

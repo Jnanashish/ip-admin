@@ -119,6 +119,12 @@ const JobsTable = ({ jobs, loading, onChanged }) => {
         window.open(url, "_blank", "noopener,noreferrer");
     };
 
+    const handleCreateBanner = (job) => {
+        const id = getJobId(job);
+        if (!id) return;
+        navigate(`/canvas?jobid=${encodeURIComponent(id)}`);
+    };
+
     const handleDuplicate = async (job) => {
         const id = getJobId(job);
         if (!id) return;
@@ -259,6 +265,15 @@ const JobsTable = ({ jobs, loading, onChanged }) => {
                                                           }
                                                       >
                                                           Duplicate
+                                                      </DropdownMenuItem>
+                                                      <DropdownMenuItem
+                                                          onSelect={() =>
+                                                              handleCreateBanner(
+                                                                  job
+                                                              )
+                                                          }
+                                                      >
+                                                          Create banner
                                                       </DropdownMenuItem>
                                                       <DropdownMenuSeparator />
                                                       <DropdownMenuItem
