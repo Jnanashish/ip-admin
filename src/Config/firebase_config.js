@@ -14,4 +14,15 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+
+if (typeof window !== "undefined") {
+    // eslint-disable-next-line no-console
+    console.info(
+        "[firebase] initialized projectId:",
+        firebaseConfig.projectId,
+        "authDomain:",
+        firebaseConfig.authDomain
+    );
+}
+
 export default firebaseConfig;
