@@ -9,6 +9,15 @@ import JobFormV2 from "./JobFormV2";
 import { fetchJobV2 } from "api/v2/jobs";
 import { mapJobResponseToFormValues } from "validators/v2/jobFormSchema";
 
+// Backends sometimes wrap the resource in `{ data }`, `{ job }`, or
+// `{ result }`. Treat the body as the job iff it has a recognisable job
+// field; otherwise unwrap the first matching key.
+const unwrapJob = (body) => {
+    if (!body || typeof body !== "object") return null;
+    if (body.title || body._id || body.slug) return body;
+    return body.job || body.data || body.result || null;
+};
+
 const Skeleton = () => (
     <div className="px-4 lg:px-6 pt-6 pb-10 max-w-4xl mx-auto space-y-6">
         <div className="h-8 w-40 bg-muted rounded animate-pulse" />
@@ -56,10 +65,11 @@ const EditJobV2 = () => {
         setState({ status: "loading", values: null });
         fetchJobV2(id).then((res) => {
             if (cancelled) return;
-            if (res.status === 200 && res.data) {
+            const job = unwrapJob(res.data);
+            if (res.status === 200 && job) {
                 setState({
                     status: "ready",
-                    values: mapJobResponseToFormValues(res.data),
+                    values: mapJobResponseToFormValues(job),
                 });
             } else if (res.status === 404) {
                 setState({ status: "missing", values: null });

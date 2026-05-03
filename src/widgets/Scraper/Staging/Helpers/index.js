@@ -13,7 +13,8 @@ export const fetchStagingJob = async (id) => {
 };
 
 export const approveJob = async (id, overrides = {}) => {
-    return scraperPost(scraperEndpoints.stagingApprove(id), { overrides }, "Approve");
+    const payload = { overrides: { ...overrides, status: "published" } };
+    return scraperPost(scraperEndpoints.stagingApprove(id), payload, "Approve");
 };
 
 export const rejectJob = async (id, reason = "") => {
@@ -21,9 +22,13 @@ export const rejectJob = async (id, reason = "") => {
 };
 
 export const bulkApproveJobs = async (ids, perJobOverrides = {}) => {
+    const merged = (ids || []).reduce((acc, jobId) => {
+        acc[jobId] = { ...(perJobOverrides[jobId] || {}), status: "published" };
+        return acc;
+    }, {});
     return scraperPost(
         scraperEndpoints.stagingBulkApprove,
-        { ids, perJobOverrides },
+        { ids, perJobOverrides: merged },
         "Bulk Approve"
     );
 };
