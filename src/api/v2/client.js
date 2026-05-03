@@ -4,6 +4,7 @@ const REQUEST_TIMEOUT_MS = 30000;
 const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
 const authHeader = async () => {
+    await auth.authStateReady();
     const token = await auth.currentUser?.getIdToken();
     return token ? { Authorization: `Bearer ${token}` } : {};
 };
