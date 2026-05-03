@@ -1,7 +1,5 @@
 export const apiEndpoint = {
-    // job description (kept for non-admin readers + Scraper writeback; v2 owns admin writes)
-    getAllJobDetails: "/api/jd/get",
-    updateJobDetails: "/api/jd/update/",
+    // image upload (used by ad manager for poster CDN URLs)
     getImagecdnUrl: "/api/jd/getposterlink",
 
     // analytics
@@ -10,9 +8,6 @@ export const apiEndpoint = {
     analyticsClicksOverTime: "/api/analytics/clicks-over-time",
     analyticsTopJobs: "/api/analytics/top-jobs",
     analyticsJobsByCategory: "/api/analytics/jobs-by-category",
-
-    // company details (read-only — kept for Banners; v2 owns writes)
-    getCompanyDetails: "/api/companydetails/get",
 
     // Ad manager (banner ads, link ads, image-link ads)
     addAdBanner: "/api/sda/banner/add",

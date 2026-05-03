@@ -5,8 +5,76 @@ import Loader from "../../Components/Loader";
 import { Button } from "Components/ui/button";
 import { cn } from "lib/utils";
 
-import { getCompanyDetailsHelper } from "../../Apis/Company";
-import { getJobDetailsHelper } from "../../widgets/Addjobs/Helpers";
+import { fetchJobV2 } from "api/v2/jobs";
+import { fetchCompanyV2, listCompaniesV2 } from "api/v2/companies";
+import { showInfoToast, showWarnToast } from "../../Helpers/toast";
+
+const formatExperience = (exp) => {
+    if (!exp) return "";
+    const min = exp.min ?? "";
+    const max = exp.max ?? "";
+    if (min === "" && max === "") return "";
+    if (Number(min) === 0 && (max === "" || Number(max) === 0)) return "Fresher";
+    if (min !== "" && max !== "") return `${min}-${max} years`;
+    return `${min || max} years`;
+};
+
+const formatSalary = (s) => {
+    if (!s) return "";
+    const min = s.min ?? "";
+    const max = s.max ?? "";
+    if (min === "" && max === "") return "";
+    const cur = s.currency || "";
+    if (min !== "" && max !== "") return `${cur} ${min}-${max}`.trim();
+    return `${cur} ${min || max}`.trim();
+};
+
+const formatLocation = (jobLocation = []) =>
+    jobLocation.map((l) => l?.city || l?.region || l?.country).filter(Boolean).join(", ");
+
+const adaptJobForCanvas = (apiJob) => {
+    if (!apiJob) return null;
+    const role = apiJob.title || "";
+    return {
+        _id: apiJob.id || apiJob._id,
+        title: role,
+        role,
+        companyName: apiJob.companyName || apiJob.company?.name || "",
+        link: apiJob.applyLink || "",
+        batch: Array.isArray(apiJob.batch) ? apiJob.batch.join(", ") : (apiJob.batch || ""),
+        degree: Array.isArray(apiJob.degree) ? apiJob.degree.join(", ") : (apiJob.degree || ""),
+        experience: formatExperience(apiJob.experience),
+        salary: formatSalary(apiJob.baseSalary),
+        location: formatLocation(apiJob.jobLocation),
+    };
+};
+
+const adaptCompanyForCanvas = (apiCompany) => {
+    if (!apiCompany) return null;
+    const logo = apiCompany.logo || {};
+    return {
+        ...apiCompany,
+        largeLogo: logo.banner || logo.icon || "",
+        smallLogo: logo.icon || logo.banner || "",
+    };
+};
+
+const resolveCompanyId = (apiJob, fallbackId) => {
+    if (fallbackId) return fallbackId;
+    const c = apiJob?.company;
+    if (!c) return null;
+    if (typeof c === "string") return c;
+    return c.id || c._id || null;
+};
+
+const findCompanyByName = async (name) => {
+    if (!name) return null;
+    const res = await listCompaniesV2({ search: name, limit: 1 });
+    const list = Array.isArray(res?.data)
+        ? res.data
+        : res?.data?.items || res?.data?.data || [];
+    return list[0] || null;
+};
 
 function Banners() {
     const [jobdetails, setJobdetails] = useState();
@@ -14,14 +82,14 @@ function Banners() {
     const [bannerType, setBannerType] = useState("careersattech");
     const [loading, setLoading] = useState(true);
 
-    const getQueryparam = async () => {
+    const loadFromQuery = async () => {
         const urlParams = new URLSearchParams(window.location.search);
         const jobId = urlParams.get("jobid");
-        const companyname = urlParams.get("companyname");
-        const companyid = urlParams.get("companyid");
+        const companyName = urlParams.get("companyname");
+        const companyIdParam = urlParams.get("companyid");
 
-        const hasJobParam = jobId && /^[a-f\d]{24}$/i.test(jobId);
-        const hasCompanyParam = companyname || (companyid && /^[a-f\d]{24}$/i.test(companyid));
+        const hasJobParam = !!jobId;
+        const hasCompanyParam = companyName || companyIdParam;
 
         if (!hasJobParam && !hasCompanyParam) {
             setLoading(false);
@@ -29,14 +97,32 @@ function Banners() {
         }
 
         try {
+            let apiJob = null;
             if (hasJobParam) {
-                const jobdata = await getJobDetailsHelper({ key: "id", value: jobId });
-                !!jobdata && jobdata?.data && setJobdetails(jobdata?.data);
+                const jobRes = await fetchJobV2(jobId);
+                apiJob = jobRes?.data || null;
+                if (apiJob) setJobdetails(adaptJobForCanvas(apiJob));
             }
 
-            if (hasCompanyParam) {
-                const companyData = await getCompanyDetailsHelper(companyname, companyid);
-                !!companyData && Array.isArray(companyData) && companyData[0] && setCompanyDetails(companyData[0]);
+            const companyId = resolveCompanyId(apiJob, companyIdParam);
+            let apiCompany = null;
+            if (companyId) {
+                const compRes = await fetchCompanyV2(companyId);
+                apiCompany = compRes?.data || null;
+            } else if (companyName) {
+                apiCompany = await findCompanyByName(companyName);
+            }
+
+            if (apiCompany) {
+                const adapted = adaptCompanyForCanvas(apiCompany);
+                setCompanyDetails(adapted);
+                if (adapted.largeLogo || adapted.smallLogo) {
+                    showInfoToast("Logo found in database");
+                } else {
+                    showWarnToast("Logo not found, upload manually");
+                }
+            } else if (hasCompanyParam) {
+                showWarnToast("Company not found");
             }
         } finally {
             setLoading(false);
@@ -44,7 +130,7 @@ function Banners() {
     };
 
     useEffect(() => {
-        getQueryparam();
+        loadFromQuery();
     }, []);
 
     const bannerOptions = [
@@ -84,7 +170,7 @@ function Banners() {
                     <div className="max-w-md text-center border border-border rounded-lg p-6">
                         <h3 className="text-lg font-semibold tracking-tight mb-2">No job selected</h3>
                         <p className="text-sm text-muted-foreground">
-                            Open this page from a job listing, or append <span className="font-mono text-xs">?jobid=&lt;id&gt;&amp;companyname=&lt;name&gt;</span> to the URL to generate a banner.
+                            Open this page from a job listing, or append <span className="font-mono text-xs">?jobid=&lt;id&gt;</span> to the URL to generate a banner.
                         </p>
                     </div>
                 </div>
