@@ -9,6 +9,15 @@ import CompanyFormV2 from "./CompanyFormV2";
 import { fetchCompanyV2 } from "api/v2/companies";
 import { mapCompanyResponseToFormValues } from "validators/v2/companyFormSchema";
 
+// Backends sometimes wrap the resource in `{ data }`, `{ company }`, or
+// `{ result }`. Treat the body as the company iff it has a recognisable
+// company field; otherwise unwrap the first matching key.
+const unwrapCompany = (body) => {
+    if (!body || typeof body !== "object") return null;
+    if (body.companyName || body._id || body.slug) return body;
+    return body.company || body.data || body.result || null;
+};
+
 const Skeleton = () => (
     <div className="px-4 lg:px-6 pt-6 pb-10 max-w-4xl mx-auto space-y-6">
         <div className="h-8 w-48 bg-muted rounded animate-pulse" />
@@ -61,13 +70,20 @@ const EditCompanyV2 = () => {
         setState({ status: "loading", values: null, openJobsCount: null });
         fetchCompanyV2(id).then((res) => {
             if (cancelled) return;
-            if (res.status === 200 && res.data) {
+            const company = unwrapCompany(res.data);
+            // eslint-disable-next-line no-console
+            console.log("[EditCompanyV2] fetch result", {
+                status: res.status,
+                rawData: res.data,
+                unwrapped: company,
+            });
+            if (res.status === 200 && company) {
                 setState({
                     status: "ready",
-                    values: mapCompanyResponseToFormValues(res.data),
+                    values: mapCompanyResponseToFormValues(company),
                     openJobsCount:
-                        typeof res.data?.openJobsCount === "number"
-                            ? res.data.openJobsCount
+                        typeof company.openJobsCount === "number"
+                            ? company.openJobsCount
                             : null,
                 });
             } else if (res.status === 404) {
