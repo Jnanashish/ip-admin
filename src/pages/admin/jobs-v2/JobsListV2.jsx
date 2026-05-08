@@ -1,6 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import {
+    Camera,
+    ChevronLeft,
+    ChevronRight,
+    MessageCircle,
+    Plus,
+    X,
+} from "lucide-react";
 
 import { Button } from "Components/ui/button";
 import { Card, CardContent } from "Components/ui/card";
@@ -14,9 +21,15 @@ import {
 
 import { listJobsV2 } from "api/v2/jobs";
 import { showErrorToast } from "Helpers/toast";
+import {
+    generateInstagramCaption,
+    generateWhatsAppMessage,
+} from "Helpers/JobListHelper";
 
 import JobsFilters from "./components/JobsFilters";
 import JobsTable from "./components/JobsTable";
+
+const getJobId = (job) => job?._id ?? job?.id ?? "";
 
 const PAGE_SIZE_OPTIONS = [20, 50, 100];
 const DEFAULT_PAGE_SIZE = 20;
@@ -86,6 +99,41 @@ const JobsListV2 = () => {
     const [meta, setMeta] = useState({ total: 0, pages: null });
     const [loading, setLoading] = useState(true);
     const [reloadKey, setReloadKey] = useState(0);
+    const [selectedJobs, setSelectedJobs] = useState([]);
+
+    const selectedIds = useMemo(
+        () => selectedJobs.map(getJobId).filter(Boolean),
+        [selectedJobs]
+    );
+
+    const handleToggleSelect = useCallback((id, job) => {
+        if (!id) return;
+        setSelectedJobs((prev) => {
+            const exists = prev.some((j) => getJobId(j) === id);
+            if (exists) return prev.filter((j) => getJobId(j) !== id);
+            return [...prev, job];
+        });
+    }, []);
+
+    const handleToggleSelectAll = useCallback(
+        (checked, visibleIds) => {
+            const ids = new Set(visibleIds);
+            if (checked) {
+                setSelectedJobs((prev) => {
+                    const kept = prev.filter((j) => !ids.has(getJobId(j)));
+                    const toAdd = jobs.filter((j) => ids.has(getJobId(j)));
+                    return [...kept, ...toAdd];
+                });
+            } else {
+                setSelectedJobs((prev) =>
+                    prev.filter((j) => !ids.has(getJobId(j)))
+                );
+            }
+        },
+        [jobs]
+    );
+
+    const clearSelection = useCallback(() => setSelectedJobs([]), []);
 
     useEffect(() => {
         let cancelled = false;
@@ -201,11 +249,72 @@ const JobsListV2 = () => {
                     </CardContent>
                 </Card>
             ) : (
-                <JobsTable
-                    jobs={jobs}
-                    loading={loading}
-                    onChanged={() => setReloadKey((k) => k + 1)}
-                />
+                <>
+                    {selectedJobs.length > 0 && (
+                        <Card>
+                            <CardContent className="py-3 px-4 flex items-center justify-between gap-3 flex-wrap">
+                                <span className="text-sm font-medium">
+                                    {selectedJobs.length} selected
+                                </span>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                            generateInstagramCaption(
+                                                selectedJobs
+                                            )
+                                        }
+                                    >
+                                        <Camera className="h-3.5 w-3.5 mr-1.5" />
+                                        IG caption
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                            generateWhatsAppMessage(
+                                                selectedJobs
+                                            )
+                                        }
+                                    >
+                                        <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
+                                        WhatsApp msg
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() =>
+                                            generateWhatsAppMessage(
+                                                selectedJobs,
+                                                true
+                                            )
+                                        }
+                                    >
+                                        <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
+                                        WhatsApp (site link)
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={clearSelection}
+                                    >
+                                        <X className="h-3.5 w-3.5 mr-1.5" />
+                                        Clear
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
+                    <JobsTable
+                        jobs={jobs}
+                        loading={loading}
+                        onChanged={() => setReloadKey((k) => k + 1)}
+                        selectedIds={selectedIds}
+                        onToggleSelect={handleToggleSelect}
+                        onToggleSelectAll={handleToggleSelectAll}
+                    />
+                </>
             )}
 
             <div className="flex items-center justify-between gap-3 flex-wrap">

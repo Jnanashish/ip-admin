@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Building2, MoreHorizontal } from "lucide-react";
+import { Building2, MoreHorizontal, Link as LinkIcon } from "lucide-react";
 
 import {
     Table,
@@ -13,6 +13,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "Components/ui/avatar";
 import { Skeleton } from "Components/ui/skeleton";
 import { Button } from "Components/ui/button";
+import { Checkbox } from "Components/ui/checkbox";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -37,6 +38,7 @@ import {
     showSuccessToast,
 } from "Helpers/toast";
 import { formatRelativeTime } from "Helpers/relativeTime";
+import { copyApplyLink } from "Helpers/JobListHelper";
 
 import StatusBadge from "./StatusBadge";
 
@@ -52,6 +54,7 @@ const EMPLOYMENT_TYPE_LABELS = {
 };
 
 const COLUMNS = [
+    { key: "select", label: "", className: "w-[44px]" },
     { key: "title", label: "Title", className: "min-w-[200px]" },
     { key: "company", label: "Company", className: "min-w-[180px]" },
     { key: "status", label: "Status", className: "w-[120px]" },
@@ -59,6 +62,7 @@ const COLUMNS = [
     { key: "batch", label: "Batch", className: "min-w-[100px]" },
     { key: "location", label: "Location", className: "min-w-[160px]" },
     { key: "posted", label: "Posted", className: "w-[140px]" },
+    { key: "copy", label: "", className: "w-[60px]" },
     { key: "actions", label: "", className: "w-[60px] text-right" },
 ];
 
@@ -108,10 +112,26 @@ const CompanyCell = ({ job }) => {
     );
 };
 
-const JobsTable = ({ jobs, loading, onChanged }) => {
+const JobsTable = ({
+    jobs,
+    loading,
+    onChanged,
+    selectedIds = [],
+    onToggleSelect,
+    onToggleSelectAll,
+}) => {
     const navigate = useNavigate();
     const [archiveTarget, setArchiveTarget] = useState(null);
     const [archiving, setArchiving] = useState(false);
+
+    const selectionEnabled = typeof onToggleSelect === "function";
+    const selectedSet = new Set(selectedIds);
+    const visibleIds = jobs.map(getJobId).filter(Boolean);
+    const allSelected =
+        visibleIds.length > 0 &&
+        visibleIds.every((id) => selectedSet.has(id));
+    const someSelected =
+        visibleIds.some((id) => selectedSet.has(id)) && !allSelected;
 
     const handleViewOnSite = (job) => {
         if (!job.slug) return;
@@ -172,14 +192,44 @@ const JobsTable = ({ jobs, loading, onChanged }) => {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            {COLUMNS.map((col) => (
-                                <TableHead
-                                    key={col.key}
-                                    className={col.className}
-                                >
-                                    {col.label}
-                                </TableHead>
-                            ))}
+                            {COLUMNS.map((col) => {
+                                if (col.key === "select") {
+                                    return (
+                                        <TableHead
+                                            key={col.key}
+                                            className={col.className}
+                                        >
+                                            {selectionEnabled && (
+                                                <Checkbox
+                                                    aria-label="Select all jobs on this page"
+                                                    checked={
+                                                        allSelected
+                                                            ? true
+                                                            : someSelected
+                                                              ? "indeterminate"
+                                                              : false
+                                                    }
+                                                    onCheckedChange={(checked) =>
+                                                        onToggleSelectAll &&
+                                                        onToggleSelectAll(
+                                                            !!checked,
+                                                            visibleIds
+                                                        )
+                                                    }
+                                                />
+                                            )}
+                                        </TableHead>
+                                    );
+                                }
+                                return (
+                                    <TableHead
+                                        key={col.key}
+                                        className={col.className}
+                                    >
+                                        {col.label}
+                                    </TableHead>
+                                );
+                            })}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -189,8 +239,28 @@ const JobsTable = ({ jobs, loading, onChanged }) => {
                               ))
                             : jobs.map((job) => {
                                   const id = getJobId(job);
+                                  const isSelected =
+                                      !!id && selectedSet.has(id);
                                   return (
-                                      <TableRow key={id || job.title}>
+                                      <TableRow
+                                          key={id || job.title}
+                                          data-state={
+                                              isSelected ? "selected" : undefined
+                                          }
+                                      >
+                                          <TableCell>
+                                              {selectionEnabled && (
+                                                  <Checkbox
+                                                      aria-label={`Select ${job.title || "job"}`}
+                                                      checked={isSelected}
+                                                      onCheckedChange={() =>
+                                                          id &&
+                                                          onToggleSelect(id, job)
+                                                      }
+                                                      disabled={!id}
+                                                  />
+                                              )}
+                                          </TableCell>
                                           <TableCell className="font-medium">
                                               <Link
                                                   to={`/admin/jobs/${id}/edit`}
@@ -222,6 +292,23 @@ const JobsTable = ({ jobs, loading, onChanged }) => {
                                                       job.createdAt
                                               )}
                                           </TableCell>
+                                          <TableCell>
+                                              <Button
+                                                  variant="ghost"
+                                                  size="icon"
+                                                  aria-label="Copy apply link"
+                                                  className="h-8 w-8"
+                                                  disabled={
+                                                      !job.applyLink &&
+                                                      !job.link
+                                                  }
+                                                  onClick={() =>
+                                                      copyApplyLink(job)
+                                                  }
+                                              >
+                                                  <LinkIcon className="h-4 w-4" />
+                                              </Button>
+                                          </TableCell>
                                           <TableCell className="text-right">
                                               <DropdownMenu>
                                                   <DropdownMenuTrigger asChild>
@@ -243,6 +330,19 @@ const JobsTable = ({ jobs, loading, onChanged }) => {
                                                           }
                                                       >
                                                           Edit
+                                                      </DropdownMenuItem>
+                                                      <DropdownMenuItem
+                                                          disabled={
+                                                              !job.applyLink &&
+                                                              !job.link
+                                                          }
+                                                          onSelect={() =>
+                                                              copyApplyLink(
+                                                                  job
+                                                              )
+                                                          }
+                                                      >
+                                                          Copy apply link
                                                       </DropdownMenuItem>
                                                       {job.status ===
                                                           "published" &&
