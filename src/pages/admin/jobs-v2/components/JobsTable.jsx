@@ -96,9 +96,19 @@ const SkeletonRow = () => (
     </TableRow>
 );
 
-const CompanyCell = ({ job }) => {
-    const logo = job?.company?.logo?.icon || job?.companyLogo || "";
-    const name = job?.companyName || job?.company?.name || "—";
+const CompanyCell = ({ job, companyMap }) => {
+    const companyId =
+        typeof job?.company === "object"
+            ? job.company?._id || job.company?.id || ""
+            : job?.company || "";
+    const mapped = companyId && companyMap ? companyMap[companyId] : null;
+    const logo =
+        mapped?.logo?.icon ||
+        job?.company?.logo?.icon ||
+        job?.companyLogo ||
+        "";
+    const name =
+        job?.companyName || job?.company?.name || mapped?.name || "—";
     return (
         <div className="flex items-center gap-2 min-w-0">
             <Avatar className="h-6 w-6">
@@ -119,6 +129,7 @@ const JobsTable = ({
     selectedIds = [],
     onToggleSelect,
     onToggleSelectAll,
+    companyMap = {},
 }) => {
     const navigate = useNavigate();
     const [archiveTarget, setArchiveTarget] = useState(null);
@@ -270,7 +281,10 @@ const JobsTable = ({
                                               </Link>
                                           </TableCell>
                                           <TableCell>
-                                              <CompanyCell job={job} />
+                                              <CompanyCell
+                                                  job={job}
+                                                  companyMap={companyMap}
+                                              />
                                           </TableCell>
                                           <TableCell>
                                               <StatusBadge status={job.status} />

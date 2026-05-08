@@ -20,6 +20,7 @@ import {
 } from "Components/ui/select";
 
 import { listJobsV2 } from "api/v2/jobs";
+import { listCompaniesV2 } from "api/v2/companies";
 import { showErrorToast } from "Helpers/toast";
 import {
     generateInstagramCaption,
@@ -100,6 +101,29 @@ const JobsListV2 = () => {
     const [loading, setLoading] = useState(true);
     const [reloadKey, setReloadKey] = useState(0);
     const [selectedJobs, setSelectedJobs] = useState([]);
+    const [companyMap, setCompanyMap] = useState({});
+
+    useEffect(() => {
+        let cancelled = false;
+        listCompaniesV2({ limit: 1000 }).then((res) => {
+            if (cancelled || res.status !== 200) return;
+            const list = Array.isArray(res.data)
+                ? res.data
+                : res.data?.items ||
+                  res.data?.data ||
+                  res.data?.companies ||
+                  [];
+            const map = {};
+            list.forEach((c) => {
+                const id = c?._id || c?.id;
+                if (id) map[id] = c;
+            });
+            setCompanyMap(map);
+        });
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
     const selectedIds = useMemo(
         () => selectedJobs.map(getJobId).filter(Boolean),
@@ -313,6 +337,7 @@ const JobsListV2 = () => {
                         selectedIds={selectedIds}
                         onToggleSelect={handleToggleSelect}
                         onToggleSelectAll={handleToggleSelectAll}
+                        companyMap={companyMap}
                     />
                 </>
             )}
