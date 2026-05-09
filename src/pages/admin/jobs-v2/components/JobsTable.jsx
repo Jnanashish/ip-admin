@@ -57,7 +57,7 @@ const COLUMNS = [
     { key: "select", label: "", className: "w-[44px]" },
     { key: "title", label: "Title", className: "min-w-[200px]" },
     { key: "company", label: "Company", className: "min-w-[180px]" },
-    { key: "status", label: "Status", className: "w-[120px]" },
+    { key: "status", label: "Status", className: "w-[60px]" },
     { key: "employmentType", label: "Employment", className: "min-w-[140px]" },
     { key: "batch", label: "Batch", className: "min-w-[100px]" },
     { key: "location", label: "Location", className: "min-w-[160px]" },
@@ -104,7 +104,9 @@ const CompanyCell = ({ job, companyMap }) => {
     const mapped = companyId && companyMap ? companyMap[companyId] : null;
     const logo =
         mapped?.logo?.icon ||
+        mapped?.logo?.banner ||
         job?.company?.logo?.icon ||
+        job?.company?.logo?.banner ||
         job?.companyLogo ||
         "";
     const name =

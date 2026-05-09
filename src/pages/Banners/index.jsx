@@ -32,6 +32,31 @@ const formatSalary = (s) => {
 const formatLocation = (jobLocation = []) =>
     jobLocation.map((l) => l?.city || l?.region || l?.country).filter(Boolean).join(", ");
 
+const looksLikeJob = (v) =>
+    !!v &&
+    typeof v === "object" &&
+    (v.title || v._id || v.id || v.slug || v.companyName);
+
+const unwrapJob = (body) => {
+    if (!body || typeof body !== "object") return null;
+    if (looksLikeJob(body)) return body;
+    const candidates = [body.job, body.data, body.result];
+    for (const c of candidates) {
+        if (looksLikeJob(c)) return c;
+        if (c && typeof c === "object") {
+            const inner = c.job || c.data || c.result;
+            if (looksLikeJob(inner)) return inner;
+        }
+    }
+    return null;
+};
+
+const unwrapCompany = (body) => {
+    if (!body || typeof body !== "object") return null;
+    if (body.companyName || body._id || body.slug) return body;
+    return body.company || body.data || body.result || null;
+};
+
 const adaptJobForCanvas = (apiJob) => {
     if (!apiJob) return null;
     const role = apiJob.title || "";
@@ -100,9 +125,18 @@ function Banners() {
             let apiJob = null;
             if (hasJobParam) {
                 const jobRes = await fetchJobV2(jobId);
-                if (jobRes?.status === 200 && jobRes?.data) {
-                    apiJob = jobRes.data;
-                    setJobdetails(adaptJobForCanvas(apiJob));
+                if (jobRes?.status === 200) {
+                    apiJob = unwrapJob(jobRes.data);
+                    if (apiJob) {
+                        setJobdetails(adaptJobForCanvas(apiJob));
+                    } else {
+                        // eslint-disable-next-line no-console
+                        console.error(
+                            "[Banners] 200 OK but job response shape unrecognised:",
+                            jobRes.data
+                        );
+                        showErrorToast("Job loaded but response shape was unexpected");
+                    }
                 } else {
                     showErrorToast(
                         (typeof jobRes?.error === "string"
@@ -117,7 +151,7 @@ function Banners() {
             let apiCompany = null;
             if (companyId) {
                 const compRes = await fetchCompanyV2(companyId);
-                apiCompany = compRes?.status === 200 ? compRes?.data || null : null;
+                apiCompany = compRes?.status === 200 ? unwrapCompany(compRes?.data) : null;
             }
             if (!apiCompany && nameForLookup) {
                 apiCompany = await findCompanyByName(nameForLookup);
