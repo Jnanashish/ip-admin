@@ -26,7 +26,7 @@ const CareersAtTechBanner = (props) => {
 
     useEffect(() => {
         const title = !!igbannertitle ? igbannertitle : role;
-        const formettedTitle = title?.length < 30 ? `${title}` : title;
+        const formettedTitle = `is Hiring ${title || ""}`.trim();
         setBannerTitle(formettedTitle);
     }, [igbannertitle, role]);
 
@@ -36,7 +36,7 @@ const CareersAtTechBanner = (props) => {
                 <div className={styles.upper}>
                     <div className={styles.canvas_header}>
                         <p contentEditable="true" className={styles.weblink}>
-                            Visit <span>careersat.tech</span>
+                            Visit :<span> careersat.tech</span>
                         </p>
                         <p contentEditable="true" className={styles.logoText}>
                             careers@<span>tech</span>
@@ -94,7 +94,7 @@ const CareersAtTechBanner = (props) => {
                         <img src={telegram} alt="telegram-logo" />
                         <img src={linkedin} alt="linkedin-logo" />
                         <p contentEditable="true">
-                            Follow <span>@carrersattech</span> to get regular Job updates.
+                            Follow <span>@careersattech</span> to get regular Job updates.
                         </p>
                     </div>
                 </div>

@@ -40,7 +40,7 @@ function LinkedinBanner(props) {
                 <img src={telegram} alt="telegram-logo" />
                 <img src={linkedin} alt="linkedin-logo" />
                 <p contentEditable="true">
-                    Follow <span>@carrersattech</span> to get regular Job updates.
+                    Follow <span>@careersattech</span> to get regular Job updates.
                 </p>
             </div>
         </div>

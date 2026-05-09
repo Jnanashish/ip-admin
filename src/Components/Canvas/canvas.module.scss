@@ -7,7 +7,8 @@ $gridBoxSize: 30px;
 
 .canvas {
     background-color: $canvasBgColor;
-    font-family: "Geist Sans", sans-serif;
+    // font-family: "Geist Sans", sans-serif;
+    font-family: "Inter", sans-serif;
     max-width: 100%;
     width: 1080px;
     // height: 1080px;
@@ -41,7 +42,7 @@ $gridBoxSize: 30px;
         font-weight: 600;
 
         span {
-            font-weight: 700;
+            font-weight: 600;
             color: #0050ff;
         }
 

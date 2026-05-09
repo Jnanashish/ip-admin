@@ -26,7 +26,7 @@ function Carousel(props) {
 
     useEffect(() => {
         const title = !!igbannertitle ? igbannertitle : role;
-        const formettedTitle = title?.length < 30 ? `is hiring ${title}` : title;
+        const formettedTitle = `is Hiring ${title || ""}`.trim();
         setBannerTitle(formettedTitle);
     }, [igbannertitle, role]);
 
@@ -54,7 +54,7 @@ function Carousel(props) {
                         <img src={instagram} alt="instagram-logo" />
                         <img src={telegram} alt="telegram-logo" />
                         <img src={linkedin} alt="linkedin-logo" />
-                        <span>@carrersattech</span>
+                        <span>@careersattech</span>
                     </span>
                     <span className={styles.carousel_footer_swiper}>
                         <p>Swipe  ⬅️</p>
@@ -87,7 +87,7 @@ function Carousel(props) {
                         <img src={instagram} alt="instagram-logo" />
                         <img src={telegram} alt="telegram-logo" />
                         <img src={linkedin} alt="linkedin-logo" />
-                        <span>@carrersattech</span>
+                        <span>@careersattech</span>
                     </span>
                     <span className={styles.carousel_footer_swiper}>
                         <p>Swipe ⬅️</p>
