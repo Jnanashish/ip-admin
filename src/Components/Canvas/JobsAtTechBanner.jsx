@@ -52,22 +52,22 @@ const JobsAtTechBanner = (props) => {
 
             <div className={styles.lower}>
                 <div className={`${styles.canvas_details} ${styles.jobsattechcanvas_details}`}>
-                    {degree !== "N" && (
+                    {degree && degree !== "N" && (
                         <p>
                             <span className={styles.tag}>Degree</span> : <span contentEditable="true">{degree}</span>
                         </p>
                     )}
-                    {batch !== "N" && (
+                    {batch && batch !== "N" && (
                         <p>
                             <span className={styles.tag}>Batch</span> : <span contentEditable="true">{batch}</span>
                         </p>
                     )}
-                    {experience !== "N" && (
+                    {experience && experience !== "N" && (
                         <p>
                             <span className={styles.tag}>Experience</span> : <span contentEditable="true">{experience}</span>
                         </p>
                     )}
-                    {salary !== "N" && salary !== "₹0LPA" && (
+                    {salary && salary !== "N" && salary !== "₹0LPA" && (
                         <p>
                             <span className={styles.tag}>Salary</span> : <span contentEditable="true">{salary}</span>
                         </p>

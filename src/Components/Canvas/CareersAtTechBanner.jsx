@@ -56,17 +56,17 @@ const CareersAtTechBanner = (props) => {
 
                 <div className={styles.lower}>
                     <div className={styles.canvas_details}>
-                        {degree !== "N" && (
+                        {degree && degree !== "N" && (
                             <p contentEditable="true">
                                 <span className={styles.tag}>Degree</span> : <span>{degree}</span>
                             </p>
                         )}
-                        {batch !== "N" && (
+                        {batch && batch !== "N" && (
                             <p contentEditable="true">
                                 <span className={styles.tag}>Batch</span> : <span>{batch}</span>
                             </p>
                         )}
-                        {experience !== "N" && (
+                        {experience && experience !== "N" && (
                             <p contentEditable="true">
                                 <span className={styles.tag}>Experience</span> : <span>{experience}</span>
                             </p>
@@ -76,7 +76,7 @@ const CareersAtTechBanner = (props) => {
                                 <span className={styles.tag}>Salary</span> : <span>{salary}</span>
                             </p>
                         )}
-                        {location !== "N" && (
+                        {location && location !== "N" && (
                             <p contentEditable="true">
                                 <span className={styles.tag}>Location</span> : <span contentEditable="true">{location}</span>
                             </p>
