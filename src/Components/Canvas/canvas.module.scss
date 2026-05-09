@@ -42,7 +42,7 @@ $gridBoxSize: 30px;
         font-weight: 600;
 
         span {
-            font-weight: 600;
+            font-weight: 700;
             color: #0050ff;
         }
 
@@ -175,6 +175,7 @@ $gridBoxSize: 30px;
 
 // linkedin banner
 .linkedinbanner {
+    font-family: "Inter", sans-serif;
     background-image: linear-gradient(0deg, #EBF5FF, #FFFFFF);
     height: 440px;
     width: 700px;

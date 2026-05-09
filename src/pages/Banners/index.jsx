@@ -19,14 +19,27 @@ const formatExperience = (exp) => {
     return `${min || max} years`;
 };
 
+const formatAmount = (n) => {
+    const num = Number(n);
+    if (!Number.isFinite(num) || num === 0) return "";
+    const trim = (v) => (v % 1 === 0 ? v.toString() : v.toFixed(1).replace(/\.0$/, ""));
+    if (num >= 100000) return `${trim(num / 100000)}LPA`;
+    if (num >= 1000) return `${trim(num / 1000)}k`;
+    return num.toString();
+};
+
 const formatSalary = (s) => {
     if (!s) return "";
     const min = s.min ?? "";
     const max = s.max ?? "";
     if (min === "" && max === "") return "";
-    const cur = s.currency || "";
-    if (min !== "" && max !== "") return `${cur} ${min}-${max}`.trim();
-    return `${cur} ${min || max}`.trim();
+    const cur = (s.currency || "").toUpperCase();
+    const symbol = cur === "INR" ? "₹" : cur === "USD" ? "$" : cur === "EUR" ? "€" : (s.currency ? `${s.currency} ` : "");
+    const fmt = (v) => (v !== "" ? `${symbol}${formatAmount(v)}` : "");
+    const minStr = fmt(min);
+    const maxStr = fmt(max);
+    if (minStr && maxStr) return `${minStr} - ${maxStr}`;
+    return minStr || maxStr;
 };
 
 const formatLocation = (jobLocation = []) =>

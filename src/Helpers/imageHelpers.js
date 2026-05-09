@@ -87,11 +87,45 @@ export const generateLinkfromImage = async (event, compressImage = true) => {
 
 // -------------------------------------------------------------------------------------
 
+const captureElementAtNativeSize = async (element) => {
+    if (document.fonts && document.fonts.ready) {
+        await document.fonts.ready;
+    }
+
+    const prevMaxWidth = element.style.maxWidth;
+    const prevTransform = element.style.transform;
+    element.style.maxWidth = "none";
+    element.style.transform = "none";
+
+    const width = element.scrollWidth;
+    const height = element.scrollHeight;
+
+    try {
+        return await htmlToImage.toJpeg(element, {
+            width,
+            height,
+            canvasWidth: width,
+            canvasHeight: height,
+            pixelRatio: 2,
+            quality: 0.95,
+            cacheBust: true,
+            style: {
+                maxWidth: "none",
+                transform: "none",
+                transformOrigin: "top left",
+            },
+        });
+    } finally {
+        element.style.maxWidth = prevMaxWidth;
+        element.style.transform = prevTransform;
+    }
+};
+
 export const downloadImagefromCanvasHelper = async (fileName, canvasId, generatelink = true) => {
     const element = document.getElementById(canvasId);
 
     try {
-        const dataUrl = await htmlToImage.toJpeg(element);
+        const dataUrl = await captureElementAtNativeSize(element);
         const link = document.createElement("a");
 
         link.href = dataUrl;
