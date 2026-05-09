@@ -22,13 +22,11 @@ import {
 import { listJobsV2 } from "api/v2/jobs";
 import { listCompaniesV2 } from "api/v2/companies";
 import { showErrorToast } from "Helpers/toast";
-import {
-    generateInstagramCaption,
-    generateWhatsAppMessage,
-} from "Helpers/JobListHelper";
+import { generateWhatsAppMessage } from "Helpers/JobListHelper";
 
 import JobsFilters from "./components/JobsFilters";
 import JobsTable from "./components/JobsTable";
+import CaptionGeneratorSheet from "./components/CaptionGeneratorSheet";
 
 const getJobId = (job) => job?._id ?? job?.id ?? "";
 
@@ -102,6 +100,7 @@ const JobsListV2 = () => {
     const [reloadKey, setReloadKey] = useState(0);
     const [selectedJobs, setSelectedJobs] = useState([]);
     const [companyMap, setCompanyMap] = useState({});
+    const [captionSheetOpen, setCaptionSheetOpen] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -285,9 +284,7 @@ const JobsListV2 = () => {
                                         variant="outline"
                                         size="sm"
                                         onClick={() =>
-                                            generateInstagramCaption(
-                                                selectedJobs
-                                            )
+                                            setCaptionSheetOpen(true)
                                         }
                                     >
                                         <Camera className="h-3.5 w-3.5 mr-1.5" />
@@ -338,6 +335,11 @@ const JobsListV2 = () => {
                         onToggleSelect={handleToggleSelect}
                         onToggleSelectAll={handleToggleSelectAll}
                         companyMap={companyMap}
+                    />
+                    <CaptionGeneratorSheet
+                        open={captionSheetOpen}
+                        onOpenChange={setCaptionSheetOpen}
+                        jobs={selectedJobs}
                     />
                 </>
             )}

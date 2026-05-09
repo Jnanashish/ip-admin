@@ -4,6 +4,25 @@ import { translate } from "../textTransform";
 
 import { hashtags, linkedinHashtags } from "./staticdata";
 
+export { buildCaption } from "./captionBuilder";
+export {
+    deriveInsights,
+    pickTemplate,
+    pickCodeword,
+    detectRole,
+    detectTech,
+    detectCity,
+    companyKey,
+} from "./jobInsights";
+export {
+    captionTemplates,
+    hashtagsByTemplate,
+    TEMPLATE_OPTIONS,
+    CODEWORDS,
+    CLOSING_QUESTIONS,
+} from "./captionTemplates";
+export { hashtagBank, avoidList, comboPacks } from "./hashtagBank";
+
 const FRONTEND_URL =
     process.env.REACT_APP_FRONTEND_URL || "https://careersat.tech";
 

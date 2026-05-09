@@ -7,7 +7,7 @@ import { cn } from "lib/utils";
 
 import { fetchJobV2 } from "api/v2/jobs";
 import { fetchCompanyV2, listCompaniesV2 } from "api/v2/companies";
-import { showInfoToast, showWarnToast } from "../../Helpers/toast";
+import { showErrorToast, showInfoToast, showWarnToast } from "../../Helpers/toast";
 
 const formatExperience = (exp) => {
     if (!exp) return "";
@@ -72,7 +72,7 @@ const findCompanyByName = async (name) => {
     const res = await listCompaniesV2({ search: name, limit: 1 });
     const list = Array.isArray(res?.data)
         ? res.data
-        : res?.data?.items || res?.data?.data || [];
+        : res?.data?.companies || res?.data?.items || res?.data?.data || [];
     return list[0] || null;
 };
 
@@ -100,17 +100,27 @@ function Banners() {
             let apiJob = null;
             if (hasJobParam) {
                 const jobRes = await fetchJobV2(jobId);
-                apiJob = jobRes?.data || null;
-                if (apiJob) setJobdetails(adaptJobForCanvas(apiJob));
+                if (jobRes?.status === 200 && jobRes?.data) {
+                    apiJob = jobRes.data;
+                    setJobdetails(adaptJobForCanvas(apiJob));
+                } else {
+                    showErrorToast(
+                        (typeof jobRes?.error === "string"
+                            ? jobRes.error
+                            : jobRes?.error?.message) || "Failed to load job"
+                    );
+                }
             }
 
             const companyId = resolveCompanyId(apiJob, companyIdParam);
+            const nameForLookup = companyName || apiJob?.companyName || apiJob?.company?.name;
             let apiCompany = null;
             if (companyId) {
                 const compRes = await fetchCompanyV2(companyId);
-                apiCompany = compRes?.data || null;
-            } else if (companyName) {
-                apiCompany = await findCompanyByName(companyName);
+                apiCompany = compRes?.status === 200 ? compRes?.data || null : null;
+            }
+            if (!apiCompany && nameForLookup) {
+                apiCompany = await findCompanyByName(nameForLookup);
             }
 
             if (apiCompany) {
@@ -121,8 +131,8 @@ function Banners() {
                 } else {
                     showWarnToast("Logo not found, upload manually");
                 }
-            } else if (hasCompanyParam) {
-                showWarnToast("Company not found");
+            } else if (apiJob || hasCompanyParam) {
+                showWarnToast("Company not found, upload logo manually");
             }
         } finally {
             setLoading(false);
@@ -163,8 +173,8 @@ function Banners() {
                 <div className="flex items-center justify-center h-[60vh]">
                     <Loader />
                 </div>
-            ) : !!jobdetails && !!companyDetails ? (
-                <Canvas bannerType={bannerType} jobdetails={jobdetails} companyDetails={companyDetails} />
+            ) : jobdetails ? (
+                <Canvas bannerType={bannerType} jobdetails={jobdetails} companyDetails={companyDetails || {}} />
             ) : (
                 <div className="flex items-center justify-center h-[60vh]">
                     <div className="max-w-md text-center border border-border rounded-lg p-6">
