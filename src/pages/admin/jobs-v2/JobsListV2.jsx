@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
     Camera,
@@ -20,7 +20,7 @@ import {
 } from "Components/ui/select";
 
 import { listJobsV2 } from "api/v2/jobs";
-import { listCompaniesV2 } from "api/v2/companies";
+import { fetchCompanyV2 } from "api/v2/companies";
 import { showErrorToast } from "Helpers/toast";
 import { generateWhatsAppMessage } from "Helpers/JobListHelper";
 
@@ -100,29 +100,45 @@ const JobsListV2 = () => {
     const [reloadKey, setReloadKey] = useState(0);
     const [selectedJobs, setSelectedJobs] = useState([]);
     const [companyMap, setCompanyMap] = useState({});
+    const companyMapRef = useRef(companyMap);
+    useEffect(() => {
+        companyMapRef.current = companyMap;
+    }, [companyMap]);
     const [captionSheetOpen, setCaptionSheetOpen] = useState(false);
 
     useEffect(() => {
-        let cancelled = false;
-        listCompaniesV2({ limit: 1000 }).then((res) => {
-            if (cancelled || res.status !== 200) return;
-            const list = Array.isArray(res.data)
-                ? res.data
-                : res.data?.items ||
-                  res.data?.data ||
-                  res.data?.companies ||
-                  [];
-            const map = {};
-            list.forEach((c) => {
-                const id = c?._id || c?.id;
-                if (id) map[id] = c;
-            });
-            setCompanyMap(map);
+        if (!jobs.length) return;
+        const ids = new Set();
+        jobs.forEach((j) => {
+            const id =
+                typeof j?.company === "object"
+                    ? j.company?._id || j.company?.id
+                    : j?.company;
+            if (id) ids.add(id);
         });
+        const missing = [...ids].filter((id) => !companyMapRef.current[id]);
+        if (missing.length === 0) return;
+
+        let cancelled = false;
+        Promise.all(missing.map((id) => fetchCompanyV2(id))).then(
+            (results) => {
+                if (cancelled) return;
+                setCompanyMap((prev) => {
+                    const next = { ...prev };
+                    results.forEach((res, i) => {
+                        if (res.status === 200 && res.data) {
+                            const data = res.data?.data || res.data;
+                            next[missing[i]] = data;
+                        }
+                    });
+                    return next;
+                });
+            }
+        );
         return () => {
             cancelled = true;
         };
-    }, []);
+    }, [jobs]);
 
     const selectedIds = useMemo(
         () => selectedJobs.map(getJobId).filter(Boolean),

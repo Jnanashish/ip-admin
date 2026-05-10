@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useController } from "react-hook-form";
 import { Check, ChevronDown, Loader2, Search } from "lucide-react";
 import { Button } from "Components/ui/button";
@@ -15,6 +15,15 @@ import { listCompaniesV2 } from "api/v2/companies";
 
 const getId = (c) => c?.id || c?._id || "";
 const getName = (c) => c?.name || c?.companyName || "";
+
+const parseCompaniesList = (data) => {
+    if (Array.isArray(data)) return data;
+    if (!data || typeof data !== "object") return [];
+    if (Array.isArray(data.companies)) return data.companies;
+    if (Array.isArray(data.items)) return data.items;
+    if (Array.isArray(data.data)) return data.data;
+    return [];
+};
 
 const CompanyAsyncSelect = ({
     name,
@@ -34,18 +43,24 @@ const CompanyAsyncSelect = ({
     const [loading, setLoading] = useState(false);
     const [loaded, setLoaded] = useState(false);
     const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const selectedCacheRef = useRef(null);
 
     useEffect(() => {
-        if (!open || loaded) return;
+        const t = setTimeout(() => setDebouncedSearch(search.trim()), 300);
+        return () => clearTimeout(t);
+    }, [search]);
+
+    useEffect(() => {
+        if (!open) return;
         let cancelled = false;
         setLoading(true);
-        listCompaniesV2({ limit: 100 })
+        const query = { limit: 50 };
+        if (debouncedSearch) query.search = debouncedSearch;
+        listCompaniesV2(query)
             .then((res) => {
                 if (cancelled) return;
-                const list = Array.isArray(res?.data)
-                    ? res.data
-                    : res?.data?.items || res?.data?.data || [];
-                setCompanies(list);
+                setCompanies(parseCompaniesList(res?.data));
                 setLoaded(true);
             })
             .finally(() => {
@@ -54,18 +69,21 @@ const CompanyAsyncSelect = ({
         return () => {
             cancelled = true;
         };
-    }, [open, loaded]);
+    }, [open, debouncedSearch]);
 
-    const filtered = useMemo(() => {
-        if (!search) return companies;
-        const q = search.toLowerCase();
-        return companies.filter((c) => getName(c).toLowerCase().includes(q));
-    }, [search, companies]);
+    const filtered = companies;
 
-    const selected = useMemo(
-        () => companies.find((c) => getId(c) === field.value),
-        [companies, field.value]
-    );
+    const selected = useMemo(() => {
+        const match = companies.find((c) => getId(c) === field.value);
+        if (match) {
+            selectedCacheRef.current = match;
+            return match;
+        }
+        if (selectedCacheRef.current && getId(selectedCacheRef.current) === field.value) {
+            return selectedCacheRef.current;
+        }
+        return null;
+    }, [companies, field.value]);
 
     const selectedLabel = selected ? getName(selected) : "Select a company";
 
@@ -121,7 +139,11 @@ const CompanyAsyncSelect = ({
                             </div>
                         ) : filtered.length === 0 ? (
                             <div className="px-3 py-4 text-sm text-muted-foreground">
-                                {loaded ? "No companies found." : "Type to search."}
+                                {loaded
+                                    ? debouncedSearch
+                                        ? `No companies match “${debouncedSearch}”.`
+                                        : "No companies found."
+                                    : "Loading…"}
                             </div>
                         ) : (
                             <ul className="py-1">

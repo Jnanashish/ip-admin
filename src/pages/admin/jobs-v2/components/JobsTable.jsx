@@ -110,7 +110,11 @@ const CompanyCell = ({ job, companyMap }) => {
         job?.companyLogo ||
         "";
     const name =
-        job?.companyName || job?.company?.name || mapped?.name || "—";
+        job?.companyName ||
+        mapped?.companyName ||
+        job?.company?.companyName ||
+        job?.company?.name ||
+        "—";
     return (
         <div className="flex items-center gap-2 min-w-0">
             <Avatar className="h-6 w-6">

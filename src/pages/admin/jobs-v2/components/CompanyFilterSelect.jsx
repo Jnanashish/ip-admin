@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronDown, Loader2, Search } from "lucide-react";
 import { Button } from "Components/ui/button";
 import { Input } from "Components/ui/input";
@@ -14,24 +14,39 @@ import { listCompaniesV2 } from "api/v2/companies";
 const getId = (c) => c?.id || c?._id || "";
 const getName = (c) => c?.name || c?.companyName || "";
 
+const parseCompaniesList = (data) => {
+    if (Array.isArray(data)) return data;
+    if (!data || typeof data !== "object") return [];
+    if (Array.isArray(data.companies)) return data.companies;
+    if (Array.isArray(data.items)) return data.items;
+    if (Array.isArray(data.data)) return data.data;
+    return [];
+};
+
 const CompanyFilterSelect = ({ value, onChange }) => {
     const [open, setOpen] = useState(false);
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(false);
     const [loaded, setLoaded] = useState(false);
     const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+    const selectedCacheRef = useRef(null);
 
     useEffect(() => {
-        if (!open || loaded) return;
+        const t = setTimeout(() => setDebouncedSearch(search.trim()), 300);
+        return () => clearTimeout(t);
+    }, [search]);
+
+    useEffect(() => {
+        if (!open) return;
         let cancelled = false;
         setLoading(true);
-        listCompaniesV2({ limit: 100 })
+        const query = { limit: 50 };
+        if (debouncedSearch) query.search = debouncedSearch;
+        listCompaniesV2(query)
             .then((res) => {
                 if (cancelled) return;
-                const list = Array.isArray(res?.data)
-                    ? res.data
-                    : res?.data?.items || res?.data?.data || [];
-                setCompanies(list);
+                setCompanies(parseCompaniesList(res?.data));
                 setLoaded(true);
             })
             .finally(() => {
@@ -40,18 +55,21 @@ const CompanyFilterSelect = ({ value, onChange }) => {
         return () => {
             cancelled = true;
         };
-    }, [open, loaded]);
+    }, [open, debouncedSearch]);
 
-    const filtered = useMemo(() => {
-        if (!search) return companies;
-        const q = search.toLowerCase();
-        return companies.filter((c) => getName(c).toLowerCase().includes(q));
-    }, [search, companies]);
+    const filtered = companies;
 
-    const selected = useMemo(
-        () => companies.find((c) => getId(c) === value),
-        [companies, value]
-    );
+    const selected = useMemo(() => {
+        const match = companies.find((c) => getId(c) === value);
+        if (match) {
+            selectedCacheRef.current = match;
+            return match;
+        }
+        if (selectedCacheRef.current && getId(selectedCacheRef.current) === value) {
+            return selectedCacheRef.current;
+        }
+        return null;
+    }, [companies, value]);
 
     const triggerLabel =
         !value || value === "all"
@@ -119,7 +137,9 @@ const CompanyFilterSelect = ({ value, onChange }) => {
                         )}
                         {!loading && filtered.length === 0 && loaded && (
                             <li className="px-3 py-4 text-sm text-muted-foreground">
-                                No companies found.
+                                {debouncedSearch
+                                    ? `No companies match “${debouncedSearch}”.`
+                                    : "No companies found."}
                             </li>
                         )}
                         {!loading &&
