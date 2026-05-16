@@ -26,7 +26,7 @@ const CareersAtTechBanner = (props) => {
 
     useEffect(() => {
         const title = !!igbannertitle ? igbannertitle : role;
-        const formettedTitle = `is Hiring ${title || ""}`.trim();
+        const formettedTitle = `${title || ""}`.trim();
         setBannerTitle(formettedTitle);
     }, [igbannertitle, role]);
 
@@ -38,9 +38,9 @@ const CareersAtTechBanner = (props) => {
                         <p contentEditable="true" className={styles.weblink}>
                             Visit :<span> careersat.tech</span>
                         </p>
-                        <p contentEditable="true" className={styles.logoText}>
-                            careers@<span>tech</span>
-                        </p>
+                        {/* <p contentEditable="true" className={styles.logoText}>
+                            careers <span className={styles.at}>at</span><span> tech</span>
+                        </p> */}
                     </div>
 
                     <div className={styles.companylogo}>
@@ -49,7 +49,7 @@ const CareersAtTechBanner = (props) => {
                     </div>
                     <div className={styles.canvas_title}>
                         <h1 contentEditable="true" style={customStyle.fontStyle}>
-                            {bannerTitle}
+                            is hiring <span>{bannerTitle}</span>
                         </h1>
                     </div>
                 </div>
