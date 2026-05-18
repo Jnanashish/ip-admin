@@ -28,6 +28,7 @@ const BlogEditor = lazy(() => import("./pages/Blogs/BlogEditor"));
 const BlogPreview = lazy(() => import("./pages/Blogs/BlogPreview"));
 const JobsListV2 = lazy(() => import("./pages/admin/jobs-v2/JobsListV2"));
 const CreateJobV2 = lazy(() => import("./pages/admin/jobs-v2/CreateJobV2"));
+const QuickPostJob = lazy(() => import("./pages/admin/jobs-v2/QuickPostJob"));
 const EditJobV2 = lazy(() => import("./pages/admin/jobs-v2/EditJobV2"));
 const CompaniesListV2 = lazy(() => import("./pages/admin/companies-v2/CompaniesListV2"));
 const CreateCompanyV2 = lazy(() => import("./pages/admin/companies-v2/CreateCompanyV2"));
@@ -68,6 +69,7 @@ function AppRoutes() {
                         <Route path="/blogs/:id/preview" element={<BlogPreview />} />
                         <Route path="/admin/jobs" element={<JobsListV2 />} />
                         <Route path="/admin/jobs/new" element={<CreateJobV2 />} />
+                        <Route path="/admin/jobs/quick-post" element={<QuickPostJob />} />
                         <Route path="/admin/jobs/:id/edit" element={<EditJobV2 />} />
                         <Route path="/admin/companies" element={<CompaniesListV2 />} />
                         <Route path="/admin/companies/new" element={<CreateCompanyV2 />} />

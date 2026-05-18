@@ -5,8 +5,9 @@ import { defaultJobValues } from "validators/v2/jobFormSchema";
 
 const CreateJobV2 = () => {
     const { state } = useLocation();
-    const initialValues = state?.duplicateFrom
-        ? { ...defaultJobValues(), ...state.duplicateFrom }
+    const seed = state?.duplicateFrom || state?.prefill || null;
+    const initialValues = seed
+        ? { ...defaultJobValues(), ...seed }
         : defaultJobValues();
     return <JobFormV2 mode="create" initialValues={initialValues} />;
 };

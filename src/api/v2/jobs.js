@@ -15,3 +15,6 @@ export const deleteJobV2 = (id) =>
 
 export const listJobsV2 = (query = {}) =>
     apiV2.get(`${BASE}${buildQueryString(query)}`);
+
+export const scrapeAndPostJob = (applyLink) =>
+    apiV2.post("/api/admin/jobs/scrape-and-post", { applyLink });

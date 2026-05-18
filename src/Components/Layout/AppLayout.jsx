@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   PlusCircle,
+  Sparkles,
   LayoutList,
   Building2,
   List,
@@ -45,6 +46,7 @@ const navGroups = [
   {
     label: "Jobs",
     items: [
+      { title: "Quick Post", url: "/admin/jobs/quick-post", icon: Sparkles },
       { title: "Add Job", url: "/admin/jobs/new", icon: PlusCircle },
       { title: "Job Dashboard", url: "/admin/jobs", icon: LayoutList },
     ],

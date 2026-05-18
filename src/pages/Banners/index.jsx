@@ -201,7 +201,7 @@ function Banners() {
 
     return (
         <div>
-            <h2 className="text-2xl font-bold tracking-tight mb-2">Banner Generator ef</h2>
+            <h2 className="text-2xl font-bold tracking-tight mb-2">Banner Generator</h2>
             <p className="text-sm text-muted-foreground mb-6">Generate social media banners for job postings</p>
 
             <div className="flex flex-wrap gap-1 mb-8 p-1 bg-muted rounded-lg w-fit">
