@@ -13,6 +13,7 @@ import { Button } from "Components/ui/button";
 import { Badge } from "Components/ui/badge";
 import { scraperGet } from "Helpers/scraperRequest";
 import { scraperEndpoints } from "Helpers/scraperApiEndpoints";
+import { getSourceLabel } from "Helpers/scraperSources";
 
 const formatDuration = (ms) => {
     if (!ms) return "—";
@@ -33,7 +34,7 @@ const AdapterRow = ({ adapter }) => {
             {isFailed && <XCircle className="h-4 w-4 text-red-500 mt-0.5 shrink-0" />}
             {!isSuccess && !isFailed && <AlertTriangle className="h-4 w-4 text-yellow-500 mt-0.5 shrink-0" />}
             <div className="flex-1">
-                <span className="font-medium">{adapter.name}</span>
+                <span className="font-medium">{getSourceLabel(adapter.name)}</span>
                 <span className="text-muted-foreground">
                     {" — "}
                     {adapter.jobsIngested ?? 0} new, {adapter.jobsSkipped ?? 0} skipped, {adapter.errors?.length ?? 0} errors
@@ -44,6 +45,20 @@ const AdapterRow = ({ adapter }) => {
                         {adapter.errors.map((err, i) => (
                             <p key={i} className="text-xs text-red-500">{typeof err === "string" ? err : JSON.stringify(err)}</p>
                         ))}
+                    </div>
+                )}
+                {adapter.stats?.dropCounts && Object.keys(adapter.stats.dropCounts).length > 0 && (
+                    <div className="mt-1.5 pl-3 border-l-2 border-muted">
+                        <p className="text-xs font-medium text-muted-foreground mb-0.5">
+                            {getSourceLabel(adapter.name)} drop reasons
+                        </p>
+                        <div className="space-y-0.5">
+                            {Object.entries(adapter.stats.dropCounts).map(([reason, count]) => (
+                                <p key={reason} className="text-xs text-muted-foreground">
+                                    {reason}: {count}
+                                </p>
+                            ))}
+                        </div>
                     </div>
                 )}
             </div>

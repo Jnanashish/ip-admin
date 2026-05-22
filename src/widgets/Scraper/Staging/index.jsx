@@ -34,6 +34,7 @@ import {
 } from "Components/ui/dialog";
 import { fetchStagingJobs, approveJob, rejectJob, bulkApproveJobs, deleteStagingJob, fetchAllPendingJobs } from "./Helpers";
 import { showInfoToast, showErrorToast } from "Helpers/toast";
+import { SCRAPER_SOURCES, getSourceLabel } from "Helpers/scraperSources";
 
 const timeAgo = (dateStr) => {
     const now = new Date();
@@ -232,6 +233,21 @@ const StagingQueue = () => {
                     </SelectContent>
                 </Select>
 
+                <Select
+                    value={filters.source || "all"}
+                    onValueChange={(v) => handleFilterChange("source", v === "all" ? "" : v)}
+                >
+                    <SelectTrigger className="w-full sm:w-[180px]">
+                        <SelectValue placeholder="Source" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All sources</SelectItem>
+                        {SCRAPER_SOURCES.map((s) => (
+                            <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
@@ -332,7 +348,7 @@ const StagingQueue = () => {
                                             </div>
                                         </div>
                                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-2 text-xs text-muted-foreground">
-                                            <span>Source: {job.source}</span>
+                                            <span>Source: {getSourceLabel(job.source)}</span>
                                             <span>Scraped: {timeAgo(job.scrapedAt)}</span>
                                             <span>AI: {job.aiProvider}</span>
                                             {job.sourceUrl && (

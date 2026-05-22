@@ -22,6 +22,7 @@ import {
 import { scraperGet, scraperPost } from "Helpers/scraperRequest";
 import { scraperEndpoints } from "Helpers/scraperApiEndpoints";
 import { showSuccessToast } from "Helpers/toast";
+import { getSourceLabel } from "Helpers/scraperSources";
 
 const statusConfig = {
     success: { color: "border-green-200 bg-green-50 dark:bg-green-950/20 dark:border-green-900", icon: CheckCircle2, iconColor: "text-green-500", label: "Healthy" },
@@ -37,7 +38,7 @@ const AdapterCard = ({ adapter, onTest, onStop, isStopping }) => {
         <Card className={`border transition-all duration-200 hover:shadow-md ${config.color}`}>
             <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
-                    <CardTitle className="text-base">{adapter.name}</CardTitle>
+                    <CardTitle className="text-base">{getSourceLabel(adapter.name)}</CardTitle>
                     <Badge
                         variant={adapter.status === "success" ? "default" : adapter.status === "failed" ? "destructive" : "secondary"}
                     >

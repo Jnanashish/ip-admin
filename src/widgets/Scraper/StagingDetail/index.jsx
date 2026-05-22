@@ -34,6 +34,7 @@ import {
 import { fetchStagingJob, approveJob, rejectJob, deleteStagingJob } from "../Staging/Helpers";
 import { useKeyboardShortcuts } from "hooks/useKeyboardShortcuts";
 import { showInfoToast } from "Helpers/toast";
+import { getSourceLabel } from "Helpers/scraperSources";
 
 const HtmlPreview = ({ html, title }) => {
     if (!html) return null;
@@ -227,7 +228,7 @@ const StagingDetail = () => {
                     <div>
                         <h1 className="text-xl font-bold">{overrides.title || jd.title || "Untitled"}</h1>
                         <p className="text-sm text-muted-foreground">
-                            {job.source} • {job.aiProvider} • {new Date(job.scrapedAt).toLocaleString()}
+                            {getSourceLabel(job.source)} • {job.aiProvider} • {new Date(job.scrapedAt).toLocaleString()}
                         </p>
                     </div>
                 </div>
@@ -402,7 +403,7 @@ const StagingDetail = () => {
                                 </div>
                                 <div>
                                     <Label className="text-xs text-muted-foreground">Source</Label>
-                                    <p>{job.source}</p>
+                                    <p>{getSourceLabel(job.source)}</p>
                                 </div>
                                 <div>
                                     <Label className="text-xs text-muted-foreground">AI Provider</Label>

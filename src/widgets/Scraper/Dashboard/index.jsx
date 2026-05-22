@@ -27,6 +27,7 @@ import { scraperGet, scraperPost } from "Helpers/scraperRequest";
 import { scraperEndpoints } from "Helpers/scraperApiEndpoints";
 import { usePolling } from "hooks/usePolling";
 import { showInfoToast, showSuccessToast } from "Helpers/toast";
+import { getSourceLabel } from "Helpers/scraperSources";
 
 const StatsCard = ({ title, value, icon: Icon, description }) => (
     <Card className="hover:shadow-md transition-shadow">
@@ -214,7 +215,7 @@ const ScraperDashboard = () => {
                         <Card key={adapter.name} className="transition-all hover:shadow-md">
                             <CardContent className="pt-4">
                                 <div className="flex items-center justify-between mb-2">
-                                    <span className="font-medium">{adapter.name}</span>
+                                    <span className="font-medium">{getSourceLabel(adapter.name)}</span>
                                     <Badge
                                         variant={
                                             adapter.status === "success"
