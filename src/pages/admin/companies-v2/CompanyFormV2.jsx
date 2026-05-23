@@ -51,6 +51,7 @@ import {
     showErrorToast,
     showInfoToast,
 } from "Helpers/toast";
+import { generateLinkfromImage } from "Helpers/imageHelpers";
 import { cn } from "lib/utils";
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -117,6 +118,8 @@ const CompanyFormV2 = ({
     const [deleteBlock, setDeleteBlock] = useState(null);
     const [bannerError, setBannerError] = useState(false);
     const [iconError, setIconError] = useState(false);
+    const [uploadingIcon, setUploadingIcon] = useState(false);
+    const [uploadingBanner, setUploadingBanner] = useState(false);
 
     const {
         control,
@@ -140,6 +143,36 @@ const CompanyFormV2 = ({
 
     const shortLen = watched.description?.short?.length || 0;
     const shortOver = shortLen > 160;
+
+    const uploadImage = async (event, field, { compress }) => {
+        const setUploading =
+            field === "logo.icon" ? setUploadingIcon : setUploadingBanner;
+        const setPreviewError =
+            field === "logo.icon" ? setIconError : setBannerError;
+        const file = event.target.files?.[0];
+        if (!file) return;
+        if (!compress && file.size > 1024 * 1024) {
+            showErrorToast("Image size should be less than 1MB");
+            event.target.value = "";
+            return;
+        }
+        try {
+            setUploading(true);
+            const url = await generateLinkfromImage(event, compress);
+            if (url) {
+                setValue(field, url, { shouldDirty: true });
+                setPreviewError(false);
+                showSuccessToast("Image uploaded");
+            }
+        } catch (err) {
+            // eslint-disable-next-line no-console
+            console.error("[CompanyFormV2] image upload failed", err);
+            showErrorToast("Image upload failed");
+        } finally {
+            setUploading(false);
+            event.target.value = "";
+        }
+    };
 
     const fetchLogo = () => {
         try {
@@ -168,8 +201,9 @@ const CompanyFormV2 = ({
         return text.length > 155 ? text.slice(0, 155) : text;
     };
 
-    const submit = handleSubmit(async (values) => {
-        setSubmitting(true);
+    const submit = handleSubmit(
+        async (values) => {
+            setSubmitting(true);
         try {
             if (mode === "create") {
                 const res = await createCompanyV2(values);
@@ -238,7 +272,25 @@ const CompanyFormV2 = ({
         } finally {
             setSubmitting(false);
         }
-    });
+        },
+        (formErrors) => {
+            // eslint-disable-next-line no-console
+            console.warn("[CompanyFormV2] validation blocked submit", formErrors);
+            const firstMessage = (() => {
+                const stack = [formErrors];
+                while (stack.length) {
+                    const node = stack.shift();
+                    if (!node || typeof node !== "object") continue;
+                    if (typeof node.message === "string" && node.message) {
+                        return node.message;
+                    }
+                    Object.values(node).forEach((v) => stack.push(v));
+                }
+                return null;
+            })();
+            showErrorToast(firstMessage || "Fix validation errors before saving");
+        }
+    );
 
     const onDeleteConfirm = async () => {
         if (!companyId) return;
@@ -362,6 +414,28 @@ const CompanyFormV2 = ({
                                     Auto-fetch from website
                                 </Button>
                             </div>
+                            <div className="flex items-center gap-2">
+                                <input
+                                    id="logo.icon.file"
+                                    type="file"
+                                    accept=".jpeg,.jpg,.png,.webp,.gif"
+                                    onChange={(e) =>
+                                        uploadImage(e, "logo.icon", {
+                                            compress: true,
+                                        })
+                                    }
+                                    disabled={uploadingIcon}
+                                    className="text-xs file:mr-2 file:px-3 file:py-1.5 file:rounded-md file:border file:border-border file:bg-background file:text-sm file:cursor-pointer file:hover:bg-accent"
+                                />
+                                {uploadingIcon && (
+                                    <span className="text-xs text-muted-foreground">
+                                        Uploading…
+                                    </span>
+                                )}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                Upload an image to auto-fill the URL (max 50kb, compressed to ~10kb).
+                            </p>
                             {iconValid && !iconError && (
                                 <img
                                     src={watched.logo.icon}
@@ -386,6 +460,28 @@ const CompanyFormV2 = ({
                                 })}
                                 placeholder="https://..."
                             />
+                            <div className="flex items-center gap-2">
+                                <input
+                                    id="logo.banner.file"
+                                    type="file"
+                                    accept=".jpeg,.jpg,.png,.webp,.gif"
+                                    onChange={(e) =>
+                                        uploadImage(e, "logo.banner", {
+                                            compress: false,
+                                        })
+                                    }
+                                    disabled={uploadingBanner}
+                                    className="text-xs file:mr-2 file:px-3 file:py-1.5 file:rounded-md file:border file:border-border file:bg-background file:text-sm file:cursor-pointer file:hover:bg-accent"
+                                />
+                                {uploadingBanner && (
+                                    <span className="text-xs text-muted-foreground">
+                                        Uploading…
+                                    </span>
+                                )}
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                                Upload an image to auto-fill the URL (max 1MB).
+                            </p>
                             {bannerValid && !bannerError && (
                                 <img
                                     src={watched.logo.banner}

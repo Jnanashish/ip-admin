@@ -119,13 +119,14 @@ const seoSchema = z.object({
 
 export const companyFormSchema = z
     .object({
-        companyName: z.string().trim().min(1, "Company name is required"),
+        companyName: optionalString,
         slug: z
             .string()
             .trim()
-            .min(1, "Slug is required")
-            .regex(
-                SLUG_REGEX,
+            .optional()
+            .or(z.literal(""))
+            .refine(
+                (v) => !v || SLUG_REGEX.test(v),
                 "Use lowercase letters, numbers, and hyphens only (no leading/trailing/double hyphens)"
             ),
 
@@ -175,16 +176,6 @@ export const companyFormSchema = z
         }),
     })
     .superRefine((v, ctx) => {
-        if (v.sponsorship?.tier && v.sponsorship.tier !== "none") {
-            if (!v.sponsorship.activeUntil) {
-                ctx.addIssue({
-                    path: ["sponsorship", "activeUntil"],
-                    code: "custom",
-                    message: "Active-until date is required for paid sponsorship",
-                });
-            }
-        }
-
         const checkRating = (key) => {
             const raw = v.ratings?.[key];
             if (raw === "" || raw === undefined || raw === null) return;
