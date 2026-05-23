@@ -321,6 +321,23 @@ const StagingQueue = () => {
                                                 <Button
                                                     size="sm"
                                                     variant="outline"
+                                                    className="h-8"
+                                                    onClick={() =>
+                                                        window.open(
+                                                            jd.link,
+                                                            "_blank",
+                                                            "noopener,noreferrer"
+                                                        )
+                                                    }
+                                                    disabled={!jd.link}
+                                                    aria-label="Open apply link"
+                                                    title="Open apply link"
+                                                >
+                                                    <ExternalLink className="h-3.5 w-3.5" />
+                                                </Button>
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
                                                     className="h-8 text-green-600 hover:text-green-700 hover:bg-green-50"
                                                     onClick={() => handleQuickApprove(job._id)}
                                                     disabled={isLoading}

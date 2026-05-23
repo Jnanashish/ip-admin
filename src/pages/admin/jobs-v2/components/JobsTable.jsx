@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Building2, MoreHorizontal, Link as LinkIcon } from "lucide-react";
+import { Building2, MoreHorizontal, Info } from "lucide-react";
 
 import {
     Table,
@@ -29,6 +29,12 @@ import {
     DialogHeader,
     DialogTitle,
 } from "Components/ui/dialog";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "Components/ui/tooltip";
 
 import { fetchJobV2, deleteJobV2 } from "api/v2/jobs";
 import { mapJobResponseToFormValues } from "validators/v2/jobFormSchema";
@@ -59,10 +65,8 @@ const COLUMNS = [
     { key: "company", label: "Company", className: "min-w-[180px]" },
     { key: "status", label: "Status", className: "w-[60px]" },
     { key: "employmentType", label: "Employment", className: "min-w-[140px]" },
-    { key: "batch", label: "Batch", className: "min-w-[100px]" },
-    { key: "location", label: "Location", className: "min-w-[160px]" },
     { key: "posted", label: "Posted", className: "w-[140px]" },
-    { key: "copy", label: "", className: "w-[60px]" },
+    { key: "info", label: "", className: "w-[60px]" },
     { key: "actions", label: "", className: "w-[60px] text-right" },
 ];
 
@@ -300,12 +304,6 @@ const JobsTable = ({
                                                   job.employmentType
                                               )}
                                           </TableCell>
-                                          <TableCell className="text-sm">
-                                              {formatBatch(job.batch)}
-                                          </TableCell>
-                                          <TableCell className="text-sm">
-                                              {formatLocation(job.jobLocation)}
-                                          </TableCell>
                                           <TableCell className="text-sm text-muted-foreground">
                                               {formatRelativeTime(
                                                   job.datePosted ||
@@ -313,21 +311,45 @@ const JobsTable = ({
                                               )}
                                           </TableCell>
                                           <TableCell>
-                                              <Button
-                                                  variant="ghost"
-                                                  size="icon"
-                                                  aria-label="Copy apply link"
-                                                  className="h-8 w-8"
-                                                  disabled={
-                                                      !job.applyLink &&
-                                                      !job.link
-                                                  }
-                                                  onClick={() =>
-                                                      copyApplyLink(job)
-                                                  }
+                                              <TooltipProvider
+                                                  delayDuration={100}
                                               >
-                                                  <LinkIcon className="h-4 w-4" />
-                                              </Button>
+                                                  <Tooltip>
+                                                      <TooltipTrigger asChild>
+                                                          <Button
+                                                              variant="ghost"
+                                                              size="icon"
+                                                              aria-label="Job details"
+                                                              className="h-8 w-8"
+                                                          >
+                                                              <Info className="h-4 w-4" />
+                                                          </Button>
+                                                      </TooltipTrigger>
+                                                      <TooltipContent
+                                                          side="left"
+                                                          className="max-w-xs"
+                                                      >
+                                                          <div className="space-y-1.5">
+                                                              <div>
+                                                                  <span className="font-medium">
+                                                                      Batch:
+                                                                  </span>{" "}
+                                                                  {formatBatch(
+                                                                      job.batch
+                                                                  )}
+                                                              </div>
+                                                              <div>
+                                                                  <span className="font-medium">
+                                                                      Location:
+                                                                  </span>{" "}
+                                                                  {formatLocation(
+                                                                      job.jobLocation
+                                                                  )}
+                                                              </div>
+                                                          </div>
+                                                      </TooltipContent>
+                                                  </Tooltip>
+                                              </TooltipProvider>
                                           </TableCell>
                                           <TableCell className="text-right">
                                               <DropdownMenu>
