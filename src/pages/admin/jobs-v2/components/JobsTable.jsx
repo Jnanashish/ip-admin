@@ -139,6 +139,7 @@ const JobsTable = ({
     selectedIds = [],
     onToggleSelect,
     onToggleSelectAll,
+    onSelectJob,
     companyMap = {},
 }) => {
     const navigate = useNavigate();
@@ -164,6 +165,14 @@ const JobsTable = ({
         const id = getJobId(job);
         if (!id) return;
         navigate(`/canvas?jobid=${encodeURIComponent(id)}`);
+    };
+
+    const handleBanner = (job) => {
+        const id = getJobId(job);
+        if (!id) return;
+        if (typeof onSelectJob === "function") onSelectJob(id, job);
+        const url = `/canvas?jobid=${encodeURIComponent(id)}`;
+        window.open(url, "_blank", "noopener,noreferrer");
     };
 
     const handleDuplicate = async (job) => {
@@ -416,6 +425,15 @@ const JobsTable = ({
                                                           }
                                                       >
                                                           Create banner
+                                                      </DropdownMenuItem>
+                                                      <DropdownMenuItem
+                                                          onSelect={() =>
+                                                              handleBanner(
+                                                                  job
+                                                              )
+                                                          }
+                                                      >
+                                                          Banner
                                                       </DropdownMenuItem>
                                                       <DropdownMenuSeparator />
                                                       <DropdownMenuItem

@@ -20,6 +20,15 @@ const DEFAULT_CLOSING = {
     spotlight: "Which team would you join? Drop the role number 👇",
 };
 
+// Instagram allows only 5 hashtags per post.
+const MAX_HASHTAGS = 5;
+
+// De-dupe + cap a whitespace-separated hashtag string to MAX_HASHTAGS.
+const capHashtags = (str) =>
+    Array.from(new Set(str.split(/\s+/).filter(Boolean)))
+        .slice(0, MAX_HASHTAGS)
+        .join(" ");
+
 const pickHashtagsString = (insights, templateKey) => {
     const techTags = (hashtagBank.techStack[insights.role] ||
         hashtagBank.techStack.generic).slice(0, 4);
@@ -39,7 +48,7 @@ const pickHashtagsString = (insights, templateKey) => {
     const mapper =
         hashtagsByTemplate[templateKey] || hashtagsByTemplate.default;
     const tags = mapper({ techTags, companyTag, locationTag, insights });
-    return Array.from(new Set(tags)).join(" ");
+    return capHashtags(Array.from(new Set(tags)).join(" "));
 };
 
 const replaceCodeword = (template, codeword) => {
@@ -70,7 +79,7 @@ export const buildCaption = ({
         codeword || pickCodeword(insights, finalTemplateKey);
     const hashtags =
         typeof customHashtags === "string" && customHashtags.trim()
-            ? customHashtags.trim()
+            ? capHashtags(customHashtags.trim())
             : pickHashtagsString(insights, finalTemplateKey);
 
     const baseTemplate =

@@ -58,12 +58,12 @@ const CareersAtTechBanner = (props) => {
                     <div className={styles.canvas_details}>
                         {degree && degree !== "N" && (
                             <p contentEditable="true">
-                                <span className={styles.tag}>Degree</span> : <span>{degree}</span>
+                                <span className={styles.tag}>Degree</span> : <span>{String(degree).split(",").map((s) => s.trim()).join(" - ")}</span>
                             </p>
                         )}
                         {batch && batch !== "N" && (
                             <p contentEditable="true">
-                                <span className={styles.tag}>Batch</span> : <span>{batch}</span>
+                                <span className={styles.tag}>Batch</span> : <span>{String(batch).split(",").map((s) => s.trim()).join(" - ")}</span>
                             </p>
                         )}
                         {experience && experience !== "N" && (

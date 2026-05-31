@@ -30,6 +30,18 @@ import CaptionGeneratorSheet from "./components/CaptionGeneratorSheet";
 
 const getJobId = (job) => job?._id ?? job?.id ?? "";
 
+const SELECTED_JOBS_STORAGE_KEY = "selectedBannerJobs";
+
+const readSelectedJobsFromStorage = () => {
+    try {
+        const raw = sessionStorage.getItem(SELECTED_JOBS_STORAGE_KEY);
+        const parsed = raw ? JSON.parse(raw) : [];
+        return Array.isArray(parsed) ? parsed : [];
+    } catch {
+        return [];
+    }
+};
+
 const PAGE_SIZE_OPTIONS = [20, 50, 100];
 const DEFAULT_PAGE_SIZE = 20;
 
@@ -98,7 +110,7 @@ const JobsListV2 = () => {
     const [meta, setMeta] = useState({ total: 0, pages: null });
     const [loading, setLoading] = useState(true);
     const [reloadKey, setReloadKey] = useState(0);
-    const [selectedJobs, setSelectedJobs] = useState([]);
+    const [selectedJobs, setSelectedJobs] = useState(readSelectedJobsFromStorage);
     const [companyMap, setCompanyMap] = useState({});
     const companyMapRef = useRef(companyMap);
     useEffect(() => {
@@ -144,6 +156,25 @@ const JobsListV2 = () => {
         () => selectedJobs.map(getJobId).filter(Boolean),
         [selectedJobs]
     );
+
+    useEffect(() => {
+        try {
+            sessionStorage.setItem(
+                SELECTED_JOBS_STORAGE_KEY,
+                JSON.stringify(selectedJobs)
+            );
+        } catch {
+            /* sessionStorage unavailable / quota — ignore */
+        }
+    }, [selectedJobs]);
+
+    const handleSelectJob = useCallback((id, job) => {
+        if (!id) return;
+        setSelectedJobs((prev) => {
+            if (prev.some((j) => getJobId(j) === id)) return prev;
+            return [...prev, job];
+        });
+    }, []);
 
     const handleToggleSelect = useCallback((id, job) => {
         if (!id) return;
@@ -350,6 +381,7 @@ const JobsListV2 = () => {
                         selectedIds={selectedIds}
                         onToggleSelect={handleToggleSelect}
                         onToggleSelectAll={handleToggleSelectAll}
+                        onSelectJob={handleSelectJob}
                         companyMap={companyMap}
                     />
                     <CaptionGeneratorSheet
