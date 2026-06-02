@@ -1,6 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Building2, MoreHorizontal, Info } from "lucide-react";
+import {
+    Building2,
+    MoreHorizontal,
+    Info,
+    ExternalLink,
+    Image as ImageIcon,
+} from "lucide-react";
 
 import {
     Table,
@@ -67,10 +73,12 @@ const COLUMNS = [
     { key: "employmentType", label: "Employment", className: "min-w-[140px]" },
     { key: "posted", label: "Posted", className: "w-[140px]" },
     { key: "info", label: "", className: "w-[60px]" },
-    { key: "actions", label: "", className: "w-[60px] text-right" },
+    { key: "actions", label: "", className: "w-[120px] text-right" },
 ];
 
 const getJobId = (job) => job?._id ?? job?.id ?? "";
+
+const getApplyLink = (job) => job?.applyLink || job?.link || "";
 
 const formatEmploymentTypes = (types) => {
     if (!Array.isArray(types) || types.length === 0) return "—";
@@ -173,6 +181,16 @@ const JobsTable = ({
         if (typeof onSelectJob === "function") onSelectJob(id, job);
         const url = `/canvas?jobid=${encodeURIComponent(id)}`;
         window.open(url, "_blank", "noopener,noreferrer");
+    };
+
+    const handleOpenApply = (job) => {
+        const url = getApplyLink(job);
+        if (!url) {
+            showInfoToast("No apply link for this job");
+            return;
+        }
+        const href = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+        window.open(href, "_blank", "noopener,noreferrer");
     };
 
     const handleDuplicate = async (job) => {
@@ -361,93 +379,135 @@ const JobsTable = ({
                                               </TooltipProvider>
                                           </TableCell>
                                           <TableCell className="text-right">
-                                              <DropdownMenu>
-                                                  <DropdownMenuTrigger asChild>
-                                                      <Button
-                                                          variant="ghost"
-                                                          size="icon"
-                                                          aria-label="Job actions"
-                                                          className="h-8 w-8"
-                                                      >
-                                                          <MoreHorizontal className="h-4 w-4" />
-                                                      </Button>
-                                                  </DropdownMenuTrigger>
-                                                  <DropdownMenuContent align="end">
-                                                      <DropdownMenuItem
-                                                          onSelect={() =>
-                                                              navigate(
-                                                                  `/admin/jobs/${id}/edit`
-                                                              )
-                                                          }
-                                                      >
-                                                          Edit
-                                                      </DropdownMenuItem>
-                                                      <DropdownMenuItem
-                                                          disabled={
-                                                              !job.applyLink &&
-                                                              !job.link
-                                                          }
-                                                          onSelect={() =>
-                                                              copyApplyLink(
-                                                                  job
-                                                              )
-                                                          }
-                                                      >
-                                                          Copy apply link
-                                                      </DropdownMenuItem>
-                                                      {job.status ===
-                                                          "published" &&
-                                                          job.slug && (
-                                                              <DropdownMenuItem
-                                                                  onSelect={() =>
-                                                                      handleViewOnSite(
+                                              <div className="flex items-center justify-end gap-0.5">
+                                                  <TooltipProvider
+                                                      delayDuration={100}
+                                                  >
+                                                      <Tooltip>
+                                                          <TooltipTrigger asChild>
+                                                              <Button
+                                                                  variant="ghost"
+                                                                  size="icon"
+                                                                  aria-label="Open apply link"
+                                                                  className="h-8 w-8"
+                                                                  disabled={
+                                                                      !getApplyLink(
+                                                                          job
+                                                                      )
+                                                                  }
+                                                                  onClick={() =>
+                                                                      handleOpenApply(
                                                                           job
                                                                       )
                                                                   }
                                                               >
-                                                                  View on site
-                                                              </DropdownMenuItem>
-                                                          )}
-                                                      <DropdownMenuItem
-                                                          onSelect={() =>
-                                                              handleDuplicate(
-                                                                  job
-                                                              )
-                                                          }
-                                                      >
-                                                          Duplicate
-                                                      </DropdownMenuItem>
-                                                      <DropdownMenuItem
-                                                          onSelect={() =>
-                                                              handleCreateBanner(
-                                                                  job
-                                                              )
-                                                          }
-                                                      >
-                                                          Create banner
-                                                      </DropdownMenuItem>
-                                                      <DropdownMenuItem
-                                                          onSelect={() =>
-                                                              handleBanner(
-                                                                  job
-                                                              )
-                                                          }
-                                                      >
-                                                          Banner
-                                                      </DropdownMenuItem>
-                                                      <DropdownMenuSeparator />
-                                                      <DropdownMenuItem
-                                                          className="text-destructive focus:text-destructive"
-                                                          onSelect={() =>
-                                                              setArchiveTarget(
-                                                                  job
-                                                              )
-                                                          }
-                                                      >
-                                                          Archive
-                                                      </DropdownMenuItem>
-                                                  </DropdownMenuContent>
-                                              </DropdownMenu>
+                                                                  <ExternalLink className="h-4 w-4" />
+                                                              </Button>
+                                                          </TooltipTrigger>
+                                                          <TooltipContent side="top">
+                                                              Open apply link
+                                                          </TooltipContent>
+                                                      </Tooltip>
+                                                      <Tooltip>
+                                                          <TooltipTrigger asChild>
+                                                              <Button
+                                                                  variant="ghost"
+                                                                  size="icon"
+                                                                  aria-label="Banner"
+                                                                  className="h-8 w-8"
+                                                                  onClick={() =>
+                                                                      handleBanner(
+                                                                          job
+                                                                      )
+                                                                  }
+                                                              >
+                                                                  <ImageIcon className="h-4 w-4" />
+                                                              </Button>
+                                                          </TooltipTrigger>
+                                                          <TooltipContent side="top">
+                                                              Banner
+                                                          </TooltipContent>
+                                                      </Tooltip>
+                                                  </TooltipProvider>
+                                                  <DropdownMenu>
+                                                      <DropdownMenuTrigger asChild>
+                                                          <Button
+                                                              variant="ghost"
+                                                              size="icon"
+                                                              aria-label="Job actions"
+                                                              className="h-8 w-8"
+                                                          >
+                                                              <MoreHorizontal className="h-4 w-4" />
+                                                          </Button>
+                                                      </DropdownMenuTrigger>
+                                                      <DropdownMenuContent align="end">
+                                                          <DropdownMenuItem
+                                                              onSelect={() =>
+                                                                  navigate(
+                                                                      `/admin/jobs/${id}/edit`
+                                                                  )
+                                                              }
+                                                          >
+                                                              Edit
+                                                          </DropdownMenuItem>
+                                                          <DropdownMenuItem
+                                                              disabled={
+                                                                  !job.applyLink &&
+                                                                  !job.link
+                                                              }
+                                                              onSelect={() =>
+                                                                  copyApplyLink(
+                                                                      job
+                                                                  )
+                                                              }
+                                                          >
+                                                              Copy apply link
+                                                          </DropdownMenuItem>
+                                                          {job.status ===
+                                                              "published" &&
+                                                              job.slug && (
+                                                                  <DropdownMenuItem
+                                                                      onSelect={() =>
+                                                                          handleViewOnSite(
+                                                                              job
+                                                                          )
+                                                                      }
+                                                                  >
+                                                                      View on site
+                                                                  </DropdownMenuItem>
+                                                              )}
+                                                          <DropdownMenuItem
+                                                              onSelect={() =>
+                                                                  handleDuplicate(
+                                                                      job
+                                                                  )
+                                                              }
+                                                          >
+                                                              Duplicate
+                                                          </DropdownMenuItem>
+                                                          <DropdownMenuItem
+                                                              onSelect={() =>
+                                                                  handleCreateBanner(
+                                                                      job
+                                                                  )
+                                                              }
+                                                          >
+                                                              Create banner
+                                                          </DropdownMenuItem>
+                                                          <DropdownMenuSeparator />
+                                                          <DropdownMenuItem
+                                                              className="text-destructive focus:text-destructive"
+                                                              onSelect={() =>
+                                                                  setArchiveTarget(
+                                                                      job
+                                                                  )
+                                                              }
+                                                          >
+                                                              Archive
+                                                          </DropdownMenuItem>
+                                                      </DropdownMenuContent>
+                                                  </DropdownMenu>
+                                              </div>
                                           </TableCell>
                                       </TableRow>
                                   );
