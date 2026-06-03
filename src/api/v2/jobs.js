@@ -18,3 +18,21 @@ export const listJobsV2 = (query = {}) =>
 
 export const scrapeAndPostJob = (applyLink) =>
     apiV2.post("/api/admin/jobs/scrape-and-post", { applyLink });
+
+// ── Apply-link verification / flagged-job cleanup ──────────────────────────
+// Background scan that checks published jobs' apply links, archives dead ones,
+// and flags inconclusive ones. 202 = scan started (poll status); 409 = already
+// running. Omit `limit` to scan all published jobs (backend caps 1–5000).
+export const verifyApplyLinksV2 = (limit) =>
+    apiV2.post(`${BASE}/verify-now`, limit ? { limit } : {});
+
+// Poll until `running` flips to false; `lastRun` then holds the summary.
+export const getVerifyStatusV2 = () => apiV2.get(`${BASE}/verify-now/status`);
+
+// Jobs needing review. query: { page, limit, result? } — result ∈ expired|inconclusive.
+export const listFlaggedJobsV2 = (query = {}) =>
+    apiV2.get(`${BASE}/flagged${buildQueryString(query)}`);
+
+// Soft-delete flagged jobs. payload = { ids: [...] } OR { all: true } (exactly one).
+export const purgeFlaggedJobsV2 = (payload) =>
+    apiV2.post(`${BASE}/flagged/purge`, payload);

@@ -15,6 +15,7 @@ import {
   HeartPulse,
   BarChart3,
   FileText,
+  Link2,
 } from "lucide-react";
 import { UserContext } from "Context/userContext";
 import {
@@ -49,6 +50,7 @@ const navGroups = [
       { title: "Quick Post", url: "/admin/jobs/quick-post", icon: Sparkles },
       { title: "Add Job", url: "/admin/jobs/new", icon: PlusCircle },
       { title: "Job Dashboard", url: "/admin/jobs", icon: LayoutList },
+      { title: "Link Cleanup", url: "/admin/jobs/link-cleanup", icon: Link2 },
     ],
   },
   {
