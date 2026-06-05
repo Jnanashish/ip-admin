@@ -93,6 +93,13 @@ $gridBoxSize: 30px;
         -webkit-text-stroke-color: #0050ff;
     }
 
+    // CareersAtTech-only text logo fallback (no company image): Source Serif 4 @ 600.
+    // Scoped via h1.textLogo so the JobsAtTech banner keeps its default logo type.
+    h1.textLogo {
+        font-family: "Source Serif 4", serif;
+        font-weight: 600 !important;
+    }
+
     grid-row-start: 6;
     grid-row-end: 9;
     padding-top: 64px;

@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import "@fontsource/geist-sans";
 import "@fontsource/geist-mono";
+import "@fontsource/source-serif-4/600"; // banner text-logo fallback only (no .css ext: CRA5 enhanced-resolve exports-wildcard bug)
 import "./App.css";
 
 import Loader from "./Components/Loader";

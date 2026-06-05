@@ -6,6 +6,7 @@ import {
     Info,
     ExternalLink,
     Image as ImageIcon,
+    Trash2,
 } from "lucide-react";
 
 import {
@@ -426,6 +427,26 @@ const JobsTable = ({
                                                           </TooltipTrigger>
                                                           <TooltipContent side="top">
                                                               Banner
+                                                          </TooltipContent>
+                                                      </Tooltip>
+                                                      <Tooltip>
+                                                          <TooltipTrigger asChild>
+                                                              <Button
+                                                                  variant="ghost"
+                                                                  size="icon"
+                                                                  aria-label="Delete job"
+                                                                  className="h-8 w-8 text-destructive hover:text-destructive"
+                                                                  onClick={() =>
+                                                                      setArchiveTarget(
+                                                                          job
+                                                                      )
+                                                                  }
+                                                              >
+                                                                  <Trash2 className="h-4 w-4" />
+                                                              </Button>
+                                                          </TooltipTrigger>
+                                                          <TooltipContent side="top">
+                                                              Delete
                                                           </TooltipContent>
                                                       </Tooltip>
                                                   </TooltipProvider>

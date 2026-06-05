@@ -6,9 +6,14 @@ import linkedin from "../../Static/Image/linkedin.png";
 import instagram from "../../Static/Image/instagram.png";
 import telegram from "../../Static/Image/telegram.png";
 
+// Hard-coded degree + batch shown on every CareersAtTech banner.
+// Edit the strings below to change the defaults (slash-separated, space on both sides).
+const HARDCODED_DEGREE = "B.Tech / B.E. / M.Tech / BCA / MCA";
+const HARDCODED_BATCH = "2024 / 2025 / 2026 / 2027";
+
 const CareersAtTechBanner = (props) => {
     const { ctaDetails, canvasCss, companyDetails, igbannertitle, jobinfo } = props;
-    const { companyName, degree, batch, experience, salary, location, role } = jobinfo;
+    const { companyName, experience, salary, location, role } = jobinfo;
     const { largeLogo } = companyDetails;
     const [bannerTitle, setBannerTitle] = useState(null);
 
@@ -45,7 +50,7 @@ const CareersAtTechBanner = (props) => {
 
                     <div className={styles.companylogo}>
                         {!!largeLogo && <img style={customStyle.imgstyle} src={largeLogo} alt={`${companyName} logo`}></img>}
-                        {!largeLogo && <h1>{companyName}</h1>}
+                        {!largeLogo && <h1 className={styles.textLogo}>{companyName}</h1>}
                     </div>
                     <div className={styles.canvas_title}>
                         <h1 contentEditable="true" style={customStyle.fontStyle}>
@@ -56,16 +61,12 @@ const CareersAtTechBanner = (props) => {
 
                 <div className={styles.lower}>
                     <div className={styles.canvas_details}>
-                        {degree && degree !== "N" && (
-                            <p contentEditable="true">
-                                <span className={styles.tag}>Degree</span> : <span>{String(degree).split(",").map((s) => s.trim()).join(" - ")}</span>
-                            </p>
-                        )}
-                        {batch && batch !== "N" && (
-                            <p contentEditable="true">
-                                <span className={styles.tag}>Batch</span> : <span>{String(batch).split(",").map((s) => s.trim()).join(" - ")}</span>
-                            </p>
-                        )}
+                        <p contentEditable="true">
+                            <span className={styles.tag}>Degree</span> : <span>{HARDCODED_DEGREE}</span>
+                        </p>
+                        <p contentEditable="true">
+                            <span className={styles.tag}>Batch</span> : <span>{HARDCODED_BATCH}</span>
+                        </p>
                         {experience && experience !== "N" && (
                             <p contentEditable="true">
                                 <span className={styles.tag}>Experience</span> : <span>{experience}</span>
