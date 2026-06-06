@@ -143,8 +143,6 @@ src/
 
 ### Existing Component Wrappers
 
-**CustomButton** (`src/Components/Button/CustomButton.jsx`): wraps shadcn Button. Variant map: `contained→default`, `outlined→outline`, `text→ghost`, `destructive→destructive`. Size map: `small→sm`, `medium→default`, `large→lg`.
-
 **CustomTextField** (`src/Components/Input/Textfield.jsx`): unified input/textarea/select via `type` prop. Full width default, optional label, error state `border-destructive`, select accepts `optionData` array.
 
 **Loader** (`src/Components/Loader/`): fixed overlay with `bg-black/20 backdrop-blur-sm`, animated spinner.

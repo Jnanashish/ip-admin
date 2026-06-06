@@ -71,12 +71,6 @@ const EditCompanyV2 = () => {
         fetchCompanyV2(id).then((res) => {
             if (cancelled) return;
             const company = unwrapCompany(res.data);
-            // eslint-disable-next-line no-console
-            console.log("[EditCompanyV2] fetch result", {
-                status: res.status,
-                rawData: res.data,
-                unwrapped: company,
-            });
             if (res.status === 200 && company) {
                 setState({
                     status: "ready",

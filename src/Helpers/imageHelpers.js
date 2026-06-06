@@ -144,34 +144,3 @@ export const downloadImagefromCanvasHelper = async (fileName, canvasId, generate
         return null;
     }
 };
-
-// upload html canvas to cdn and return image link
-export const uploadBannertoCDNHelper = async (canvasId) => {
-    const element = document.getElementById(canvasId);
-
-    try {
-        const dataUrl = await htmlToImage.toBlob(element);
-        const bannerUrl = await generateLinkfromImageHelper(null, dataUrl);
-
-        return bannerUrl;
-    } catch (error) {
-        console.error("Error converting HTML to image:", error);
-        return null;
-    }
-};
-
-// download an image from image link, accept image link and filename
-export const generateImageFromLink = async (imagelink, fileName) => {
-    const image = await fetch(imagelink);
-    const imageBlob = await image.blob();
-    const imageURL = URL.createObjectURL(imageBlob);
-
-    const link = document.createElement("a");
-    link.href = imageURL;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    // Release the blob URL to avoid a memory leak
-    URL.revokeObjectURL(imageURL);
-};

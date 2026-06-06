@@ -15,7 +15,7 @@ import { Card, CardContent } from "../../../Components/ui/card";
 import { Checkbox } from "../../../Components/ui/checkbox";
 import Loader from "../../../Components/Loader";
 import { getBlogList, deleteBlog, archiveBlogs } from "../../../Apis/Blog";
-import { showSuccessToast, showErrorToast } from "../../../Helpers/toast";
+import { showSuccessToast } from "../../../Helpers/toast";
 
 const STATUS_COLORS = {
     draft: "border-gray-300 text-gray-600 dark:border-gray-600 dark:text-gray-400",

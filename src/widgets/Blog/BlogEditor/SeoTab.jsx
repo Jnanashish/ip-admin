@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Input } from "../../../Components/ui/input";
 import { Label } from "../../../Components/ui/label";
 import { Switch } from "../../../Components/ui/switch";
@@ -6,12 +6,11 @@ import CharCounter from "../../../Components/Blog/CharCounter";
 import TagInput from "../../../Components/Blog/TagInput";
 import SerpPreview from "../../../Components/Blog/SerpPreview";
 import { uploadBlogImage } from "../../../Apis/Blog";
-import { useRef, useState } from "react";
 import { Button } from "../../../Components/ui/button";
 import { ImagePlus, X } from "lucide-react";
 
 const SeoTab = ({ blogData, onChange }) => {
-    const seo = blogData.seo || {};
+    const seo = useMemo(() => blogData.seo || {}, [blogData.seo]);
     const fileInputRef = useRef(null);
     const [isUploading, setIsUploading] = useState(false);
 

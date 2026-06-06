@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./canvas.module.scss";
 
 const JobsAtTechBanner = (props) => {
-    const { canvasCss, companyDetails, igbannertitle, jobinfo, jobdetails } = props;
+    const { canvasCss, companyDetails, igbannertitle, jobdetails } = props;
     const { companyName, degree, batch, experience, salary, location, role } = jobdetails;
     const { largeLogo } = companyDetails;
 

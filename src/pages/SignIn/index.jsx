@@ -7,7 +7,6 @@ import { Button } from "Components/ui/button";
 import CustomTextField from "../../Components/Input/Textfield";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "Components/ui/card";
 import { Eye, EyeOff, LayoutList } from "lucide-react";
-import Loader from "../../Components/Loader";
 
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../Config/firebase_config";

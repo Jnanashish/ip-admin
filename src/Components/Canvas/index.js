@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { TextField, MenuItem, FormControl, InputLabel, Select } from "@mui/material";
 import styles from "./canvas.module.scss";
 import { downloadImagefromCanvasHelper } from "../../Helpers/imageHelpers";
@@ -9,7 +9,6 @@ import JobsAtTechBanner from "./JobsAtTechBanner";
 import CustomTextField from "../../Components/Input/Textfield";
 import CustomDivider from "../Divider/Divider";
 import Carousel from "./Carousel";
-import { UserContext } from "../../Context/userContext";
 
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import { Button } from "@mui/material";
@@ -97,7 +96,6 @@ const CanvasDesignControls = ({ canvasCss, handleCanvasCssChange }) => (
 // Main Canvas component
 function Canvas(props) {
     const { bannerType, jobdetails } = props;
-    const context = useContext(UserContext);
 
     // Define available CTAs - moved to useMemo for optimization
     const availableCTAs = useMemo(() => [
@@ -129,7 +127,6 @@ function Canvas(props) {
     ], []);
 
     // State management
-    const [canvasId, setCanvasId] = useState();
     const [canvas, setCanvas] = useState("careersattech");
     const [canvasCss, setCanvasCss] = useState({
         imgsize: bannerType === "linkedinbanner" ? "100%" : "60%",
@@ -176,10 +173,10 @@ function Canvas(props) {
             const bannername = jobdetails.companyName + "_" + bannerType;
             downloadImagefromCanvasHelper(bannername, "careersattech", false);
         } else {
-            const bannername = jobdetails.companyName + "_" + "carousel1";
+            const bannername = jobdetails.companyName + "_carousel1";
             downloadImagefromCanvasHelper(bannername, "carousel1", false);
 
-            const bannername2 = jobdetails.companyName + "_" + "carousel2";
+            const bannername2 = jobdetails.companyName + "_carousel2";
             downloadImagefromCanvasHelper(bannername2, "carousel2", false);
         }
     };
@@ -188,27 +185,24 @@ function Canvas(props) {
     useEffect(() => {
         // Set canvas CSS based on banner type
         if (bannerType === "linkedinbanner") {
-            setCanvasCss({
-                ...canvasCss,
+            setCanvasCss((c) => ({
+                ...c,
                 imgsize: "100%",
                 fontSize: "28px",
-            });
+            }));
         } else {
-            setCanvasCss({
-                ...canvasCss,
+            setCanvasCss((c) => ({
+                ...c,
                 imgsize: "60%",
                 fontSize: "96px",
-            });
+            }));
         }
 
-        // Set canvas ID
-        if (!!bannerType) {
+        // Set canvas type from the requested banner
+        if (bannerType) {
             setCanvas(bannerType);
-            setCanvasId(bannerType);
-        } else {
-            setCanvasId(context?.isAdmin ? "careersattech" : "jobsattech");
         }
-    }, [bannerType, context?.isAdmin]);
+    }, [bannerType]);
 
     useEffect(() => {
         // Update job info when job details change

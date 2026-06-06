@@ -1,5 +1,5 @@
 export const apiEndpoint = {
-    // image upload (used by ad manager for poster CDN URLs)
+    // image upload — poster/banner CDN URLs (used by imageHelpers)
     getImagecdnUrl: "/api/jd/getposterlink",
 
     // analytics
@@ -8,18 +8,6 @@ export const apiEndpoint = {
     analyticsClicksOverTime: "/api/analytics/clicks-over-time",
     analyticsTopJobs: "/api/analytics/top-jobs",
     analyticsJobsByCategory: "/api/analytics/jobs-by-category",
-
-    // Ad manager (banner ads, link ads, image-link ads)
-    addAdBanner: "/api/sda/banner/add",
-    getAdBanners: "/api/sda/banner/get",
-    deleteAdBanner: "/api/sda/banner/delete",
-    addAdLink: "/api/sda/link/add",
-    getAdLinks: "/api/sda/link/get",
-    deleteAdLink: "/api/sda/link/delete",
-    addAdLinkImage: "/api/sda/linkimg/add",
-    getAdLinkImages: "/api/sda/linkimg/get",
-    deleteAdLinkImage: "/api/sda/linkimg/delete",
-    updateAdPopupType: "/api/showadpop/update",
 
     // Blog
     getBlogList: "/api/blogs/get",

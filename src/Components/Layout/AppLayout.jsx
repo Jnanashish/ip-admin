@@ -37,7 +37,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "Components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "Components/ui/avatar";

@@ -141,8 +141,6 @@ function Banners() {
                 if (jobRes?.status === 200) {
                     apiJob = unwrapJob(jobRes.data);
                     if (apiJob) {
-                        // eslint-disable-next-line no-console
-                        console.log("[Banners] apiJob.degree =", apiJob.degree, "raw apiJob:", apiJob);
                         setJobdetails(adaptJobForCanvas(apiJob));
                     } else {
                         // eslint-disable-next-line no-console

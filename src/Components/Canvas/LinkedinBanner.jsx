@@ -26,7 +26,7 @@ function LinkedinBanner(props) {
     return (
         <div id="linkedinbanner" className={styles.linkedinbanner}>
             <div className={styles.linkedinbanner_imagecontainer}>
-                <img style={customStyle.imgstyle} src={largeLogo} />
+                <img style={customStyle.imgstyle} src={largeLogo} alt="Company logo" />
             </div>
             <h3 contentEditable="true">is Hiring</h3>
             <p className={styles.linkedinbanner_title} style={customStyle.fontStyle} contentEditable="true">
