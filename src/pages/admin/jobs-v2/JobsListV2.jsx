@@ -23,6 +23,7 @@ import { listJobsV2 } from "api/v2/jobs";
 import { fetchCompanyV2 } from "api/v2/companies";
 import { showErrorToast } from "Helpers/toast";
 import { generateWhatsAppMessage } from "Helpers/JobListHelper";
+import { cn } from "lib/utils";
 
 import JobsFilters from "./components/JobsFilters";
 import JobsTable from "./components/JobsTable";
@@ -45,9 +46,16 @@ const readSelectedJobsFromStorage = () => {
 const PAGE_SIZE_OPTIONS = [20, 50, 100];
 const DEFAULT_PAGE_SIZE = 20;
 
+const SCOPE_TABS = [
+    { value: "active", label: "Active" },
+    { value: "archived", label: "Archived" },
+    { value: "all", label: "All" },
+];
+const SCOPE_VALUES = SCOPE_TABS.map((t) => t.value);
+
 const FILTER_KEYS = [
     "search",
-    "status",
+    "scope",
     "employmentType",
     "batch",
     "companyId",
@@ -55,7 +63,9 @@ const FILTER_KEYS = [
 
 const readFilters = (params) => ({
     search: params.get("search") || "",
-    status: params.get("status") || "all",
+    scope: SCOPE_VALUES.includes(params.get("scope"))
+        ? params.get("scope")
+        : "active",
     employmentType: params.get("employmentType") || "all",
     batch: params.get("batch") || "all",
     companyId: params.get("companyId") || "all",
@@ -69,7 +79,10 @@ const readFilters = (params) => ({
 const buildApiQuery = (filters) => {
     const q = { page: filters.page, limit: filters.limit };
     if (filters.search) q.search = filters.search;
-    if (filters.status && filters.status !== "all") q.status = filters.status;
+    // Tab scope → backend filter. Active hides archived (relies on backend
+    // ?excludeArchived); Archived shows only archived; All sends neither.
+    if (filters.scope === "archived") q.status = "archived";
+    else if (filters.scope !== "all") q.excludeArchived = "true";
     if (filters.employmentType && filters.employmentType !== "all")
         q.employmentType = filters.employmentType;
     if (filters.batch && filters.batch !== "all") q.batch = filters.batch;
@@ -98,7 +111,12 @@ const parseJobsResponse = (data) => {
             : typeof data.totalCount === "number"
               ? data.totalCount
               : jobs.length;
-    const pages = typeof data.pages === "number" ? data.pages : null;
+    const pages =
+        typeof data.pages === "number"
+            ? data.pages
+            : typeof data.totalPages === "number"
+              ? data.totalPages
+              : null;
     return { jobs, total, pages };
 };
 
@@ -237,7 +255,8 @@ const JobsListV2 = () => {
                     value === undefined ||
                     value === null ||
                     value === "" ||
-                    value === "all" ||
+                    (key !== "scope" && value === "all") ||
+                    (key === "scope" && value === "active") ||
                     (key === "page" && value === 1) ||
                     (key === "limit" && value === DEFAULT_PAGE_SIZE)
                 ) {
@@ -264,8 +283,12 @@ const JobsListV2 = () => {
         if (filters.limit !== DEFAULT_PAGE_SIZE) {
             next.set("limit", String(filters.limit));
         }
+        // Keep the active tab; Clear only resets search/type/batch/company.
+        if (filters.scope !== "active") {
+            next.set("scope", filters.scope);
+        }
         setSearchParams(next, { replace: true });
-    }, [filters.limit, setSearchParams]);
+    }, [filters.limit, filters.scope, setSearchParams]);
 
     const totalPages = useMemo(() => {
         if (typeof meta.pages === "number" && meta.pages > 0) return meta.pages;
@@ -275,12 +298,18 @@ const JobsListV2 = () => {
 
     const hasActiveFilter =
         !!filters.search ||
-        filters.status !== "all" ||
         filters.employmentType !== "all" ||
         filters.batch !== "all" ||
         filters.companyId !== "all";
 
     const showEmpty = !loading && jobs.length === 0;
+    const emptyMessage = hasActiveFilter
+        ? "No jobs match your filters"
+        : filters.scope === "archived"
+          ? "No archived jobs"
+          : filters.scope === "all"
+            ? "No jobs yet"
+            : "No active jobs";
 
     return (
         <div className="px-4 lg:px-6 pt-6 pb-10 max-w-7xl mx-auto space-y-6">
@@ -294,6 +323,27 @@ const JobsListV2 = () => {
                 </Button>
             </div>
 
+            <div className="flex w-fit items-center gap-1 rounded-md border border-border bg-muted p-0.5">
+                {SCOPE_TABS.map((tab) => (
+                    <button
+                        key={tab.value}
+                        type="button"
+                        aria-pressed={filters.scope === tab.value}
+                        onClick={() =>
+                            updateParams({ scope: tab.value, page: 1 })
+                        }
+                        className={cn(
+                            "rounded-sm px-3 py-1.5 text-sm font-medium transition-colors",
+                            filters.scope === tab.value
+                                ? "bg-background text-foreground shadow-sm"
+                                : "text-muted-foreground hover:text-foreground"
+                        )}
+                    >
+                        {tab.label}
+                    </button>
+                ))}
+            </div>
+
             <JobsFilters
                 filters={filters}
                 onChange={handleFilterChange}
@@ -305,7 +355,7 @@ const JobsListV2 = () => {
                 <Card>
                     <CardContent className="py-12 flex flex-col items-center justify-center gap-3 text-center">
                         <p className="text-sm text-muted-foreground">
-                            No jobs match your filters
+                            {emptyMessage}
                         </p>
                         {hasActiveFilter && (
                             <Button

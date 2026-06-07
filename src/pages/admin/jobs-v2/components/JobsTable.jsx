@@ -6,7 +6,8 @@ import {
     Info,
     ExternalLink,
     Image as ImageIcon,
-    Trash2,
+    Archive,
+    RotateCcw,
 } from "lucide-react";
 
 import {
@@ -21,6 +22,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "Components/ui/avatar";
 import { Skeleton } from "Components/ui/skeleton";
 import { Button } from "Components/ui/button";
 import { Checkbox } from "Components/ui/checkbox";
+import { Input } from "Components/ui/input";
+import { Label } from "Components/ui/label";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -43,7 +46,12 @@ import {
     TooltipTrigger,
 } from "Components/ui/tooltip";
 
-import { fetchJobV2, deleteJobV2 } from "api/v2/jobs";
+import {
+    fetchJobV2,
+    archiveJobV2,
+    restoreJobV2,
+    permanentlyDeleteJobV2,
+} from "api/v2/jobs";
 import { mapJobResponseToFormValues } from "validators/v2/jobFormSchema";
 import {
     showErrorToast,
@@ -70,7 +78,7 @@ const COLUMNS = [
     { key: "select", label: "", className: "w-[44px]" },
     { key: "title", label: "Title", className: "min-w-[200px]" },
     { key: "company", label: "Company", className: "min-w-[180px]" },
-    { key: "status", label: "Status", className: "w-[60px]" },
+    { key: "status", label: "Status", className: "min-w-[120px]" },
     { key: "employmentType", label: "Employment", className: "min-w-[140px]" },
     { key: "posted", label: "Posted", className: "w-[140px]" },
     { key: "info", label: "", className: "w-[60px]" },
@@ -97,6 +105,17 @@ const formatLocation = (locations) => {
     if (!first) return "—";
     const parts = [first.city, first.country].filter(Boolean);
     return parts.length ? parts.join(", ") : "—";
+};
+
+const formatArchivedDate = (value) => {
+    if (!value) return "";
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return "";
+    return `Archived ${d.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+    })}`;
 };
 
 const SkeletonRow = () => (
@@ -154,6 +173,10 @@ const JobsTable = ({
     const navigate = useNavigate();
     const [archiveTarget, setArchiveTarget] = useState(null);
     const [archiving, setArchiving] = useState(false);
+    const [restoringId, setRestoringId] = useState(null);
+    const [permTarget, setPermTarget] = useState(null);
+    const [permText, setPermText] = useState("");
+    const [permDeleting, setPermDeleting] = useState(false);
 
     const selectionEnabled = typeof onToggleSelect === "function";
     const selectedSet = new Set(selectedIds);
@@ -224,7 +247,7 @@ const JobsTable = ({
         const id = getJobId(archiveTarget);
         if (!id) return;
         setArchiving(true);
-        const res = await deleteJobV2(id);
+        const res = await archiveJobV2(id);
         setArchiving(false);
         if (res.status === 200 || res.status === 204) {
             showSuccessToast("Job archived");
@@ -234,6 +257,53 @@ const JobsTable = ({
         }
         showErrorToast(res.error?.message || "Failed to archive job");
     };
+
+    const handleRestore = async (job) => {
+        const id = getJobId(job);
+        if (!id || restoringId) return;
+        setRestoringId(id);
+        const res = await restoreJobV2(id);
+        setRestoringId(null);
+        if (res.status === 200 || res.status === 204) {
+            showSuccessToast("Job restored");
+            if (typeof onChanged === "function") onChanged();
+            return;
+        }
+        // 404 = already restored / no longer archived (race). Treat as info.
+        if (res.status === 404) {
+            showInfoToast("Job is no longer archived — refreshing list");
+            if (typeof onChanged === "function") onChanged();
+            return;
+        }
+        showErrorToast(res.error?.message || "Failed to restore job");
+    };
+
+    const closePermDialog = () => {
+        if (permDeleting) return;
+        setPermTarget(null);
+        setPermText("");
+    };
+
+    const handlePermDeleteConfirm = async () => {
+        if (!permTarget) return;
+        const id = getJobId(permTarget);
+        if (!id) return;
+        setPermDeleting(true);
+        const res = await permanentlyDeleteJobV2(id);
+        setPermDeleting(false);
+        if (res.status === 200 || res.status === 204) {
+            showSuccessToast("Job permanently deleted");
+            setPermTarget(null);
+            setPermText("");
+            if (typeof onChanged === "function") onChanged();
+            return;
+        }
+        showErrorToast(res.error?.message || "Failed to delete job");
+    };
+
+    const permTitle = (permTarget?.title || "").trim();
+    const permConfirmDisabled =
+        permDeleting || permTitle.length === 0 || permText.trim() !== permTitle;
 
     return (
         <>
@@ -290,6 +360,7 @@ const JobsTable = ({
                                   const id = getJobId(job);
                                   const isSelected =
                                       !!id && selectedSet.has(id);
+                                  const isArchived = job.status === "archived";
                                   return (
                                       <TableRow
                                           key={id || job.title}
@@ -325,7 +396,19 @@ const JobsTable = ({
                                               />
                                           </TableCell>
                                           <TableCell>
-                                              <StatusBadge status={job.status} />
+                                              <div className="flex flex-col gap-1">
+                                                  <StatusBadge
+                                                      status={job.status}
+                                                  />
+                                                  {isArchived &&
+                                                      job.archivedAt && (
+                                                          <span className="text-xs text-muted-foreground">
+                                                              {formatArchivedDate(
+                                                                  job.archivedAt
+                                                              )}
+                                                          </span>
+                                                      )}
+                                              </div>
                                           </TableCell>
                                           <TableCell className="text-sm">
                                               {formatEmploymentTypes(
@@ -429,26 +512,53 @@ const JobsTable = ({
                                                               Banner
                                                           </TooltipContent>
                                                       </Tooltip>
-                                                      <Tooltip>
-                                                          <TooltipTrigger asChild>
-                                                              <Button
-                                                                  variant="ghost"
-                                                                  size="icon"
-                                                                  aria-label="Delete job"
-                                                                  className="h-8 w-8 text-destructive hover:text-destructive"
-                                                                  onClick={() =>
-                                                                      setArchiveTarget(
-                                                                          job
-                                                                      )
-                                                                  }
-                                                              >
-                                                                  <Trash2 className="h-4 w-4" />
-                                                              </Button>
-                                                          </TooltipTrigger>
-                                                          <TooltipContent side="top">
-                                                              Delete
-                                                          </TooltipContent>
-                                                      </Tooltip>
+                                                      {isArchived ? (
+                                                          <Tooltip>
+                                                              <TooltipTrigger asChild>
+                                                                  <Button
+                                                                      variant="ghost"
+                                                                      size="icon"
+                                                                      aria-label="Restore job"
+                                                                      className="h-8 w-8"
+                                                                      disabled={
+                                                                          restoringId ===
+                                                                          id
+                                                                      }
+                                                                      onClick={() =>
+                                                                          handleRestore(
+                                                                              job
+                                                                          )
+                                                                      }
+                                                                  >
+                                                                      <RotateCcw className="h-4 w-4" />
+                                                                  </Button>
+                                                              </TooltipTrigger>
+                                                              <TooltipContent side="top">
+                                                                  Restore
+                                                              </TooltipContent>
+                                                          </Tooltip>
+                                                      ) : (
+                                                          <Tooltip>
+                                                              <TooltipTrigger asChild>
+                                                                  <Button
+                                                                      variant="ghost"
+                                                                      size="icon"
+                                                                      aria-label="Archive job"
+                                                                      className="h-8 w-8"
+                                                                      onClick={() =>
+                                                                          setArchiveTarget(
+                                                                              job
+                                                                          )
+                                                                      }
+                                                                  >
+                                                                      <Archive className="h-4 w-4" />
+                                                                  </Button>
+                                                              </TooltipTrigger>
+                                                              <TooltipContent side="top">
+                                                                  Archive
+                                                              </TooltipContent>
+                                                          </Tooltip>
+                                                      )}
                                                   </TooltipProvider>
                                                   <DropdownMenu>
                                                       <DropdownMenuTrigger asChild>
@@ -510,21 +620,46 @@ const JobsTable = ({
                                                               onSelect={() =>
                                                                   handleCreateBanner(
                                                                       job
-                                                                  )
+                                                                      )
                                                               }
                                                           >
                                                               Create banner
                                                           </DropdownMenuItem>
                                                           <DropdownMenuSeparator />
+                                                          {isArchived ? (
+                                                              <DropdownMenuItem
+                                                                  disabled={
+                                                                      restoringId ===
+                                                                      id
+                                                                  }
+                                                                  onSelect={() =>
+                                                                      handleRestore(
+                                                                          job
+                                                                      )
+                                                                  }
+                                                              >
+                                                                  Restore
+                                                              </DropdownMenuItem>
+                                                          ) : (
+                                                              <DropdownMenuItem
+                                                                  onSelect={() =>
+                                                                      setArchiveTarget(
+                                                                          job
+                                                                      )
+                                                                  }
+                                                              >
+                                                                  Archive
+                                                              </DropdownMenuItem>
+                                                          )}
                                                           <DropdownMenuItem
                                                               className="text-destructive focus:text-destructive"
                                                               onSelect={() =>
-                                                                  setArchiveTarget(
+                                                                  setPermTarget(
                                                                       job
                                                                   )
                                                               }
                                                           >
-                                                              Archive
+                                                              Delete permanently
                                                           </DropdownMenuItem>
                                                       </DropdownMenuContent>
                                                   </DropdownMenu>
@@ -548,7 +683,8 @@ const JobsTable = ({
                         <DialogTitle>Archive this job?</DialogTitle>
                         <DialogDescription>
                             "{archiveTarget?.title}" will be removed from the
-                            listing. This is reversible from the database.
+                            active listing. This is reversible — you can restore
+                            it from the Archived tab.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -560,11 +696,61 @@ const JobsTable = ({
                             Cancel
                         </Button>
                         <Button
-                            variant="destructive"
                             onClick={handleArchiveConfirm}
                             disabled={archiving}
                         >
                             {archiving ? "Archiving…" : "Archive"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog
+                open={!!permTarget}
+                onOpenChange={(open) => {
+                    if (!open) closePermDialog();
+                }}
+            >
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Delete permanently?</DialogTitle>
+                        <DialogDescription>
+                            This permanently deletes{" "}
+                            <span className="font-medium text-foreground">
+                                "{permTarget?.title}"
+                            </span>
+                            . It cannot be undone and the job cannot be restored.
+                            To remove it reversibly, cancel and use Archive
+                            instead.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-2">
+                        <Label htmlFor="perm-confirm-input" className="text-sm">
+                            Type the job title to confirm
+                        </Label>
+                        <Input
+                            id="perm-confirm-input"
+                            value={permText}
+                            onChange={(e) => setPermText(e.target.value)}
+                            placeholder={permTarget?.title || ""}
+                            autoComplete="off"
+                            disabled={permDeleting}
+                        />
+                    </div>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={closePermDialog}
+                            disabled={permDeleting}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={handlePermDeleteConfirm}
+                            disabled={permConfirmDisabled}
+                        >
+                            {permDeleting ? "Deleting…" : "Delete permanently"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

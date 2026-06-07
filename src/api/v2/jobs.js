@@ -10,8 +10,18 @@ export const updateJobV2 = (id, partialData) =>
 export const fetchJobV2 = (id) =>
     apiV2.get(`${BASE}/${encodeURIComponent(id)}`);
 
-export const deleteJobV2 = (id) =>
-    apiV2.delete(`${BASE}/${encodeURIComponent(id)}`);
+// Soft-archive — the default removal. Reversible via restoreJobV2.
+export const archiveJobV2 = (id) =>
+    apiV2.post(`${BASE}/${encodeURIComponent(id)}/archive`);
+
+// Undo an archive. 404 means "not archived / already restored".
+export const restoreJobV2 = (id) =>
+    apiV2.post(`${BASE}/${encodeURIComponent(id)}/restore`);
+
+// Permanent hard-delete — junk only. The `?permanent=true` flag is REQUIRED;
+// without it the backend refuses with 400 by design.
+export const permanentlyDeleteJobV2 = (id) =>
+    apiV2.delete(`${BASE}/${encodeURIComponent(id)}?permanent=true`);
 
 export const listJobsV2 = (query = {}) =>
     apiV2.get(`${BASE}${buildQueryString(query)}`);

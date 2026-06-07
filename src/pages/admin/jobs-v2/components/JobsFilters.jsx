@@ -11,15 +11,6 @@ import {
 } from "Components/ui/select";
 import CompanyFilterSelect from "./CompanyFilterSelect";
 
-const STATUS_OPTIONS = [
-    { value: "all", label: "All statuses" },
-    { value: "draft", label: "Draft" },
-    { value: "published", label: "Published" },
-    { value: "paused", label: "Paused" },
-    { value: "expired", label: "Expired" },
-    { value: "archived", label: "Archived" },
-];
-
 const EMPLOYMENT_TYPE_OPTIONS = [
     { value: "all", label: "All types" },
     { value: "FULL_TIME", label: "Full-time" },
@@ -69,22 +60,6 @@ const JobsFilters = ({ filters, onChange, onClear, hasActiveFilter }) => {
                     className="pl-9"
                 />
             </div>
-
-            <Select
-                value={filters.status || "all"}
-                onValueChange={(v) => onChange({ status: v })}
-            >
-                <SelectTrigger className="w-full sm:w-44">
-                    <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                    {STATUS_OPTIONS.map((opt) => (
-                        <SelectItem key={opt.value} value={opt.value}>
-                            {opt.label}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
 
             <Select
                 value={filters.employmentType || "all"}

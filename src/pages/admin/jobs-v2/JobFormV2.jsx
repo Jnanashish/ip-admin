@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
-import { Trash2, ExternalLink, Image as ImageIcon } from "lucide-react";
+import { Archive, ExternalLink, Image as ImageIcon } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "Components/ui/card";
 import { Button } from "Components/ui/button";
@@ -49,7 +49,7 @@ import {
     WORK_MODES,
     APPLY_PLATFORMS,
 } from "validators/v2/jobFormSchema";
-import { createJobV2, updateJobV2, deleteJobV2, listJobsV2 } from "api/v2/jobs";
+import { createJobV2, updateJobV2, archiveJobV2, listJobsV2 } from "api/v2/jobs";
 import {
     showSuccessToast,
     showErrorToast,
@@ -265,17 +265,16 @@ const JobFormV2 = ({ mode = "create", jobId, initialValues }) => {
         navigate(`/canvas?jobid=${encodeURIComponent(jobId)}`);
     };
 
-    const onDeleteConfirm = async () => {
+    const onArchiveConfirm = async () => {
         if (!jobId) return;
         setDeleting(true);
         try {
-            const res = await deleteJobV2(jobId);
+            const res = await archiveJobV2(jobId);
             if (res.status === 200 || res.status === 204) {
-                showSuccessToast("Job deleted");
-                // /admin/jobs listing lands in A5; legacy /jobs is the stand-in.
+                showSuccessToast("Job archived");
                 navigate("/admin/jobs");
             } else {
-                showErrorToast(res.error?.message || "Failed to delete job");
+                showErrorToast(res.error?.message || "Failed to archive job");
             }
         } finally {
             setDeleting(false);
@@ -694,12 +693,12 @@ const JobFormV2 = ({ mode = "create", jobId, initialValues }) => {
                         {mode === "edit" && (
                             <Button
                                 type="button"
-                                variant="destructive"
+                                variant="outline"
                                 onClick={() => setConfirmDelete(true)}
                                 disabled={submitting || deleting}
                             >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Delete
+                                <Archive className="h-4 w-4 mr-2" />
+                                Archive
                             </Button>
                         )}
                     </div>
@@ -731,10 +730,11 @@ const JobFormV2 = ({ mode = "create", jobId, initialValues }) => {
             <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete this job?</DialogTitle>
+                        <DialogTitle>Archive this job?</DialogTitle>
                         <DialogDescription>
-                            This will permanently remove the job posting. This action cannot
-                            be undone.
+                            This removes the job from the active listing. It's
+                            reversible — you can restore it later from the
+                            Archived tab.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -748,11 +748,10 @@ const JobFormV2 = ({ mode = "create", jobId, initialValues }) => {
                         </Button>
                         <Button
                             type="button"
-                            variant="destructive"
-                            onClick={onDeleteConfirm}
+                            onClick={onArchiveConfirm}
                             disabled={deleting}
                         >
-                            {deleting ? "Deleting…" : "Delete"}
+                            {deleting ? "Archiving…" : "Archive"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
