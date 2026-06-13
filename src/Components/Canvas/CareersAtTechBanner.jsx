@@ -12,7 +12,7 @@ const HARDCODED_DEGREE = "B.Tech / B.E. / M.Tech / BCA / MCA";
 const HARDCODED_BATCH = "2024 / 2025 / 2026 / 2027";
 
 const CareersAtTechBanner = (props) => {
-    const { ctaDetails, canvasCss, companyDetails, igbannertitle, jobinfo } = props;
+    const { ctaDetails, canvasCss, companyDetails, igbannertitle, jobinfo, instaChannelCTA } = props;
     const { companyName, experience, salary, location, role } = jobinfo;
     const { largeLogo } = companyDetails;
     const [bannerTitle, setBannerTitle] = useState(null);
@@ -59,7 +59,7 @@ const CareersAtTechBanner = (props) => {
                     </div>
                 </div>
 
-                <div className={styles.lower}>
+                <div className={`${styles.lower}${instaChannelCTA ? ` ${styles.lower_reordered}` : ""}`}>
                     <div className={styles.canvas_details}>
                         <p contentEditable="true">
                             <span className={styles.tag}>Degree</span> : <span>{HARDCODED_DEGREE}</span>
@@ -82,12 +82,14 @@ const CareersAtTechBanner = (props) => {
                                 <span className={styles.tag}>Location</span> : <span contentEditable="true">{location}</span>
                             </p>
                         )}
-                        <p contentEditable="true">
-                            <span className={styles.tag}>{ctaDetails?.ctaTitle}</span>
-                            <span className={styles.tag} style={{ color: "#0050ff" }}>
-                                {ctaDetails?.ctaLine}
-                            </span>
-                        </p>
+                        {!instaChannelCTA && (
+                            <p contentEditable="true">
+                                <span className={styles.tag}>{ctaDetails?.ctaTitle}</span>
+                                <span className={styles.tag} style={{ color: "#0050ff" }}>
+                                    {ctaDetails?.ctaLine}
+                                </span>
+                            </p>
+                        )}
                     </div>
 
                     <div className={styles.footer}>
@@ -98,6 +100,19 @@ const CareersAtTechBanner = (props) => {
                             Follow <span>@careersattech</span> to get regular Job updates.
                         </p>
                     </div>
+
+                    {/* Instagram-channel CTA only: comment line drops below the footer
+                        so its 👇 points down to the apply-link sticker. */}
+                    {instaChannelCTA && (
+                        <div className={styles.cta_strip}>
+                            <p contentEditable="true">
+                                <span className={styles.tag}>{ctaDetails?.ctaTitle}</span>
+                                <span className={styles.tag} style={{ color: "#0050ff" }}>
+                                    {ctaDetails?.ctaLine}
+                                </span>
+                            </p>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
