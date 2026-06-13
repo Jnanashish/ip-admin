@@ -24,25 +24,17 @@ import { showSuccessToast } from "Helpers/toast";
 import { buildCaption } from "Helpers/JobListHelper/captionBuilder";
 import {
     deriveInsights,
-    pickCodeword,
     pickTemplate,
 } from "Helpers/JobListHelper/jobInsights";
-import {
-    CLOSING_QUESTIONS,
-    CODEWORDS,
-    TEMPLATE_OPTIONS,
-} from "Helpers/JobListHelper/captionTemplates";
+import { TEMPLATE_OPTIONS } from "Helpers/JobListHelper/captionTemplates";
 
 const AUTO = "auto";
 
 const CaptionGeneratorSheet = ({ open, onOpenChange, jobs = [] }) => {
     const insights = useMemo(() => deriveInsights(jobs), [jobs]);
     const autoTemplate = useMemo(() => pickTemplate(insights), [insights]);
-    const autoCodeword = useMemo(() => pickCodeword(insights), [insights]);
 
     const [templateKey, setTemplateKey] = useState(AUTO);
-    const [codeword, setCodeword] = useState(autoCodeword);
-    const [closingQuestion, setClosingQuestion] = useState(AUTO);
     const [hashtagMode, setHashtagMode] = useState(AUTO);
     const [customHashtags, setCustomHashtags] = useState("");
     const [preview, setPreview] = useState("");
@@ -54,35 +46,21 @@ const CaptionGeneratorSheet = ({ open, onOpenChange, jobs = [] }) => {
     useEffect(() => {
         if (!open) return;
         setTemplateKey(AUTO);
-        setCodeword(autoCodeword);
-        setClosingQuestion(AUTO);
         setHashtagMode(AUTO);
         setCustomHashtags("");
         setDirty(false);
-    }, [open, autoCodeword]);
+    }, [open]);
 
     useEffect(() => {
         if (!open || dirty) return;
         const text = buildCaption({
             jobs,
             templateKey: resolvedTemplateKey,
-            codeword,
-            closingQuestion:
-                closingQuestion === AUTO ? undefined : closingQuestion,
             customHashtags:
                 hashtagMode === "custom" ? customHashtags : undefined,
         });
         setPreview(text);
-    }, [
-        open,
-        dirty,
-        jobs,
-        resolvedTemplateKey,
-        codeword,
-        closingQuestion,
-        hashtagMode,
-        customHashtags,
-    ]);
+    }, [open, dirty, jobs, resolvedTemplateKey, hashtagMode, customHashtags]);
 
     const handleCopy = () => {
         if (!preview) return;
@@ -92,8 +70,6 @@ const CaptionGeneratorSheet = ({ open, onOpenChange, jobs = [] }) => {
 
     const handleReset = () => {
         setTemplateKey(AUTO);
-        setCodeword(autoCodeword);
-        setClosingQuestion(AUTO);
         setHashtagMode(AUTO);
         setCustomHashtags("");
         setDirty(false);
@@ -120,75 +96,14 @@ const CaptionGeneratorSheet = ({ open, onOpenChange, jobs = [] }) => {
                 </SheetHeader>
 
                 <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-                    <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1.5">
-                            <Label className="text-xs text-muted-foreground">
-                                Template
-                            </Label>
-                            <Select
-                                value={templateKey}
-                                onValueChange={(v) => {
-                                    setTemplateKey(v);
-                                    setDirty(false);
-                                }}
-                            >
-                                <SelectTrigger className="h-9">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value={AUTO}>
-                                        Auto pick ({autoTemplate})
-                                    </SelectItem>
-                                    {TEMPLATE_OPTIONS.map((opt) => (
-                                        <SelectItem
-                                            key={opt.key}
-                                            value={opt.key}
-                                        >
-                                            {opt.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        <div className="space-y-1.5">
-                            <Label className="text-xs text-muted-foreground">
-                                Codeword
-                            </Label>
-                            <Select
-                                value={
-                                    CODEWORDS.includes(codeword)
-                                        ? codeword
-                                        : "CUSTOM"
-                                }
-                                onValueChange={(v) => {
-                                    if (v === "CUSTOM") return;
-                                    setCodeword(v);
-                                    setDirty(false);
-                                }}
-                            >
-                                <SelectTrigger className="h-9">
-                                    <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {CODEWORDS.map((c) => (
-                                        <SelectItem key={c} value={c}>
-                                            {c}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-
                     <div className="space-y-1.5">
                         <Label className="text-xs text-muted-foreground">
-                            Closing question
+                            Template
                         </Label>
                         <Select
-                            value={closingQuestion}
+                            value={templateKey}
                             onValueChange={(v) => {
-                                setClosingQuestion(v);
+                                setTemplateKey(v);
                                 setDirty(false);
                             }}
                         >
@@ -197,11 +112,11 @@ const CaptionGeneratorSheet = ({ open, onOpenChange, jobs = [] }) => {
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value={AUTO}>
-                                    Default for template
+                                    Auto pick ({autoTemplate})
                                 </SelectItem>
-                                {CLOSING_QUESTIONS.map((q) => (
-                                    <SelectItem key={q} value={q}>
-                                        {q}
+                                {TEMPLATE_OPTIONS.map((opt) => (
+                                    <SelectItem key={opt.key} value={opt.key}>
+                                        {opt.label}
                                     </SelectItem>
                                 ))}
                             </SelectContent>

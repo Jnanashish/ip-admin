@@ -229,7 +229,7 @@ const buildJobLine = (job, idx) => {
     const company = job?.companyName || job?.company?.name || "Company";
     const title = job?.title || job?.role || "Engineer";
     const locs = formatLocations(job?.jobLocation);
-    return `${prefix} ${company} — ${title} | 📍 ${locs}`;
+    return `${prefix} ${company} — ${title} | ${locs}`;
 };
 
 const uniq = (arr) => Array.from(new Set(arr.filter(Boolean)));

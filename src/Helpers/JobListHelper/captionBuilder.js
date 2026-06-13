@@ -2,23 +2,9 @@ import { hashtagBank } from "./hashtagBank";
 import {
     captionTemplates,
     hashtagsByTemplate,
+    SAVE_CTAS,
 } from "./captionTemplates";
-import {
-    deriveInsights,
-    pickTemplate,
-    pickCodeword,
-} from "./jobInsights";
-
-const DEFAULT_CLOSING = {
-    alert: "Which one are you applying to first? Drop the company name 👇",
-    codeFocused:
-        "Which stack are you strongest in? Drop it in the comments 👇",
-    curation: "Which company has been on your dream list? 👇",
-    questionHook: "Drop the company you're applying to first 👇",
-    tier1: "Which one is your #1? Drop the name 👇",
-    internship: "Which one matches your skills? Drop the company 👇",
-    spotlight: "Which team would you join? Drop the role number 👇",
-};
+import { deriveInsights, pickTemplate } from "./jobInsights";
 
 // Instagram allows only 5 hashtags per post.
 const MAX_HASHTAGS = 5;
@@ -51,23 +37,16 @@ const pickHashtagsString = (insights, templateKey) => {
     return capHashtags(Array.from(new Set(tags)).join(" "));
 };
 
-const replaceCodeword = (template, codeword) => {
-    if (!codeword || codeword === "LINK") return template;
-    return template.replace(/"LINK"/g, `"${codeword}"`);
-};
-
-const replaceClosingQuestion = (template, templateKey, closingQuestion) => {
-    if (!closingQuestion) return template;
-    const original = DEFAULT_CLOSING[templateKey];
-    if (!original || !template.includes(original)) return template;
-    return template.replace(original, closingQuestion);
+const pickSaveCta = (insights) => {
+    const seed =
+        (insights.count + (insights.companies.charCodeAt(0) || 0)) %
+        SAVE_CTAS.length;
+    return SAVE_CTAS[seed];
 };
 
 export const buildCaption = ({
     jobs = [],
     templateKey,
-    codeword,
-    closingQuestion,
     customHashtags,
 } = {}) => {
     const list = Array.isArray(jobs) ? jobs : [];
@@ -75,8 +54,6 @@ export const buildCaption = ({
 
     const insights = deriveInsights(list);
     const finalTemplateKey = templateKey || pickTemplate(insights);
-    const finalCodeword =
-        codeword || pickCodeword(insights, finalTemplateKey);
     const hashtags =
         typeof customHashtags === "string" && customHashtags.trim()
             ? capHashtags(customHashtags.trim())
@@ -85,10 +62,6 @@ export const buildCaption = ({
     const baseTemplate =
         captionTemplates[finalTemplateKey] || captionTemplates.alert;
 
-    let out = baseTemplate;
-    out = replaceClosingQuestion(out, finalTemplateKey, closingQuestion);
-    out = replaceCodeword(out, finalCodeword);
-
     const replacements = {
         "{COUNT}": String(insights.count),
         "{ROLE}": insights.role,
@@ -96,11 +69,11 @@ export const buildCaption = ({
         "{TECH}": insights.tech,
         "{COMPANIES}": insights.companies || "",
         "{JOBS_LIST}": insights.jobsList || "",
-        "{BATCHES}": insights.batches || "",
-        "{DEGREES}": insights.degrees || "",
+        "{SAVE_CTA}": pickSaveCta(insights),
         "{HASHTAGS}": hashtags,
     };
 
+    let out = baseTemplate;
     for (const [token, value] of Object.entries(replacements)) {
         out = out.split(token).join(value);
     }
