@@ -18,8 +18,6 @@ export {
     captionTemplates,
     hashtagsByTemplate,
     TEMPLATE_OPTIONS,
-    CODEWORDS,
-    CLOSING_QUESTIONS,
 } from "./captionTemplates";
 export { hashtagBank, avoidList, comboPacks } from "./hashtagBank";
 
