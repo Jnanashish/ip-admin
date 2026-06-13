@@ -193,6 +193,39 @@ $gridBoxSize: 30px;
     }
 }
 
+// Reordered lower section — only for the "Join instagram channel" CTA.
+// Footer moves up one line (just below Location); the comment line drops to its
+// own strip at the very bottom. Box height trimmed so the three blocks
+// (details 16 + footer 2 + comment strip 3 = 21 grid) fill the same space and
+// nothing overflows the canvas.
+.lower_reordered {
+    .canvas_details {
+        height: 16 * $gridBoxSize;
+    }
+}
+
+.cta_strip {
+    background-color: #f0f8ff;
+    font-family: "Helvetica Neue", sans-serif;
+    height: 3 * $gridBoxSize;
+    padding: 0px 0px 0px 120px;
+    display: flex;
+    align-items: center;
+
+    p {
+        color: #000000;
+        margin: 4.5px 0px;
+        font-weight: 500;
+        font-size: $detailFontSize;
+        line-height: 70px;
+    }
+
+    .tag {
+        font-weight: 600;
+        color: #000000;
+    }
+}
+
 .flex {
     display: flex;
     justify-content: space-between;

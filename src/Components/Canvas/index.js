@@ -222,8 +222,10 @@ function Canvas(props) {
         ...props,
         jobinfo,
         ctaDetails,
-        canvasCss
-    }), [props, jobinfo, ctaDetails, canvasCss]);
+        canvasCss,
+        // CTA id 4 = "Join instagram channel for apply link 👇" — triggers footer/comment reorder
+        instaChannelCTA: selectedCTA === 4
+    }), [props, jobinfo, ctaDetails, canvasCss, selectedCTA]);
 
     return (
         <div>
