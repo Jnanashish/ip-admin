@@ -216,7 +216,8 @@ $gridBoxSize: 30px;
         color: #000000;
         margin: 4.5px 0px;
         font-weight: 500;
-        font-size: $detailFontSize;
+        // "Join instagram channel" CTA line — 1px smaller than other detail lines.
+        font-size: $detailFontSize - 1;
         line-height: 70px;
     }
 
