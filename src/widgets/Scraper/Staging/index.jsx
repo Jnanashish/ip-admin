@@ -32,7 +32,7 @@ import {
     DialogDescription,
     DialogFooter,
 } from "Components/ui/dialog";
-import { fetchStagingJobs, approveJob, rejectJob, bulkApproveJobs, deleteStagingJob, fetchAllPendingJobs } from "./Helpers";
+import { fetchStagingJobs, approveJob, rejectJob, bulkApproveJobs, deleteStagingJob, fetchAllPendingJobs, deleteAllPendingJobs } from "./Helpers";
 import { showInfoToast, showErrorToast } from "Helpers/toast";
 import { SCRAPER_SOURCES, getSourceLabel } from "Helpers/scraperSources";
 
@@ -61,6 +61,8 @@ const StagingQueue = () => {
     const [actionLoading, setActionLoading] = useState(null);
     const [showApproveAllConfirm, setShowApproveAllConfirm] = useState(false);
     const [approveAllLoading, setApproveAllLoading] = useState(false);
+    const [showDeleteAllConfirm, setShowDeleteAllConfirm] = useState(false);
+    const [deleteAllLoading, setDeleteAllLoading] = useState(false);
 
     const totalPages = Math.ceil(totalCount / filters.size);
 
@@ -177,6 +179,26 @@ const StagingQueue = () => {
         }
     };
 
+    const handleDeleteAll = async () => {
+        setDeleteAllLoading(true);
+        try {
+            const { deleted, failed, total } = await deleteAllPendingJobs();
+            if (!total) {
+                showInfoToast("No pending jobs to delete.");
+                return;
+            }
+            showInfoToast(`${deleted} deleted${failed ? `, ${failed} failed` : ""}`);
+            setSelectedIds(new Set());
+            fetchJobs();
+        } catch (err) {
+            console.error("Delete all failed:", err);
+            showErrorToast("Failed to delete all jobs. Please try again.");
+        } finally {
+            setDeleteAllLoading(false);
+            setShowDeleteAllConfirm(false);
+        }
+    };
+
     const filteredJobs = searchQuery
         ? jobs.filter(
               (j) =>
@@ -200,18 +222,33 @@ const StagingQueue = () => {
                 <div className="flex items-center gap-2">
                     <Badge variant="secondary">{totalCount} total</Badge>
                     {totalCount > 0 && filters.status === "pending" && (
-                        <Button
-                            size="sm"
-                            onClick={() => setShowApproveAllConfirm(true)}
-                            disabled={approveAllLoading || bulkLoading}
-                        >
-                            {approveAllLoading ? (
-                                <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-                            ) : (
-                                <CheckCheck className="mr-1 h-4 w-4" />
-                            )}
-                            Approve All
-                        </Button>
+                        <>
+                            <Button
+                                size="sm"
+                                onClick={() => setShowApproveAllConfirm(true)}
+                                disabled={approveAllLoading || bulkLoading || deleteAllLoading}
+                            >
+                                {approveAllLoading ? (
+                                    <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                                ) : (
+                                    <CheckCheck className="mr-1 h-4 w-4" />
+                                )}
+                                Approve All
+                            </Button>
+                            <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => setShowDeleteAllConfirm(true)}
+                                disabled={approveAllLoading || bulkLoading || deleteAllLoading}
+                            >
+                                {deleteAllLoading ? (
+                                    <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Trash2 className="mr-1 h-4 w-4" />
+                                )}
+                                Delete All
+                            </Button>
+                        </>
                     )}
                 </div>
             </div>
@@ -483,6 +520,28 @@ const StagingQueue = () => {
                                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
                             ) : null}
                             Approve {totalCount} Jobs
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={showDeleteAllConfirm} onOpenChange={(open) => { if (!deleteAllLoading) setShowDeleteAllConfirm(open); }}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Delete All Pending Jobs</DialogTitle>
+                        <DialogDescription>
+                            This will permanently delete all {totalCount} pending jobs across all pages. This action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setShowDeleteAllConfirm(false)} disabled={deleteAllLoading}>
+                            Cancel
+                        </Button>
+                        <Button variant="destructive" onClick={handleDeleteAll} disabled={deleteAllLoading}>
+                            {deleteAllLoading ? (
+                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                            ) : null}
+                            Delete {totalCount} Jobs
                         </Button>
                     </DialogFooter>
                 </DialogContent>

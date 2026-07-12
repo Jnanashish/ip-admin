@@ -51,3 +51,17 @@ export const fetchAllPendingJobs = async () => {
     }
     return allJobs;
 };
+
+// No bulk-delete endpoint exists, so delete each pending job individually
+// (mirrors fetchAllPendingJobs + bulkApproveJobs used by "Approve All").
+export const deleteAllPendingJobs = async () => {
+    const pendingJobs = await fetchAllPendingJobs();
+    let deleted = 0;
+    let failed = 0;
+    for (const job of pendingJobs) {
+        const res = await scraperDelete(scraperEndpoints.stagingDelete(job._id));
+        if (res) deleted += 1;
+        else failed += 1;
+    }
+    return { deleted, failed, total: pendingJobs.length };
+};
