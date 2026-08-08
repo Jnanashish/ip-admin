@@ -86,8 +86,10 @@ const buildApiQuery = (filters) => {
     if (filters.employmentType && filters.employmentType !== "all")
         q.employmentType = filters.employmentType;
     if (filters.batch && filters.batch !== "all") q.batch = filters.batch;
+    // URL param stays `companyId` for readable shareable links; the API
+    // param is `company`.
     if (filters.companyId && filters.companyId !== "all")
-        q.companyId = filters.companyId;
+        q.company = filters.companyId;
     return q;
 };
 

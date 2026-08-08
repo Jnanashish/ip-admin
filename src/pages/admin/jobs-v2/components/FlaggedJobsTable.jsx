@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Building2, ExternalLink, Trash2 } from "lucide-react";
+import { Archive, Building2, ExternalLink } from "lucide-react";
 
 import {
     Table,
@@ -93,7 +93,7 @@ const FlaggedJobsTable = ({
     selectedIds = [],
     onToggleSelect,
     onToggleSelectAll,
-    onDeleteRow,
+    onArchiveRow,
 }) => {
     const selectedSet = new Set(selectedIds);
     const visibleIds = jobs.map(getJobId).filter(Boolean);
@@ -209,13 +209,13 @@ const FlaggedJobsTable = ({
                                           <Button
                                               variant="ghost"
                                               size="icon"
-                                              aria-label={`Delete ${job.title || "job"}`}
+                                              aria-label={`Archive ${job.title || "job"}`}
                                               className="h-8 w-8 text-destructive hover:text-destructive"
                                               onClick={() =>
-                                                  onDeleteRow && onDeleteRow(job)
+                                                  onArchiveRow && onArchiveRow(job)
                                               }
                                           >
-                                              <Trash2 className="h-4 w-4" />
+                                              <Archive className="h-4 w-4" />
                                           </Button>
                                       </TableCell>
                                   </TableRow>

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
-import { Trash2 } from "lucide-react";
+import { Archive } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "Components/ui/card";
 import { Button } from "Components/ui/button";
@@ -44,7 +44,7 @@ import {
 import {
     createCompanyV2,
     updateCompanyV2,
-    deleteCompanyV2,
+    archiveCompanyV2,
 } from "api/v2/companies";
 import {
     showSuccessToast,
@@ -113,9 +113,9 @@ const CompanyFormV2 = ({
 }) => {
     const navigate = useNavigate();
     const [submitting, setSubmitting] = useState(false);
-    const [deleting, setDeleting] = useState(false);
-    const [confirmDelete, setConfirmDelete] = useState(false);
-    const [deleteBlock, setDeleteBlock] = useState(null);
+    const [archiving, setArchiving] = useState(false);
+    const [confirmArchive, setConfirmArchive] = useState(false);
+    const [archiveBlock, setArchiveBlock] = useState(null);
     const [bannerError, setBannerError] = useState(false);
     const [iconError, setIconError] = useState(false);
     const [uploadingIcon, setUploadingIcon] = useState(false);
@@ -292,28 +292,28 @@ const CompanyFormV2 = ({
         }
     );
 
-    const onDeleteConfirm = async () => {
+    const onArchiveConfirm = async () => {
         if (!companyId) return;
-        setDeleting(true);
+        setArchiving(true);
         try {
-            const res = await deleteCompanyV2(companyId);
+            const res = await archiveCompanyV2(companyId);
             if (res.status === 200 || res.status === 204) {
-                showSuccessToast("Company deleted");
+                showSuccessToast("Company archived");
                 // /admin/companies listing lands in a later phase; the
                 // legacy /companys route is the current stand-in.
                 navigate("/admin/companies");
             } else if (res.status === 409) {
                 const count =
                     res.error?.activeJobsCount ?? res.error?.count ?? null;
-                setDeleteBlock({ activeJobsCount: count });
-                setConfirmDelete(false);
+                setArchiveBlock({ activeJobsCount: count });
+                setConfirmArchive(false);
             } else {
                 showErrorToast(
-                    res.error?.message || "Failed to delete company"
+                    res.error?.message || "Failed to archive company"
                 );
             }
         } finally {
-            setDeleting(false);
+            setArchiving(false);
         }
     };
 
@@ -1010,11 +1010,11 @@ const CompanyFormV2 = ({
                             <Button
                                 type="button"
                                 variant="destructive"
-                                onClick={() => setConfirmDelete(true)}
-                                disabled={submitting || deleting}
+                                onClick={() => setConfirmArchive(true)}
+                                disabled={submitting || archiving}
                             >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Delete
+                                <Archive className="h-4 w-4 mr-2" />
+                                Archive
                             </Button>
                         )}
                     </div>
@@ -1029,49 +1029,49 @@ const CompanyFormV2 = ({
             </div>
 
             <Dialog
-                open={confirmDelete}
-                onOpenChange={setConfirmDelete}
+                open={confirmArchive}
+                onOpenChange={setConfirmArchive}
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete this company?</DialogTitle>
+                        <DialogTitle>Archive this company?</DialogTitle>
                         <DialogDescription>
-                            This will permanently remove the company record.
-                            This action cannot be undone.
+                            The company drops out of all listings but stays in
+                            the database, so this can be undone later.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={() => setConfirmDelete(false)}
-                            disabled={deleting}
+                            onClick={() => setConfirmArchive(false)}
+                            disabled={archiving}
                         >
                             Cancel
                         </Button>
                         <Button
                             type="button"
                             variant="destructive"
-                            onClick={onDeleteConfirm}
-                            disabled={deleting}
+                            onClick={onArchiveConfirm}
+                            disabled={archiving}
                         >
-                            {deleting ? "Deleting…" : "Delete"}
+                            {archiving ? "Archiving…" : "Archive"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
 
             <Dialog
-                open={!!deleteBlock}
-                onOpenChange={(o) => !o && setDeleteBlock(null)}
+                open={!!archiveBlock}
+                onOpenChange={(o) => !o && setArchiveBlock(null)}
             >
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Cannot delete company</DialogTitle>
+                        <DialogTitle>Cannot archive company</DialogTitle>
                         <DialogDescription>
-                            {deleteBlock?.activeJobsCount != null
-                                ? `This company has ${deleteBlock.activeJobsCount} active ${
-                                      deleteBlock.activeJobsCount === 1
+                            {archiveBlock?.activeJobsCount != null
+                                ? `This company has ${archiveBlock.activeJobsCount} active ${
+                                      archiveBlock.activeJobsCount === 1
                                           ? "job"
                                           : "jobs"
                                   }. Archive or reassign them first.`
@@ -1082,7 +1082,7 @@ const CompanyFormV2 = ({
                         <Button
                             type="button"
                             variant="outline"
-                            onClick={() => setDeleteBlock(null)}
+                            onClick={() => setArchiveBlock(null)}
                         >
                             Close
                         </Button>

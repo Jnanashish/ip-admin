@@ -4,7 +4,7 @@ import {
     ChevronRight,
     Loader2,
     ScanSearch,
-    Trash2,
+    Archive,
 } from "lucide-react";
 
 import { Button } from "Components/ui/button";
@@ -23,7 +23,7 @@ import {
     verifyApplyLinksV2,
     getVerifyStatusV2,
     listFlaggedJobsV2,
-    purgeFlaggedJobsV2,
+    archiveFlaggedJobsV2,
 } from "api/v2/jobs";
 import {
     showSuccessToast,
@@ -79,7 +79,7 @@ const JobLinkCleanup = () => {
     // ── Deletion state ──────────────────────────────────────────────────────
     // confirm: { type: "row" | "selected" | "all", ids?: string[], count: number, title?: string }
     const [confirm, setConfirm] = useState(null);
-    const [deleting, setDeleting] = useState(false);
+    const [archiving, setArchiving] = useState(false);
 
     const refetch = useCallback(() => setReloadKey((k) => k + 1), []);
 
@@ -246,17 +246,19 @@ const JobLinkCleanup = () => {
         setSelectedIds([]);
     }, []);
 
-    // ── Deletion ────────────────────────────────────────────────────────────
-    const handleConfirmDelete = useCallback(async () => {
+    // ── Archiving ───────────────────────────────────────────────────────────
+    const handleConfirmArchive = useCallback(async () => {
         if (!confirm) return;
-        setDeleting(true);
+        setArchiving(true);
         const payload =
             confirm.type === "all" ? { all: true } : { ids: confirm.ids };
-        const res = await purgeFlaggedJobsV2(payload);
-        setDeleting(false);
+        const res = await archiveFlaggedJobsV2(payload);
+        setArchiving(false);
         if (res.status === 200 && res.data) {
-            const deleted = res.data.deleted ?? confirm.ids?.length ?? 0;
-            showSuccessToast(`Deleted ${deleted} job${deleted === 1 ? "" : "s"}`);
+            const archived = res.data.archived ?? confirm.ids?.length ?? 0;
+            showSuccessToast(
+                `Archived ${archived} job${archived === 1 ? "" : "s"}`
+            );
             setConfirm(null);
             setSelectedIds([]);
             if (confirm.type === "all") setPage(1);
@@ -267,26 +269,26 @@ const JobLinkCleanup = () => {
             showErrorToast("Session expired — please sign in again.");
             return;
         }
-        showErrorToast(apiErrorMessage(res, "Failed to delete jobs"));
+        showErrorToast(apiErrorMessage(res, "Failed to archive jobs"));
     }, [confirm, refetch]);
 
     const confirmCopy = (() => {
         if (!confirm) return { title: "", body: "" };
         if (confirm.type === "row") {
             return {
-                title: "Delete this job?",
-                body: `"${confirm.title || "This job"}" will be soft-deleted (status archived). It drops out of all listings but can be restored.`,
+                title: "Archive this job?",
+                body: `"${confirm.title || "This job"}" will be archived. It drops out of all listings but can be restored.`,
             };
         }
         if (confirm.type === "selected") {
             return {
-                title: "Delete selected jobs?",
-                body: `Soft-delete ${confirm.count} selected job${confirm.count === 1 ? "" : "s"}? They drop out of all listings but can be restored.`,
+                title: "Archive selected jobs?",
+                body: `Archive ${confirm.count} selected job${confirm.count === 1 ? "" : "s"}? They drop out of all listings but can be restored.`,
             };
         }
         return {
-            title: "Delete all flagged jobs?",
-            body: `Soft-delete all ${confirm.count} flagged job${confirm.count === 1 ? "" : "s"}? They drop out of all listings but can be restored.`,
+            title: "Archive all flagged jobs?",
+            body: `Archive all ${confirm.count} flagged job${confirm.count === 1 ? "" : "s"}? They drop out of all listings but can be restored.`,
         };
     })();
 
@@ -302,7 +304,7 @@ const JobLinkCleanup = () => {
                     </h1>
                     <p className="text-sm text-muted-foreground">
                         Scan published jobs for dead apply links, then review and
-                        remove flagged postings.
+                        archive flagged postings.
                     </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -372,8 +374,8 @@ const JobLinkCleanup = () => {
                                 })
                             }
                         >
-                            <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-                            Delete selected ({selectedIds.length})
+                            <Archive className="h-3.5 w-3.5 mr-1.5" />
+                            Archive selected ({selectedIds.length})
                         </Button>
                     )}
                     {result === "all" && total > 0 && (
@@ -384,8 +386,8 @@ const JobLinkCleanup = () => {
                                 setConfirm({ type: "all", count: total })
                             }
                         >
-                            <Trash2 className="h-3.5 w-3.5 mr-1.5" />
-                            Delete all flagged
+                            <Archive className="h-3.5 w-3.5 mr-1.5" />
+                            Archive all flagged
                         </Button>
                     )}
                 </div>
@@ -407,7 +409,7 @@ const JobLinkCleanup = () => {
                     selectedIds={selectedIds}
                     onToggleSelect={handleToggleSelect}
                     onToggleSelectAll={handleToggleSelectAll}
-                    onDeleteRow={(job) =>
+                    onArchiveRow={(job) =>
                         setConfirm({
                             type: "row",
                             ids: [getJobId(job)],
@@ -447,11 +449,11 @@ const JobLinkCleanup = () => {
                 </div>
             )}
 
-            {/* Delete confirmation */}
+            {/* Archive confirmation */}
             <Dialog
                 open={!!confirm}
                 onOpenChange={(open) => {
-                    if (!open && !deleting) setConfirm(null);
+                    if (!open && !archiving) setConfirm(null);
                 }}
             >
                 <DialogContent>
@@ -463,16 +465,16 @@ const JobLinkCleanup = () => {
                         <Button
                             variant="outline"
                             onClick={() => setConfirm(null)}
-                            disabled={deleting}
+                            disabled={archiving}
                         >
                             Cancel
                         </Button>
                         <Button
                             variant="destructive"
-                            onClick={handleConfirmDelete}
-                            disabled={deleting}
+                            onClick={handleConfirmArchive}
+                            disabled={archiving}
                         >
-                            {deleting ? "Deleting…" : "Delete"}
+                            {archiving ? "Archiving…" : "Archive"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

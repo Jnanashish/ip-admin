@@ -29,7 +29,7 @@ import {
     DialogTitle,
 } from "Components/ui/dialog";
 
-import { deleteCompanyV2 } from "api/v2/companies";
+import { archiveCompanyV2 } from "api/v2/companies";
 import { showErrorToast, showSuccessToast } from "Helpers/toast";
 import { formatRelativeTime } from "Helpers/relativeTime";
 
@@ -111,7 +111,7 @@ const CompaniesTable = ({ companies, loading, onChanged }) => {
         const id = getCompanyId(archiveTarget);
         if (!id) return;
         setArchiving(true);
-        const res = await deleteCompanyV2(id);
+        const res = await archiveCompanyV2(id);
         setArchiving(false);
 
         if (res.status === 200 || res.status === 204) {

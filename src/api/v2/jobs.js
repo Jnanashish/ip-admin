@@ -43,6 +43,8 @@ export const getVerifyStatusV2 = () => apiV2.get(`${BASE}/verify-now/status`);
 export const listFlaggedJobsV2 = (query = {}) =>
     apiV2.get(`${BASE}/flagged${buildQueryString(query)}`);
 
-// Soft-delete flagged jobs. payload = { ids: [...] } OR { all: true } (exactly one).
-export const purgeFlaggedJobsV2 = (payload) =>
-    apiV2.post(`${BASE}/flagged/purge`, payload);
+// Bulk-archive flagged jobs. payload = { ids: [...] } OR { all: true } (exactly
+// one). Reversible — same soft archive as archiveJobV2, never a hard delete.
+// Responds { archived, ids }.
+export const archiveFlaggedJobsV2 = (payload) =>
+    apiV2.post(`${BASE}/flagged/archive`, payload);
