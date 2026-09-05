@@ -35,6 +35,7 @@ const JobLinkCleanup = lazy(() => import("./pages/admin/jobs-v2/JobLinkCleanup")
 const CompaniesListV2 = lazy(() => import("./pages/admin/companies-v2/CompaniesListV2"));
 const CreateCompanyV2 = lazy(() => import("./pages/admin/companies-v2/CreateCompanyV2"));
 const EditCompanyV2 = lazy(() => import("./pages/admin/companies-v2/EditCompanyV2"));
+const DailyDigest = lazy(() => import("./pages/admin/social-digest/DailyDigest"));
 
 function ProtectedRoute({ children }) {
     const { user, loading } = useContext(UserContext);
@@ -59,6 +60,7 @@ function AppRoutes() {
                     <Route path="/signin" element={isAuthenticated ? <Navigate to="/admin/jobs" /> : <Signin />} />
                     <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
                         <Route path="/canvas" element={<Banners />} />
+                        <Route path="/admin/daily-digest" element={<DailyDigest />} />
                         <Route path="/admin/scraper" element={<ScraperDashboard />} />
                         <Route path="/admin/scraper/staging" element={<ScraperStaging />} />
                         <Route path="/admin/scraper/staging/:id" element={<ScraperStagingDetail />} />

@@ -12,7 +12,19 @@ const HARDCODED_DEGREE = "B.Tech / B.E. / M.Tech / BCA / MCA";
 const HARDCODED_BATCH = "2024 / 2025 / 2026 / 2027";
 
 const CareersAtTechBanner = (props) => {
-    const { ctaDetails, canvasCss, companyDetails, igbannertitle, jobinfo, instaChannelCTA } = props;
+    // canvasId defaults to the legacy fixed id so the single-banner page keeps
+    // working. Screens that mount several banners at once must pass a unique id
+    // per instance — html-to-image looks the node up with getElementById, and
+    // duplicate ids would capture the first banner every time.
+    const {
+        ctaDetails,
+        canvasCss,
+        companyDetails,
+        igbannertitle,
+        jobinfo,
+        instaChannelCTA,
+        canvasId = "careersattech",
+    } = props;
     const { companyName, experience, salary, location, role } = jobinfo;
     const { largeLogo } = companyDetails;
     const [bannerTitle, setBannerTitle] = useState(null);
@@ -37,7 +49,7 @@ const CareersAtTechBanner = (props) => {
 
     return (
         <div>
-            <div id="careersattech" className={styles.canvas}>
+            <div id={canvasId} className={styles.canvas}>
                 <div className={styles.upper}>
                     <div className={styles.canvas_header}>
                         <p contentEditable="true" className={styles.weblink}>

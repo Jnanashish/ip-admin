@@ -16,6 +16,7 @@ import {
   BarChart3,
   FileText,
   Link2,
+  Megaphone,
 } from "lucide-react";
 import { UserContext } from "Context/userContext";
 import {
@@ -68,6 +69,7 @@ const navGroups = [
   {
     label: "Tools",
     items: [
+      { title: "Daily Digest", url: "/admin/daily-digest", icon: Megaphone },
       { title: "Banners", url: "/canvas", icon: Image },
       { title: "Analytics", url: "/analytics", icon: BarChart3 },
     ],

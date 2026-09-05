@@ -20,6 +20,7 @@ const routeLabels = {
   "/admin/companies": "Company List",
   "/admin/companies/new": "Add Company",
   "/canvas": "Banners",
+  "/admin/daily-digest": "Daily Digest",
   "/admin/scraper": "Scraper Dashboard",
   "/admin/scraper/staging": "Staging Queue",
   "/admin/scraper/logs": "Scrape Logs",

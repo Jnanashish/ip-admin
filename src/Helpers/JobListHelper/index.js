@@ -96,9 +96,12 @@ export const messageTemplate = (item, platform, useWebsiteLink = false) => {
 
 const toList = (jobs) => (Array.isArray(jobs) ? jobs : jobs ? [jobs] : []);
 
-export const generateInstagramCaption = (jobs) => {
+// The build* functions return the text. The generate*/copy* wrappers below add
+// the clipboard write and toast — screens that need to display the text (the
+// digest previews it before you copy) call the builders directly.
+export const buildInstagramCaption = (jobs) => {
     const list = toList(jobs);
-    if (!list.length) return;
+    if (!list.length) return "";
     const header = "Comment 👉 Link to get the apply link in your DM \n";
     const blocks = list.map((item, i) => {
         const prefix = list.length > 1 ? `${i + 1}. ` : "";
@@ -108,7 +111,13 @@ export const generateInstagramCaption = (jobs) => {
         "\n\n👉 Visit link given in Bio to apply." +
         "\n\nFollow @careersattech to get regular Job updates." +
         "\n\n\n" + instagramHashtags;
-    copyToClipBoard(header + blocks.join("\n\n") + footer);
+    return header + blocks.join("\n\n") + footer;
+};
+
+export const generateInstagramCaption = (jobs) => {
+    const text = buildInstagramCaption(jobs);
+    if (!text) return;
+    copyToClipBoard(text);
     showSuccessToast("Copied");
 };
 
@@ -127,10 +136,10 @@ export const copyWhatsAppMessage = (item) => {
     showSuccessToast("Copied");
 };
 
-export const generateWhatsAppMessage = (jobs, useWebsiteLink = false) => {
+export const buildWhatsAppMessage = (jobs, useWebsiteLink = false) => {
     const list = toList(jobs);
-    if (!list.length) return;
-    const message = list
+    if (!list.length) return "";
+    return list
         .map(
             (item, i) =>
                 `${i + 1}. ` +
@@ -138,6 +147,11 @@ export const generateWhatsAppMessage = (jobs, useWebsiteLink = false) => {
                 "\n\n"
         )
         .join("");
+};
+
+export const generateWhatsAppMessage = (jobs, useWebsiteLink = false) => {
+    const message = buildWhatsAppMessage(jobs, useWebsiteLink);
+    if (!message) return;
     copyToClipBoard(message);
     showSuccessToast("Copied");
 };

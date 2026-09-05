@@ -121,24 +121,57 @@ const captureElementAtNativeSize = async (element) => {
     }
 };
 
-export const downloadImagefromCanvasHelper = async (fileName, canvasId, generatelink = true) => {
+// Trigger a browser save of an already-captured data URL.
+export const saveDataUrl = (dataUrl, fileName) => {
+    const link = document.createElement("a");
+    link.href = dataUrl;
+    link.download = fileName + ".jpg";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
+
+/**
+ * Capture a canvas element to a JPEG data URL without saving or uploading it.
+ * Batch screens (the digest renders five banners per click) use this so they
+ * can show previews first and only upload the ones actually wanted.
+ */
+export const captureCanvasDataUrl = async (canvasId) => {
     const element = document.getElementById(canvasId);
+    if (!element) {
+        console.error(`No canvas element found with id "${canvasId}"`);
+        return null;
+    }
 
     try {
-        const dataUrl = await captureElementAtNativeSize(element);
-        const link = document.createElement("a");
+        return await captureElementAtNativeSize(element);
+    } catch (error) {
+        console.error("Error converting HTML to image:", error);
+        return null;
+    }
+};
 
-        link.href = dataUrl;
-        link.download = fileName + ".jpg";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+// Upload a captured data URL to the CDN and return the hosted link.
+export const uploadDataUrl = async (dataUrl) => {
+    const blob = await fetch(dataUrl).then((res) => res.blob());
+    return generateLinkfromImageHelper(null, blob);
+};
 
-        if (generatelink) {
-            const blob = await fetch(dataUrl).then((res) => res.blob());
-            const bannerUrl = await generateLinkfromImageHelper(null, blob);
-            return bannerUrl;
-        }
+// `download` is opt-out for callers that only want the CDN link — five forced
+// file saves per click is not what the digest screen wants.
+export const downloadImagefromCanvasHelper = async (
+    fileName,
+    canvasId,
+    generatelink = true,
+    download = true
+) => {
+    const dataUrl = await captureCanvasDataUrl(canvasId);
+    if (!dataUrl) return null;
+
+    try {
+        if (download) saveDataUrl(dataUrl, fileName);
+        if (generatelink) return await uploadDataUrl(dataUrl);
+        return null;
     } catch (error) {
         console.error("Error converting HTML to image:", error);
         return null;

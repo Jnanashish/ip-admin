@@ -2,7 +2,14 @@ import React, { useState, useEffect } from "react";
 import styles from "./canvas.module.scss";
 
 const JobsAtTechBanner = (props) => {
-    const { canvasCss, companyDetails, igbannertitle, jobdetails } = props;
+    // See CareersAtTechBanner — unique id required when several are mounted.
+    const {
+        canvasCss,
+        companyDetails,
+        igbannertitle,
+        jobdetails,
+        canvasId = "jobsattech",
+    } = props;
     const { companyName, degree, batch, experience, salary, location, role } = jobdetails;
     const { largeLogo } = companyDetails;
 
@@ -27,7 +34,7 @@ const JobsAtTechBanner = (props) => {
     };
 
     return (
-        <div id="jobsattech" className={`${styles.canvas} ${styles.jobsattechcanvas}`}>
+        <div id={canvasId} className={`${styles.canvas} ${styles.jobsattechcanvas}`}>
             <div className={`${styles.upper} ${styles.jobsattechcanvas_upper}`}>
                 <div className={`${styles.canvas_header} ${styles.jobsattechcanvas_header}`}>
                     <p className={styles.weblink}>
