@@ -5,6 +5,7 @@ import {
     Loader2,
     ScanSearch,
     Archive,
+    Trash2,
 } from "lucide-react";
 
 import { Button } from "Components/ui/button";
@@ -24,6 +25,7 @@ import {
     getVerifyStatusV2,
     listFlaggedJobsV2,
     archiveFlaggedJobsV2,
+    deleteFlaggedJobsV2,
 } from "api/v2/jobs";
 import {
     showSuccessToast,
@@ -80,6 +82,7 @@ const JobLinkCleanup = () => {
     // confirm: { type: "row" | "selected" | "all", ids?: string[], count: number, title?: string }
     const [confirm, setConfirm] = useState(null);
     const [archiving, setArchiving] = useState(false);
+    const [deletingAll, setDeletingAll] = useState(false);
 
     const refetch = useCallback(() => setReloadKey((k) => k + 1), []);
 
@@ -272,6 +275,30 @@ const JobLinkCleanup = () => {
         showErrorToast(apiErrorMessage(res, "Failed to archive jobs"));
     }, [confirm, refetch]);
 
+    // ── Permanent delete ────────────────────────────────────────────────────
+    // Deliberately unconfirmed: click = hard delete of the whole flagged queue.
+    const handleDeleteAllFlagged = useCallback(async () => {
+        if (deletingAll) return;
+        setDeletingAll(true);
+        const res = await deleteFlaggedJobsV2({ all: true });
+        setDeletingAll(false);
+        if (res.status === 200 && res.data) {
+            const deleted = res.data.deleted ?? 0;
+            showSuccessToast(
+                `Permanently deleted ${deleted} job${deleted === 1 ? "" : "s"}`
+            );
+            setSelectedIds([]);
+            setPage(1);
+            refetch();
+            return;
+        }
+        if (res.status === 401) {
+            showErrorToast("Session expired — please sign in again.");
+            return;
+        }
+        showErrorToast(apiErrorMessage(res, "Failed to delete jobs"));
+    }, [deletingAll, refetch]);
+
     const confirmCopy = (() => {
         if (!confirm) return { title: "", body: "" };
         if (confirm.type === "row") {
@@ -379,16 +406,36 @@ const JobLinkCleanup = () => {
                         </Button>
                     )}
                     {result === "all" && total > 0 && (
-                        <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() =>
-                                setConfirm({ type: "all", count: total })
-                            }
-                        >
-                            <Archive className="h-3.5 w-3.5 mr-1.5" />
-                            Archive all flagged
-                        </Button>
+                        <>
+                            <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={() =>
+                                    setConfirm({ type: "all", count: total })
+                                }
+                            >
+                                <Archive className="h-3.5 w-3.5 mr-1.5" />
+                                Archive all flagged
+                            </Button>
+                            <Button
+                                variant="destructive"
+                                size="sm"
+                                onClick={handleDeleteAllFlagged}
+                                disabled={deletingAll}
+                            >
+                                {deletingAll ? (
+                                    <>
+                                        <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                                        Deleting…
+                                    </>
+                                ) : (
+                                    <>
+                                        <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                                        Delete all flagged
+                                    </>
+                                )}
+                            </Button>
+                        </>
                     )}
                 </div>
             </div>

@@ -22,8 +22,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "Components/ui/avatar";
 import { Skeleton } from "Components/ui/skeleton";
 import { Button } from "Components/ui/button";
 import { Checkbox } from "Components/ui/checkbox";
-import { Input } from "Components/ui/input";
-import { Label } from "Components/ui/label";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -174,9 +172,7 @@ const JobsTable = ({
     const [archiveTarget, setArchiveTarget] = useState(null);
     const [archiving, setArchiving] = useState(false);
     const [restoringId, setRestoringId] = useState(null);
-    const [permTarget, setPermTarget] = useState(null);
-    const [permText, setPermText] = useState("");
-    const [permDeleting, setPermDeleting] = useState(false);
+    const [permDeletingId, setPermDeletingId] = useState(null);
 
     const selectionEnabled = typeof onToggleSelect === "function";
     const selectedSet = new Set(selectedIds);
@@ -278,32 +274,19 @@ const JobsTable = ({
         showErrorToast(res.error?.message || "Failed to restore job");
     };
 
-    const closePermDialog = () => {
-        if (permDeleting) return;
-        setPermTarget(null);
-        setPermText("");
-    };
-
-    const handlePermDeleteConfirm = async () => {
-        if (!permTarget) return;
-        const id = getJobId(permTarget);
-        if (!id) return;
-        setPermDeleting(true);
+    const handlePermDelete = async (job) => {
+        const id = getJobId(job);
+        if (!id || permDeletingId) return;
+        setPermDeletingId(id);
         const res = await permanentlyDeleteJobV2(id);
-        setPermDeleting(false);
+        setPermDeletingId(null);
         if (res.status === 200 || res.status === 204) {
             showSuccessToast("Job permanently deleted");
-            setPermTarget(null);
-            setPermText("");
             if (typeof onChanged === "function") onChanged();
             return;
         }
         showErrorToast(res.error?.message || "Failed to delete job");
     };
-
-    const permTitle = (permTarget?.title || "").trim();
-    const permConfirmDisabled =
-        permDeleting || permTitle.length === 0 || permText.trim() !== permTitle;
 
     return (
         <>
@@ -653,8 +636,12 @@ const JobsTable = ({
                                                           )}
                                                           <DropdownMenuItem
                                                               className="text-destructive focus:text-destructive"
+                                                              disabled={
+                                                                  permDeletingId ===
+                                                                  id
+                                                              }
                                                               onSelect={() =>
-                                                                  setPermTarget(
+                                                                  handlePermDelete(
                                                                       job
                                                                   )
                                                               }
@@ -700,57 +687,6 @@ const JobsTable = ({
                             disabled={archiving}
                         >
                             {archiving ? "Archiving…" : "Archive"}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
-
-            <Dialog
-                open={!!permTarget}
-                onOpenChange={(open) => {
-                    if (!open) closePermDialog();
-                }}
-            >
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Delete permanently?</DialogTitle>
-                        <DialogDescription>
-                            This permanently deletes{" "}
-                            <span className="font-medium text-foreground">
-                                "{permTarget?.title}"
-                            </span>
-                            . It cannot be undone and the job cannot be restored.
-                            To remove it reversibly, cancel and use Archive
-                            instead.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-2">
-                        <Label htmlFor="perm-confirm-input" className="text-sm">
-                            Type the job title to confirm
-                        </Label>
-                        <Input
-                            id="perm-confirm-input"
-                            value={permText}
-                            onChange={(e) => setPermText(e.target.value)}
-                            placeholder={permTarget?.title || ""}
-                            autoComplete="off"
-                            disabled={permDeleting}
-                        />
-                    </div>
-                    <DialogFooter>
-                        <Button
-                            variant="outline"
-                            onClick={closePermDialog}
-                            disabled={permDeleting}
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            variant="destructive"
-                            onClick={handlePermDeleteConfirm}
-                            disabled={permConfirmDisabled}
-                        >
-                            {permDeleting ? "Deleting…" : "Delete permanently"}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

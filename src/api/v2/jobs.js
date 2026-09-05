@@ -48,3 +48,10 @@ export const listFlaggedJobsV2 = (query = {}) =>
 // Responds { archived, ids }.
 export const archiveFlaggedJobsV2 = (payload) =>
     apiV2.post(`${BASE}/flagged/archive`, payload);
+
+// Bulk hard-delete flagged jobs. Same payload contract as the archive, but
+// irreversible — documents and their click events are removed. `?permanent=true`
+// is REQUIRED; without it the backend refuses with 400 by design.
+// Responds { deleted, clickEventsDeleted, ids }.
+export const deleteFlaggedJobsV2 = (payload) =>
+    apiV2.post(`${BASE}/flagged/delete?permanent=true`, payload);
