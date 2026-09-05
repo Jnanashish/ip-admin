@@ -24,6 +24,7 @@ import { fetchCompanyV2 } from "api/v2/companies";
 import { showErrorToast } from "Helpers/toast";
 import { generateWhatsAppMessage } from "Helpers/JobListHelper";
 import { cn } from "lib/utils";
+import { isBestToPost } from "Helpers/bestToPost";
 
 import JobsFilters from "./components/JobsFilters";
 import JobsTable from "./components/JobsTable";
@@ -59,6 +60,7 @@ const FILTER_KEYS = [
     "employmentType",
     "batch",
     "companyId",
+    "bestToPost",
 ];
 
 const readFilters = (params) => ({
@@ -69,6 +71,9 @@ const readFilters = (params) => ({
     employmentType: params.get("employmentType") || "all",
     batch: params.get("batch") || "all",
     companyId: params.get("companyId") || "all",
+    // Client-side only — scored from the lazily hydrated company map, so it
+    // never reaches buildApiQuery.
+    bestToPost: params.get("bestToPost") === "true",
     page: Math.max(1, parseInt(params.get("page") || "1", 10) || 1),
     limit: (() => {
         const raw = parseInt(params.get("limit") || "", 10);
@@ -129,7 +134,6 @@ const JobsListV2 = () => {
     const [jobs, setJobs] = useState([]);
     const [meta, setMeta] = useState({ total: 0, pages: null });
     const [loading, setLoading] = useState(true);
-    const [reloadKey, setReloadKey] = useState(0);
     const [selectedJobs, setSelectedJobs] = useState(readSelectedJobsFromStorage);
     const [companyMap, setCompanyMap] = useState({});
     const companyMapRef = useRef(companyMap);
@@ -225,6 +229,45 @@ const JobsListV2 = () => {
 
     const clearSelection = useCallback(() => setSelectedJobs([]), []);
 
+    // Archive / restore / delete patch the loaded page in place — no refetch,
+    // so the user keeps their scroll position and page. Whether the row leaves
+    // the table depends on the active scope tab: a job archived while on
+    // "Active" no longer belongs there, but on "All" it just changes status.
+    const handleJobMutated = useCallback(
+        (id, action, updatedJob) => {
+            if (!id) return;
+
+            const leavesView =
+                action === "deleted" ||
+                (action === "archived" && filters.scope === "active") ||
+                (action === "restored" && filters.scope === "archived");
+
+            if (leavesView) {
+                setJobs((prev) => prev.filter((j) => getJobId(j) !== id));
+                setMeta((prev) => ({
+                    ...prev,
+                    total: Math.max(0, prev.total - 1),
+                }));
+                setSelectedJobs((prev) =>
+                    prev.filter((j) => getJobId(j) !== id)
+                );
+                return;
+            }
+
+            // Row stays — prefer the server's copy, fall back to the fields the
+            // action is known to change.
+            const patch =
+                updatedJob ||
+                (action === "archived"
+                    ? { status: "archived", archivedAt: new Date().toISOString() }
+                    : { status: "published", archivedAt: null });
+            setJobs((prev) =>
+                prev.map((j) => (getJobId(j) === id ? { ...j, ...patch } : j))
+            );
+        },
+        [filters.scope]
+    );
+
     useEffect(() => {
         let cancelled = false;
         setLoading(true);
@@ -244,7 +287,7 @@ const JobsListV2 = () => {
         return () => {
             cancelled = true;
         };
-    }, [filters, reloadKey]);
+    }, [filters]);
 
     const updateParams = useCallback(
         (patch, options = {}) => {
@@ -257,6 +300,7 @@ const JobsListV2 = () => {
                     value === undefined ||
                     value === null ||
                     value === "" ||
+                    value === false ||
                     (key !== "scope" && value === "all") ||
                     (key === "scope" && value === "active") ||
                     (key === "page" && value === 1) ||
@@ -302,10 +346,23 @@ const JobsListV2 = () => {
         !!filters.search ||
         filters.employmentType !== "all" ||
         filters.batch !== "all" ||
-        filters.companyId !== "all";
+        filters.companyId !== "all" ||
+        filters.bestToPost;
 
-    const showEmpty = !loading && jobs.length === 0;
-    const emptyMessage = hasActiveFilter
+    // Best-to-post is scored client-side from `companyMap`, so it narrows the
+    // page the API already returned rather than the whole result set.
+    const visibleJobs = useMemo(
+        () =>
+            filters.bestToPost
+                ? jobs.filter((job) => isBestToPost(job, companyMap))
+                : jobs,
+        [jobs, filters.bestToPost, companyMap]
+    );
+
+    const showEmpty = !loading && visibleJobs.length === 0;
+    const emptyMessage = filters.bestToPost
+        ? "No jobs on this page are a good fit for posting"
+        : hasActiveFilter
         ? "No jobs match your filters"
         : filters.scope === "archived"
           ? "No archived jobs"
@@ -352,6 +409,14 @@ const JobsListV2 = () => {
                 onClear={handleClearFilters}
                 hasActiveFilter={hasActiveFilter}
             />
+
+            {filters.bestToPost && !loading && (
+                <p className="text-xs text-muted-foreground">
+                    Showing {visibleJobs.length} of {jobs.length} jobs on this
+                    page. Best to post is scored in the browser, so it filters
+                    the current page only.
+                </p>
+            )}
 
             {showEmpty ? (
                 <Card>
@@ -427,9 +492,9 @@ const JobsListV2 = () => {
                         </Card>
                     )}
                     <JobsTable
-                        jobs={jobs}
+                        jobs={visibleJobs}
                         loading={loading}
-                        onChanged={() => setReloadKey((k) => k + 1)}
+                        onJobMutated={handleJobMutated}
                         selectedIds={selectedIds}
                         onToggleSelect={handleToggleSelect}
                         onToggleSelectAll={handleToggleSelectAll}

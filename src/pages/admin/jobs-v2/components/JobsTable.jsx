@@ -8,6 +8,7 @@ import {
     Image as ImageIcon,
     Archive,
     RotateCcw,
+    Sparkles,
 } from "lucide-react";
 
 import {
@@ -58,6 +59,11 @@ import {
 } from "Helpers/toast";
 import { formatRelativeTime } from "Helpers/relativeTime";
 import { copyApplyLink } from "Helpers/JobListHelper";
+import {
+    evaluateBestToPost,
+    FRESHER_MAX_EXPERIENCE,
+} from "Helpers/bestToPost";
+import { cn } from "lib/utils";
 
 import StatusBadge from "./StatusBadge";
 
@@ -84,6 +90,14 @@ const COLUMNS = [
 ];
 
 const getJobId = (job) => job?._id ?? job?.id ?? "";
+
+// Mutation endpoints may answer with the updated job, either bare or wrapped
+// in { data }. Anything else (204, a bare { ok: true }) yields null and the
+// caller falls back to a locally derived patch.
+const extractJob = (data) => {
+    const doc = data?.data || data;
+    return doc && typeof doc === "object" && getJobId(doc) ? doc : null;
+};
 
 const getApplyLink = (job) => job?.applyLink || job?.link || "";
 
@@ -126,6 +140,13 @@ const SkeletonRow = () => (
     </TableRow>
 );
 
+const COMPANY_NAME_MAX_LENGTH = 16;
+
+const truncateCompanyName = (value) =>
+    value.length > COMPANY_NAME_MAX_LENGTH
+        ? `${value.slice(0, COMPANY_NAME_MAX_LENGTH).trimEnd()}\u2026`
+        : value;
+
 const CompanyCell = ({ job, companyMap }) => {
     const companyId =
         typeof job?.company === "object"
@@ -153,7 +174,9 @@ const CompanyCell = ({ job, companyMap }) => {
                     <Building2 className="h-3 w-3 text-muted-foreground" />
                 </AvatarFallback>
             </Avatar>
-            <span className="truncate">{name}</span>
+            <span className="truncate" title={name}>
+                {truncateCompanyName(name)}
+            </span>
         </div>
     );
 };
@@ -161,7 +184,7 @@ const CompanyCell = ({ job, companyMap }) => {
 const JobsTable = ({
     jobs,
     loading,
-    onChanged,
+    onJobMutated,
     selectedIds = [],
     onToggleSelect,
     onToggleSelectAll,
@@ -182,6 +205,11 @@ const JobsTable = ({
         visibleIds.every((id) => selectedSet.has(id));
     const someSelected =
         visibleIds.some((id) => selectedSet.has(id)) && !allSelected;
+
+    const notifyMutated = (id, action, updatedJob) => {
+        if (typeof onJobMutated === "function")
+            onJobMutated(id, action, updatedJob);
+    };
 
     const handleViewOnSite = (job) => {
         if (!job.slug) return;
@@ -248,7 +276,7 @@ const JobsTable = ({
         if (res.status === 200 || res.status === 204) {
             showSuccessToast("Job archived");
             setArchiveTarget(null);
-            if (typeof onChanged === "function") onChanged();
+            notifyMutated(id, "archived", extractJob(res.data));
             return;
         }
         showErrorToast(res.error?.message || "Failed to archive job");
@@ -262,13 +290,13 @@ const JobsTable = ({
         setRestoringId(null);
         if (res.status === 200 || res.status === 204) {
             showSuccessToast("Job restored");
-            if (typeof onChanged === "function") onChanged();
+            notifyMutated(id, "restored", extractJob(res.data));
             return;
         }
-        // 404 = already restored / no longer archived (race). Treat as info.
+        // 404 = already restored / no longer archived (race). Same end state.
         if (res.status === 404) {
-            showInfoToast("Job is no longer archived — refreshing list");
-            if (typeof onChanged === "function") onChanged();
+            showInfoToast("Job is no longer archived");
+            notifyMutated(id, "restored", null);
             return;
         }
         showErrorToast(res.error?.message || "Failed to restore job");
@@ -282,7 +310,7 @@ const JobsTable = ({
         setPermDeletingId(null);
         if (res.status === 200 || res.status === 204) {
             showSuccessToast("Job permanently deleted");
-            if (typeof onChanged === "function") onChanged();
+            notifyMutated(id, "deleted", null);
             return;
         }
         showErrorToast(res.error?.message || "Failed to delete job");
@@ -344,12 +372,21 @@ const JobsTable = ({
                                   const isSelected =
                                       !!id && selectedSet.has(id);
                                   const isArchived = job.status === "archived";
+                                  const bestToPost = evaluateBestToPost(
+                                      job,
+                                      companyMap
+                                  );
                                   return (
                                       <TableRow
                                           key={id || job.title}
                                           data-state={
                                               isSelected ? "selected" : undefined
                                           }
+                                          className={cn(
+                                              bestToPost.eligible &&
+                                                  !isArchived &&
+                                                  "bg-green-50 hover:bg-green-100 dark:bg-green-950/30 dark:hover:bg-green-950/50"
+                                          )}
                                       >
                                           <TableCell>
                                               {selectionEnabled && (
@@ -365,12 +402,40 @@ const JobsTable = ({
                                               )}
                                           </TableCell>
                                           <TableCell className="font-medium">
-                                              <Link
-                                                  to={`/admin/jobs/${id}/edit`}
-                                                  className="hover:underline"
-                                              >
-                                                  {job.title || "Untitled"}
-                                              </Link>
+                                              <div className="flex items-center gap-1.5">
+                                                  {bestToPost.eligible &&
+                                                      !isArchived && (
+                                                          <TooltipProvider
+                                                              delayDuration={100}
+                                                          >
+                                                              <Tooltip>
+                                                                  <TooltipTrigger
+                                                                      asChild
+                                                                  >
+                                                                      <Sparkles
+                                                                          className="h-3.5 w-3.5 shrink-0 text-green-600 dark:text-green-500"
+                                                                          aria-label="Best to post"
+                                                                      />
+                                                                  </TooltipTrigger>
+                                                                  <TooltipContent side="right">
+                                                                      Best to post: known
+                                                                      company, has logo,
+                                                                      0–
+                                                                      {
+                                                                          FRESHER_MAX_EXPERIENCE
+                                                                      }{" "}
+                                                                      yrs experience
+                                                                  </TooltipContent>
+                                                              </Tooltip>
+                                                          </TooltipProvider>
+                                                      )}
+                                                  <Link
+                                                      to={`/admin/jobs/${id}/edit`}
+                                                      className="hover:underline"
+                                                  >
+                                                      {job.title || "Untitled"}
+                                                  </Link>
+                                              </div>
                                           </TableCell>
                                           <TableCell>
                                               <CompanyCell

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Search, X } from "lucide-react";
+import { Search, Sparkles, X } from "lucide-react";
 import { Button } from "Components/ui/button";
 import { Input } from "Components/ui/input";
 import {
@@ -10,6 +10,7 @@ import {
     SelectValue,
 } from "Components/ui/select";
 import CompanyFilterSelect from "./CompanyFilterSelect";
+import { cn } from "lib/utils";
 
 const EMPLOYMENT_TYPE_OPTIONS = [
     { value: "all", label: "All types" },
@@ -97,6 +98,21 @@ const JobsFilters = ({ filters, onChange, onClear, hasActiveFilter }) => {
                 value={filters.companyId || "all"}
                 onChange={(v) => onChange({ companyId: v })}
             />
+
+            <Button
+                type="button"
+                variant="outline"
+                aria-pressed={!!filters.bestToPost}
+                onClick={() => onChange({ bestToPost: !filters.bestToPost })}
+                className={cn(
+                    "h-10",
+                    filters.bestToPost &&
+                        "border-green-300 bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-700 dark:border-green-900 dark:bg-green-950/40 dark:text-green-400 dark:hover:bg-green-950/60"
+                )}
+            >
+                <Sparkles className="h-4 w-4 mr-1.5" />
+                Best to post
+            </Button>
 
             {hasActiveFilter && (
                 <Button
