@@ -11,6 +11,7 @@ import {
     XCircle,
     AlertTriangle,
     Square,
+    Zap,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "Components/ui/card";
 import { Button } from "Components/ui/button";
@@ -82,6 +83,8 @@ const ScraperDashboard = () => {
     const [scrapePolling, setScrapePolling] = useState(false);
     const [stopConfirm, setStopConfirm] = useState(null);
     const [stoppingAdapters, setStoppingAdapters] = useState({});
+    const [scrapeConfirm, setScrapeConfirm] = useState(null);
+    const [scrapingAdapters, setScrapingAdapters] = useState({});
 
     const fetchData = useCallback(async () => {
         try {
@@ -130,6 +133,21 @@ const ScraperDashboard = () => {
         const res = await scraperPost(scraperEndpoints.scrapeRun, {}, "Scrape Run");
         if (res) {
             showInfoToast("Scrape run started. New jobs will appear in the staging queue shortly.");
+            setScrapePolling(true);
+            setTimeout(() => setScrapePolling(false), 5 * 60 * 1000);
+        }
+    };
+
+    // Same endpoint as the header button, but scoped to one source: the
+    // backend runs only this adapter when the body names it, instead of every
+    // enabled source back to back.
+    const handleScrapeAdapter = async (adapterName) => {
+        setScrapeConfirm(null);
+        setScrapingAdapters((prev) => ({ ...prev, [adapterName]: true }));
+        const res = await scraperPost(scraperEndpoints.scrapeRun, { adapter: adapterName });
+        setScrapingAdapters((prev) => ({ ...prev, [adapterName]: false }));
+        if (res) {
+            showSuccessToast(`Scrape started for ${getSourceLabel(adapterName)}`);
             setScrapePolling(true);
             setTimeout(() => setScrapePolling(false), 5 * 60 * 1000);
         }
@@ -241,9 +259,27 @@ const ScraperDashboard = () => {
                                     )}
                                 </div>
                                 <Button
-                                    variant="destructive"
                                     size="sm"
                                     className="w-full mt-3"
+                                    disabled={scrapingAdapters[adapter.name]}
+                                    onClick={() => setScrapeConfirm(adapter.name)}
+                                >
+                                    {scrapingAdapters[adapter.name] ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                                            Starting...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Zap className="mr-2 h-3 w-3" />
+                                            Scrape Now
+                                        </>
+                                    )}
+                                </Button>
+                                <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    className="w-full mt-2"
                                     disabled={stoppingAdapters[adapter.name]}
                                     onClick={() => setStopConfirm(adapter.name)}
                                 >
@@ -284,7 +320,13 @@ const ScraperDashboard = () => {
                     <DialogHeader>
                         <DialogTitle>Start Scrape Run</DialogTitle>
                         <DialogDescription>
-                            This will scrape up to 20 jobs from each enabled source. Continue?
+                            This runs{" "}
+                            <span className="font-medium">
+                                all {healthData.filter((a) => a.enabled !== false).length} enabled sources
+                            </span>{" "}
+                            back to back in a single pipeline run, which is a heavy burst of AI and
+                            scraper-API usage. To refresh just one portal, use its own Scrape Now
+                            button below. Continue?
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
@@ -292,6 +334,25 @@ const ScraperDashboard = () => {
                             Cancel
                         </Button>
                         <Button onClick={handleScrapeNow}>Start Scraping</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={!!scrapeConfirm} onOpenChange={() => setScrapeConfirm(null)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Scrape {getSourceLabel(scrapeConfirm)}</DialogTitle>
+                        <DialogDescription>
+                            Runs the full pipeline for{" "}
+                            <span className="font-medium">{getSourceLabel(scrapeConfirm)}</span> only —
+                            no other source is touched.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setScrapeConfirm(null)}>
+                            Cancel
+                        </Button>
+                        <Button onClick={() => handleScrapeAdapter(scrapeConfirm)}>Start Scraping</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

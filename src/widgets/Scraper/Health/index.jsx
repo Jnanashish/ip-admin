@@ -7,6 +7,7 @@ import {
     Play,
     HeartPulse,
     Square,
+    Zap,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "Components/ui/card";
 import { Button } from "Components/ui/button";
@@ -21,7 +22,7 @@ import {
 } from "Components/ui/dialog";
 import { scraperGet, scraperPost } from "Helpers/scraperRequest";
 import { scraperEndpoints } from "Helpers/scraperApiEndpoints";
-import { showSuccessToast } from "Helpers/toast";
+import { showSuccessToast, showInfoToast } from "Helpers/toast";
 import { getSourceLabel } from "Helpers/scraperSources";
 
 const statusConfig = {
@@ -30,7 +31,7 @@ const statusConfig = {
     partial: { color: "border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20 dark:border-yellow-900", icon: AlertTriangle, iconColor: "text-yellow-500", label: "Partial" },
 };
 
-const AdapterCard = ({ adapter, onTest, onStop, isStopping }) => {
+const AdapterCard = ({ adapter, onScrape, onTest, onStop, isScraping, isStopping }) => {
     const config = statusConfig[adapter.status] || statusConfig.partial;
     const Icon = config.icon;
 
@@ -63,6 +64,27 @@ const AdapterCard = ({ adapter, onTest, onStop, isStopping }) => {
                         Last run: {new Date(adapter.lastRun).toLocaleString()}
                     </p>
                 )}
+                {/* A real run for this source alone. "Test Adapter" below only
+                    dry-runs three jobs and saves nothing, so this is the button
+                    that actually ingests. */}
+                <Button
+                    size="sm"
+                    className="w-full"
+                    disabled={isScraping}
+                    onClick={() => onScrape(adapter.name)}
+                >
+                    {isScraping ? (
+                        <>
+                            <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                            Starting...
+                        </>
+                    ) : (
+                        <>
+                            <Zap className="mr-2 h-3 w-3" />
+                            Scrape Now
+                        </>
+                    )}
+                </Button>
                 <div className="flex gap-2">
                     <Button
                         variant="outline"
@@ -104,6 +126,8 @@ const AdapterHealth = () => {
     const [testResults, setTestResults] = useState({});
     const [stopConfirm, setStopConfirm] = useState(null);
     const [stoppingAdapters, setStoppingAdapters] = useState({});
+    const [scrapeConfirm, setScrapeConfirm] = useState(null);
+    const [scrapingAdapters, setScrapingAdapters] = useState({});
 
     const fetchHealth = async () => {
         setLoading(true);
@@ -129,6 +153,26 @@ const AdapterHealth = () => {
         setStoppingAdapters((prev) => ({ ...prev, [adapterName]: false }));
         if (res) {
             showSuccessToast(`Scraping stopped for ${adapterName}`);
+            fetchHealth();
+        }
+    };
+
+    // POST /admin/scrape/run with an adapter name runs the full pipeline for
+    // that source only — transform, ingest and auto-publish included. Without
+    // the name the backend runs every enabled source at once, which is the
+    // burst the staggered crons exist to avoid.
+    //
+    // The backend answers as soon as the run is queued and keeps working in the
+    // background, so the spinner covers the request, not the scrape; the toast
+    // says where to watch for results.
+    const handleScrapeAdapter = async (adapterName) => {
+        setScrapeConfirm(null);
+        setScrapingAdapters((prev) => ({ ...prev, [adapterName]: true }));
+        const res = await scraperPost(scraperEndpoints.scrapeRun, { adapter: adapterName });
+        setScrapingAdapters((prev) => ({ ...prev, [adapterName]: false }));
+        if (res) {
+            showSuccessToast(`Scrape started for ${getSourceLabel(adapterName)}`);
+            showInfoToast("Running in the background — check Logs, or the staging queue for anything held back.");
             fetchHealth();
         }
     };
@@ -169,8 +213,10 @@ const AdapterHealth = () => {
                         <AdapterCard
                             key={adapter.name}
                             adapter={adapter}
+                            onScrape={setScrapeConfirm}
                             onTest={handleTest}
                             onStop={setStopConfirm}
+                            isScraping={scrapingAdapters[adapter.name]}
                             isStopping={stoppingAdapters[adapter.name]}
                         />
                     ))}
@@ -199,6 +245,26 @@ const AdapterHealth = () => {
                     )}
                 </Card>
             ))}
+
+            <Dialog open={!!scrapeConfirm} onOpenChange={() => setScrapeConfirm(null)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Scrape {getSourceLabel(scrapeConfirm)}</DialogTitle>
+                        <DialogDescription>
+                            Runs the full pipeline for{" "}
+                            <span className="font-medium">{getSourceLabel(scrapeConfirm)}</span> only —
+                            no other source is touched. Scraped jobs go through the AI transformer and
+                            publish automatically; anything not publish-ready waits in the staging queue.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setScrapeConfirm(null)}>
+                            Cancel
+                        </Button>
+                        <Button onClick={() => handleScrapeAdapter(scrapeConfirm)}>Start Scraping</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             <Dialog open={!!stopConfirm} onOpenChange={() => setStopConfirm(null)}>
                 <DialogContent>
