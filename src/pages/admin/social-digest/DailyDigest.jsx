@@ -23,6 +23,8 @@ import {
 
 import CareersAtTechBanner from "Components/Canvas/CareersAtTechBanner";
 
+import TelegramDigestButton from "./components/TelegramDigestButton";
+
 import { captureCanvasDataUrl, saveDataUrl, uploadDataUrl } from "Helpers/imageHelpers";
 import { copyToClipBoard } from "Helpers/utility";
 import {
@@ -282,6 +284,7 @@ const DailyDigest = () => {
                         <RotateCcw className="h-4 w-4 mr-2" />
                         Reset history
                     </Button>
+                    <TelegramDigestButton />
                     <Button onClick={loadNext} disabled={busy}>
                         {busy ? (
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />

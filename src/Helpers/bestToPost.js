@@ -8,6 +8,10 @@
  *
  * Company data comes from the `companyMap` the jobs list hydrates lazily, so
  * callers should expect `eligible: false` until the map is populated.
+ *
+ * The backend's daily Telegram digest applies the same three checks
+ * (services/socialDigest/bestToPost.js) to pick the jobs it sends — change both
+ * together, or the digest stops matching the rows highlighted here.
  */
 
 export const KNOWN_COMPANY_TYPES = ["bigtech", "mnc", "unicorn", "product"];

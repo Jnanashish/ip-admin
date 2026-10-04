@@ -53,7 +53,13 @@ export const messageTemplate = (item, platform, useWebsiteLink = false) => {
 
     switch (platform) {
         case "whatsapp": {
-            const titleStyled = stylize((item?.companyName || "") + role);
+            // v2 titles are the bare role ("Software Engineer"), so the company
+            // needs a separator or the two run together. The backend's Telegram
+            // digest builds the same message (services/socialDigest/captions/
+            // whatsapp.js) — keep the two in sync.
+            const titleStyled = stylize(
+                [item?.companyName, role].filter(Boolean).join(" — ")
+            );
             return (
                 titleStyled +
                 "\nBatch : " + batch +
