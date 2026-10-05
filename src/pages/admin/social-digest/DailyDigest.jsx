@@ -284,7 +284,7 @@ const DailyDigest = () => {
                         <RotateCcw className="h-4 w-4 mr-2" />
                         Reset history
                     </Button>
-                    <TelegramDigestButton />
+                    <TelegramDigestButton count={DIGEST_SIZE} />
                     <Button onClick={loadNext} disabled={busy}>
                         {busy ? (
                             <Loader2 className="h-4 w-4 mr-2 animate-spin" />
