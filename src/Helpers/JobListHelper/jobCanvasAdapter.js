@@ -7,6 +7,10 @@
 // Note these produce *display* shapes: batch/degree collapse to strings and
 // jobLocation collapses to one line. The caption builders need the raw arrays,
 // so pass them the untouched API job, not the adapted one.
+//
+// formatExperience / formatSalary / formatLocation are copied into the
+// backend's Telegram digest banner (services/socialDigest/banner) — keep them
+// in sync.
 
 export const formatExperience = (exp) => {
     if (!exp) return "";

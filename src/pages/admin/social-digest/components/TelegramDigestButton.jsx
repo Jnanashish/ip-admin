@@ -14,8 +14,9 @@ import {
 const errorText = (error, fallback) => error?.error || error?.message || fallback;
 
 // One click posts the top `count` best-to-post jobs to the backend's Telegram
-// digest channel, with the Instagram caption and WhatsApp message — the same
-// digest the 4 PM run sends, which then skips the jobs sent here.
+// digest channel, with their banners as files, the Instagram caption and the
+// WhatsApp message — the same digest the 4 PM run sends, which then skips the
+// jobs sent here.
 const TelegramDigestButton = ({ count }) => {
     const [sending, setSending] = useState(false);
 
@@ -46,6 +47,12 @@ const TelegramDigestButton = ({ count }) => {
                 ? `Sent ${sent} job(s) to Telegram — only ${sent} qualified`
                 : `Sent ${sent} jobs to Telegram`
         );
+        // The digest still went out; the Telegram list flags which jobs lack one.
+        if (result.banners?.failed) {
+            showWarnToast(
+                `${result.banners.failed} banner(s) failed to render — make them with the job's Banner button in the jobs list`
+            );
+        }
     };
 
     return (

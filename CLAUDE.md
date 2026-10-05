@@ -55,7 +55,7 @@ src/
 - **Toasts**: `react-toastify` via helpers in `src/Helpers/toast.js`
 - **Pages are thin wrappers** that render widget components (e.g., `AddJobs.jsx` just renders `<AddjobsComponent />`)
 - **Banner generation**: Canvas components in `src/Components/Canvas/` render HTML banners (Instagram, LinkedIn, CareersAtTech) that can be downloaded as images
-- **Telegram social digest**: the backend posts the top 6 best-to-post jobs, an Instagram caption and a WhatsApp message to a Telegram channel daily at 4 PM IST; "Send top 5 to Telegram" on the Daily Digest page sends the top 5 in one click (`src/api/v2/socialDigest.js`; the 4 PM run then skips them). The backend's copies of `src/Helpers/bestToPost.js` and the `src/Helpers/JobListHelper/` caption builders live in `services/socialDigest/` — change both repos together.
+- **Telegram social digest**: the backend posts the top 6 best-to-post jobs, their banners (as files), an Instagram caption and a WhatsApp message to a Telegram channel daily at 4 PM IST; "Send top 5 to Telegram" on the Daily Digest page sends the top 5 in one click (`src/api/v2/socialDigest.js`; the 4 PM run then skips them). The backend keeps copies of `src/Helpers/bestToPost.js`, the `src/Helpers/JobListHelper/` caption builders, and the CareersAtTech banner (`CareersAtTechBanner.jsx` + `canvas.module.scss` + the `jobCanvasAdapter` formatters, redrawn server-side) in `services/socialDigest/` — change both repos together.
 
 ## UI/Theme Rules
 

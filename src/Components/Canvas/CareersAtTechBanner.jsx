@@ -6,6 +6,10 @@ import linkedin from "../../Static/Image/linkedin.png";
 import instagram from "../../Static/Image/instagram.png";
 import telegram from "../../Static/Image/telegram.png";
 
+// The backend redraws this banner for the daily Telegram digest
+// (services/socialDigest/banner — the "Join instagram channel" CTA layout).
+// A change to the layout, the text or these two strings must be made there too.
+
 // Hard-coded degree + batch shown on every CareersAtTech banner.
 // Edit the strings below to change the defaults (slash-separated, space on both sides).
 const HARDCODED_DEGREE = "B.Tech / B.E. / M.Tech / BCA / MCA";
